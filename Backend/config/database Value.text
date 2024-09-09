@@ -1,0 +1,41 @@
+----item----
+
+cmd command for add data
+ 1--navigate to the MySQL bin directory if it's not in your system's PATH. (cd C:\Program Files\MySQL\MySQL Server 8.0\bin)
+ 2--open cmd
+ 3---USE Simply5;
+ 4-- ----------------------
+ INSERT INTO item (category, sub_category, name, price, prepare_time, description, rate)
+VALUES
+-- Meals
+('Meal', 'Main Course', 'Basmati Rice', 200, '30 minutes', 'Aromatic long-grain rice.', 8.5),
+('Meal', 'Street Food', 'Chicken Kottu', 500, '20 minutes', 'Stir-fried roti with chicken.', 9.0),
+('Meal', 'Main Course', 'Egg Noodles', 300, '15 minutes', 'Stir-fried noodles with eggs.', 8.8),
+('Meal', 'Italian', 'Spaghetti Bolognese', 600, '40 minutes', 'Classic Italian pasta with meat sauce.', 9.2),
+('Meal', 'Fast Food', 'Beef Burger', 450, '10 minutes', 'Juicy beef patty with fresh toppings.', 9.1),
+('Meal', 'Italian', 'Margherita Pizza', 700, '25 minutes', 'Classic pizza with tomato, mozzarella, and basil.', 9.5),
+('Meal', 'Main Course', 'Chicken Biriyani', 550, '1 hour', 'Flavorful rice with marinated chicken.', 9.4),
+('Meal', 'Street Food', 'Fish Tacos', 400, '15 minutes', 'Crispy fish with fresh toppings.', 8.9),
+('Meal', 'Main Course', 'Grilled Salmon', 800, '25 minutes', 'Grilled salmon with lemon butter sauce.', 9.4),
+('Meal', 'Main Course', 'Paneer Butter Masala', 400, '30 minutes', 'Cottage cheese in creamy tomato gravy.', 9.1),
+('Meal', 'Main Course', 'Mutton Curry', 750, '1.5 hours', 'Tender mutton cooked in spicy gravy.', 9.4),
+('Meal', 'Street Food', 'Vada Pav', 100, '10 minutes', 'Spicy potato fritter in a bun.', 8.9),
+('Meal', 'Main Course', 'Butter Chicken', 600, '45 minutes', 'Creamy tomato-based chicken curry.', 9.5),
+('Meal', 'Main Course', 'Vegetable Stir Fry', 350, '20 minutes', 'Mixed veggies stir-fried with sauces.', 8.7),
+
+-- Drinks
+('Drinks', 'Beverage', 'Mango Smoothie', 150, '5 minutes', 'Refreshing mango smoothie.', 8.7),
+('Drinks', 'Beverage', 'Lemon Iced Tea', 120, '5 minutes', 'Refreshing iced tea with lemon.', 8.7),
+('Drinks', 'Beverage', 'Cold Coffee', 200, '5 minutes', 'Iced coffee with milk and sugar.', 8.9),
+
+-- Desserts
+('Desserts', 'Cake', 'Chocolate Cake', 350, '1 hour', 'Rich chocolate cake with ganache.', 9.3),
+('Desserts', 'Ice Cream', 'Vanilla Ice Cream', 200, 'No preparation', 'Creamy vanilla ice cream.', 8.8),
+('Desserts', 'Traditional', 'Gulab Jamun', 300, '30 minutes', 'Soft dough balls soaked in syrup.', 9.3),
+('Desserts', 'Pastry', 'Brownie', 250, '45 minutes', 'Rich chocolate brownie.', 9.2),
+('Desserts', 'Sweets', 'Pani Puri', 100, '10 minutes', 'Crispy puris filled with tangy water.', 9.0),
+('Desserts', 'Traditional', 'Gajar Halwa', 300, '1 hour', 'Carrot-based sweet dessert.', 9.4),
+('Desserts', 'Pastry', 'Cheesecake', 500, '3 hours', 'Creamy cheesecake with a biscuit base.', 9.6),
+('Desserts', 'Sweets', 'Rasgulla', 250, '1 hour', 'Spongy soft cheese balls in syrup.', 9.1);
+---------------------------------------------------------
+
