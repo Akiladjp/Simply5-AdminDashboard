@@ -33,7 +33,7 @@ export default function ItemCard({ data }) {
       throw error; // or handle the error as needed
     }
   };
-
+//dhanushka-->> meka remove krpn akila
   return (
     <div className="flex flex-col w-[237px] h-auto pb-2 overflow-hidden bg-white shadow-lg rounded-xl shadow-indigo-200">
       <div className="flex flex-col w-[237px] h-[194px] pb-2 overflow-hidden bg-white rounded-t-xl ">
