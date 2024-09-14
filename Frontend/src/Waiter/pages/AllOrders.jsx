@@ -1,9 +1,11 @@
-import React from 'react'
+
+import OrderCard from '../components/OrderCard'
+
 
 function AllOrders() {
   return (
-    <div>
-      AllOrders
+    <div className="pt-20 md:pt-28">
+      <OrderCard status="allOrders" />
     </div>
   )
 }

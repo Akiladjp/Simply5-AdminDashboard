@@ -243,7 +243,7 @@ export default function Sidebar() {
             }}
           >
             <GrUserWorker className="mr-2" />
-            EMPLOYERS
+            EMPLOYEES
           </Link>
         </div>
 
