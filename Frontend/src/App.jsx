@@ -52,6 +52,7 @@ import PendingOrders from "./Waiter/pages/PendingOrders";
 import AcceptedOrders from "./Waiter/pages/AcceptedOrders";
 import Profile from "./Waiter/pages/Profile";
 
+
 const MainLayout = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
@@ -93,7 +94,7 @@ const WaiterLayOut = () => {
         <WaiterHeader/>
       </div>
 			
-				<div className="lg:w-full   ">
+				<div className="lg:w-full ">
 					<Outlet />
 				</div>
 
@@ -155,6 +156,7 @@ const router = createBrowserRouter([
   { path: "/forgotpassword", element: <ForgotPassword /> },
   { path: "/api/otp", element: <OTPInput /> },
   { path: "/resetpassword", element: <ResetPassword /> },
+  
 
 ]);
 

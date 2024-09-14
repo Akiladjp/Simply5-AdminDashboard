@@ -1,9 +1,9 @@
-import React from 'react'
+import OrderCard from "../components/OrderCard"
 
 function AcceptedOrders() {
   return (
-    <div>
-      AcceptedOrders
+    <div className="pt-20 md:pt-28">
+      <OrderCard status="accepted" />
     </div>
   )
 }
