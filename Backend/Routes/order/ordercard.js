@@ -32,7 +32,7 @@ router.get('/orderpending', (req, res) => {
 
     db.query(sql, [], (err, rows) => {
         if (err) {
-           
+           console.log("rows")
             res.status(400).json({ "error": err.message });
             return;
         }
@@ -63,6 +63,38 @@ router.get('/orderaccepted', (req, res) => {
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
         WHERE orders.status = 'accept' AND orders.date = CURDATE()
+        GROUP BY orders.orderID;
+    `;
+
+    db.query(sql, [], (err, rows) => {
+        if (err) {
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        res.json({
+            "data": rows
+        });
+    });
+});
+router.get('/orderdelivered', (req, res) => {
+    const sql = `
+        SELECT 
+            orders.orderID, 
+            orders.status, 
+            orders.mobileNo, 
+            orders.tableNo, 
+            orders.date, 
+            orders.total,
+            CONCAT('[', GROUP_CONCAT(
+                CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
+                SEPARATOR ', '
+            ), ']') AS items,
+            user.name AS userName
+        FROM orders
+        JOIN contains ON orders.orderID = contains.orderID
+        JOIN item ON contains.itemID = item.itemID
+        JOIN user ON orders.mobileNo = user.phoneNo
+        WHERE orders.status = 'delivered' AND orders.date = CURDATE()
         GROUP BY orders.orderID;
     `;
 
@@ -168,6 +200,33 @@ router.put('/orderaccept/:orderID', (req, res) => {
     });
 });
 
+router.put('/orderstatusdelivered/:orderID', (req, res) => {
+    const { orderID } = req.params;
+   const waiterID = req.body.waiterID
+
+    const updateStatusSQL = 'UPDATE orders SET status = ? WHERE orderID = ?';
+    db.query(updateStatusSQL, ['delivered', orderID], (err, result) => {
+        if (err) {
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+
+        if (result.affectedRows > 0) {
+            
+            const sql1 = "UPDATE orders SET waiterID =? WHERE orderID =?";
+            db.query(sql1,[waiterID,orderID],(err,result)=>{
+                if(err){
+                    res.status(400).send({massage:"error in adding waiter id to table"})
+                }
+                else{
+                    res.status(200).send({ message: "status updated to paid and waiter ID successfully added" });
+                }
+            })
+        } else {
+            res.status(404).send({ message: `Order ${orderID} not found` });
+        }
+    });
+});
 router.put('/orderstatuspaid/:orderID', (req, res) => {
     const { orderID } = req.params;
 

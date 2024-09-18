@@ -1,12 +1,13 @@
 import {
-
-  createBrowserRouter,
-  RouterProvider,
-  Outlet,
-  useNavigate,
-  useLocation,
-
+	createBrowserRouter,
+	RouterProvider,
+	Outlet,
+	useNavigate,
+	useLocation,
 } from "react-router-dom";
+
+import { Provider } from "react-redux";
+import { store } from "./Redux/Store";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import Login from "./pages/loginSystem/Login";
@@ -42,7 +43,6 @@ import "./App.css";
 import WaiterHeader from "./Waiter/components/Header.jsx";
 import WaiterNavbar from "./Waiter/components/Navbar.jsx";
 
-
 import { useEffect, useState } from "react";
 import ForgotPassword from "./pages/loginSystem/ForgotPassword";
 import OTPInput from "./pages/loginSystem/OTPInput";
@@ -51,7 +51,7 @@ import AllOrders from "./Waiter/pages/AllOrders";
 import PendingOrders from "./Waiter/pages/PendingOrders";
 import AcceptedOrders from "./Waiter/pages/AcceptedOrders";
 import Profile from "./Waiter/pages/Profile";
-
+import DeliveredOreders from "./Waiter/pages/DeliveredOreders.jsx";
 
 const MainLayout = () => {
 	const navigate = useNavigate();
@@ -91,77 +91,80 @@ const WaiterLayOut = () => {
 	return (
 		<div className="h-screen">
 			<div>
-        <WaiterHeader/>
-      </div>
-			
-				<div className="lg:w-full ">
-					<Outlet />
-				</div>
+				<WaiterHeader />
+			</div>
 
-        <div>
-          <WaiterNavbar/>
-        </div>
-			
+			<div className="lg:w-full ">
+				<Outlet />
+			</div>
+
+			<div>
+				<WaiterNavbar />
+			</div>
 		</div>
 	);
 };
 
 const router = createBrowserRouter([
+	{
+		path: "/app",
+		element: <MainLayout />,
+		children: [
+			{ path: "/app/order/pending", element: <OrderPending /> },
+			{ path: "/app/order/accept", element: <OrderAccept /> },
+			{ path: "/app/order/paid", element: <OrderPaid /> },
 
-  {
-    path: "/app",
-    element: <MainLayout />,
-    children: [
-      { path: "/app/order/pending", element: <OrderPending /> },
-      { path: "/app/order/accept", element: <OrderAccept /> },
-      { path: "/app/order/paid", element: <OrderPaid /> },
+			{ path: "/app/items/meals", element: <ItemsMeals /> },
+			{ path: "/app/items/drinks", element: <ItemsDrinks /> },
+			{ path: "/app/items/desserts", element: <ItemsDesserts /> },
 
-      { path: "/app/items/meals", element: <ItemsMeals /> },
-      { path: "/app/items/drinks", element: <ItemsDrinks /> },
-      { path: "/app/items/desserts", element: <ItemsDesserts /> },
+			{ path: "/app/analysis/todaytime", element: <AnalysisTimeToday /> },
+			{ path: "/app/analysis/todayitem", element: <AnalysisItemToday /> },
+			{ path: "/app/analysis/weektime", element: <AnalysisTimeWeek /> },
+			{ path: "/app/analysis/weekitem", element: <AnalysisItemWeek /> },
+			{ path: "/app/analysis/monthtime", element: <AnalysisTimeMonth /> },
+			{ path: "/app/analysis/monthitem", element: <AnalysisItemMonth /> },
 
-      { path: "/app/analysis/todaytime", element: <AnalysisTimeToday /> },
-      { path: "/app/analysis/todayitem", element: <AnalysisItemToday /> },
-      { path: "/app/analysis/weektime", element: <AnalysisTimeWeek /> },
-      { path: "/app/analysis/weekitem", element: <AnalysisItemWeek /> },
-      { path: "/app/analysis/monthtime", element: <AnalysisTimeMonth /> },
-      { path: "/app/analysis/monthitem", element: <AnalysisItemMonth /> },
+			{ path: "/app/employers/employee", element: <Employee /> },
+			{ path: "/app/employers/employeeform", element: <EmployeeForm /> },
+			{
+				path: "/app/employers/updateEmployee/:empID",
+				element: <UpdateEmployee />,
+			},
 
-      { path: "/app/employers/employee", element: <Employee /> },
-      { path: "/app/employers/employeeform", element: <EmployeeForm /> },
-      { path: "/app/employers/updateEmployee/:empID", element: <UpdateEmployee /> },
-   
-      { path: "/app/items/updateitem/:itemID", element: <UpdateItem /> },
-      { path: "/app/items/add/:category", element: <MealsForm /> },
+			{ path: "/app/items/updateitem/:itemID", element: <UpdateItem /> },
+			{ path: "/app/items/add/:category", element: <MealsForm /> },
 
-      { path: "/app/offers", element: <Offers /> },
-     
+			{ path: "/app/offers", element: <Offers /> },
 
-      { path: "/app/logout", element: <Logout /> },
-    ],
-    
-  },
-  //try this url::-- /Waiter/all-orders
-  {
-    path: "/Waiter",
-    element: <WaiterLayOut />,
-    children: [
-      { path: "all-orders", element: <AllOrders /> },
-      { path: "pending-orders", element: <PendingOrders /> },
-      { path: "accepted-orders", element: <AcceptedOrders /> },
-      { path: "profile", element: <Profile /> },
-    ]
-  },
-  { path: "/", element: <Login /> },
-  { path: "/forgotpassword", element: <ForgotPassword /> },
-  { path: "/api/otp", element: <OTPInput /> },
-  { path: "/resetpassword", element: <ResetPassword /> },
-  
-
+			{ path: "/app/logout", element: <Logout /> },
+		],
+	},
+	//try this url::-- /Waiter/pending-orders
+	{
+		path: "/Waiter",
+		element: <WaiterLayOut />,
+		children: [
+			
+			{ path: "pending-orders", element: <PendingOrders /> },
+			{ path: "accepted-orders", element: <AcceptedOrders /> },
+			{ path: "delevered-orders", element: <DeliveredOreders /> },
+			{ path: "profile", element: <Profile /> },
+		],
+	},
+	{ path: "/", element: <Login /> },
+	{ path: "/forgotpassword", element: <ForgotPassword /> },
+	{ path: "/api/otp", element: <OTPInput /> },
+	{ path: "/resetpassword", element: <ResetPassword /> },
 ]);
 
 function App() {
-	return <RouterProvider router={router} />;
+
+	return (
+		<Provider store={store}>
+			<RouterProvider router={router} />
+		</Provider>
+	);
 }
 
 export default App;

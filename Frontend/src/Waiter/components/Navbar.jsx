@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 
@@ -12,11 +12,13 @@ function Navbar() {
   const Menus = [
     {icon:<MdFastfood/>, path:"/Waiter/pending-orders"},
     {icon:<CgSandClock/> , path:"/Waiter/accepted-orders"},
-    {icon:<FaCircleCheck/> , path:"/Waiter/all-orders"},
+    {icon:<FaCircleCheck/> , path:"/Waiter/delevered-orders"},
     {icon:<CgProfile/> , path:"/Waiter/profile"},
   ]
 
   const [active, setActive] = useState(0)
+
+
   
   return (
     <div className="bottom-0 bg-[#007FA8] text-white fixed w-full md:h-24 h-[68px] ">
