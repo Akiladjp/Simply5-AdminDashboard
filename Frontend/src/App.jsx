@@ -67,7 +67,7 @@ const MainLayout = () => {
 		<div className="h-screen">
 			<Header />
 			<div className="flex w-full h-screen pt-16 ">
-				<div className="flex bg-[#007FA8] w-[20%] lg:w-[16%] xl:w-[12%] fixed h-full ">
+				<div className="flex bg-[#007FA8] w-[20%] lg:w-[16%] xl:w-[12%] fixed h-full z-10">
 					<Navbar />
 				</div>
 				<div className=" w-[80%]  ml-[20%] lg:ml-[16%] xl:ml-[12%]   lg:w-full   ">

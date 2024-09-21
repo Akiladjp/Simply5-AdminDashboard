@@ -21,7 +21,7 @@ function Navbar() {
 
   
   return (
-    <div className="bottom-0 bg-[#007FA8] text-white fixed w-full md:h-24 h-[68px] ">
+    <div className="bottom-0 bg-[#007FA8] text-white fixed w-full md:h-24 h-[68px]  ">
       <div className="flex w-full h-full">
         <ul className="flex w-full h-full">
           {
