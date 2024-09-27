@@ -19,6 +19,18 @@ function Navbar() {
   const [active, setActive] = useState(0)
 
 
+useEffect(() => {
+  const savedActiveIndex = sessionStorage.getItem('activeMenuIndex');
+  if (savedActiveIndex) {
+    setActive(Number(savedActiveIndex));
+  }
+}, []);
+
+const handleMenuClick = (index) => {
+  setActive(index);
+  sessionStorage.setItem('activeMenuIndex', index); 
+};
+
   
   return (
     <div className="bottom-0 bg-[#007FA8] text-white fixed w-full md:h-24 h-[68px]  ">
@@ -30,7 +42,7 @@ function Navbar() {
                 <Link
                   to={menu.path}
                   className="flex flex-col items-center w-full h-full"
-                  onClick={() => setActive(i)}
+                  onClick={() => handleMenuClick(i)}
                 >
                   <span className={`text-[33px] md:text-5xl md:mt-6 mt-4 cursor-pointer duration-500 ${i === active && "text-[#007FA8]"}`}>
                     {menu.icon}
