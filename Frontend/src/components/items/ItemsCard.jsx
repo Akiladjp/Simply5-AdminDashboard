@@ -95,3 +95,4 @@ export default function ItemCard({ data }) {
     </div>
   );
 }
+// ssdfgfs
