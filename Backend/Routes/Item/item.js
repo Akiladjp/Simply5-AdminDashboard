@@ -1,19 +1,21 @@
 import db from "../../config/DatabaseConfig.js";
 import express from "express";
-import session from "express-session";
 import multer from "multer";
-const Item = express.Router();
 import { uploadImage } from "../../AWS/upload_image.js";
 import { getImage } from "../../AWS/get_images.js";
 import { deleteImage } from "../../AWS/delete_image.js";
 
+const Item = express.Router();
+
+// Configure multer for image uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+// Add new item
 Item.post("/additemevalues", upload.single("image"), async (req, res) => {
-
   const fileExtension = req.file.originalname;
   const filename = "item_bucket/" + fileExtension;
+
   const sql =
     "INSERT INTO item (`name`,`category`,`sub_category`,`price`,`prepare_time`,`description`,`image_link`) VALUES (?)";
   const values = [
@@ -29,24 +31,16 @@ Item.post("/additemevalues", upload.single("image"), async (req, res) => {
   db.query(sql, [values], async (err, data) => {
     if (err) {
       console.error("Error inserting into database:", err);
-      return res
-        .status(500)
-        .json({ message: "Error in uploading to database", err });
+      return res.status(500).json({ message: "Error in uploading to database", err });
     }
 
-    console.log(req.file);
-    const upload_image = await uploadImage(
-      req.file.mimetype,
-      filename,
-      req.file.buffer
-    );
+    const upload_image = await uploadImage(req.file.mimetype, filename, req.file.buffer);
 
     if (upload_image.message === "Successfully uploaded") {
-      console.log("Successfully uploaded");
       return res.json({ message: "Success" });
     } else {
-      const dlt = "DELETE FROM `employer` item `itemID` = ?";
-      db.query(dlt, [data.insertId], (error, result) => {
+      const deleteSQL = "DELETE FROM `item` WHERE `itemID` = ?";
+      db.query(deleteSQL, [data.insertId], (error, result) => {
         if (error) {
           console.error("Error deleting record:", error);
           return res.json({ message: "Error deleting record" });
@@ -57,160 +51,74 @@ Item.post("/additemevalues", upload.single("image"), async (req, res) => {
   });
 });
 
+// Get all meals
 Item.get("/getiteMeal", async (req, res) => {
   try {
     const sql = 'SELECT * FROM item WHERE category = "Meal"';
-
-    var imageUrl;
     db.query(sql, async (err, ans) => {
       if (err) return res.json({ Message: "Error inside server" });
 
       const items = [];
-
       const maxItems = Math.min(15, ans.length);
       for (var i = 0; i < maxItems; i++) {
-        imageUrl = await getImage(ans[i].image_link);
-
-        items.push({
-          ...ans[i],
-          image_url: imageUrl,
-        });
+        const imageUrl = await getImage(ans[i].image_link);
+        items.push({ ...ans[i], image_url: imageUrl });
       }
 
       return res.json({ items });
     });
   } catch (error) {
-    console.log(" error in get employee", error);
     return res.json({ Message: "Error inside server" });
   }
 });
 
+// Get all drinks
 Item.get("/getiteDrinks", async (req, res) => {
   try {
     const sql = 'SELECT * FROM item WHERE category = "Drinks"';
-
-    var imageUrl;
     db.query(sql, async (err, ans) => {
       if (err) return res.json({ Message: "Error inside server" });
 
       const items = [];
-
       const maxItems = Math.min(15, ans.length);
       for (var i = 0; i < maxItems; i++) {
-        imageUrl = await getImage(ans[i].image_link);
-
-        items.push({
-          ...ans[i],
-          image_url: imageUrl,
-        });
+        const imageUrl = await getImage(ans[i].image_link);
+        items.push({ ...ans[i], image_url: imageUrl });
       }
 
       return res.json({ items });
     });
   } catch (error) {
-    console.log(" error in get employee", error);
     return res.json({ Message: "Error inside server" });
   }
 });
 
+// Get all desserts
 Item.get("/getiteDesserts", async (req, res) => {
   try {
     const sql = 'SELECT * FROM item WHERE category = "Desserts"';
-
-    var imageUrl;
     db.query(sql, async (err, ans) => {
       if (err) return res.json({ Message: "Error inside server" });
 
       const items = [];
-
       const maxItems = Math.min(15, ans.length);
       for (var i = 0; i < maxItems; i++) {
-        imageUrl = await getImage(ans[i].image_link);
-
-        items.push({
-          ...ans[i],
-          image_url: imageUrl,
-        });
+        const imageUrl = await getImage(ans[i].image_link);
+        items.push({ ...ans[i], image_url: imageUrl });
       }
 
       return res.json({ items });
     });
   } catch (error) {
-    console.log(" error in get employee", error);
     return res.json({ Message: "Error inside server" });
   }
 });
 
-Item.get("/updateItem/:id", async (req, res) => {
-  const { id } = req.params;
-  console.log(id);
-  //console.log(req.file)
-  try {
-    const sql = "SELECT * FROM item WHERE itemID = ?";
-
-    db.query(sql, [id], async (err, ans) => {
-      if (err) {
-        return res.json({ Message: "Error inside server" });
-      }
-      if (ans.length === 0) {
-        return res.status(404).json({ Message: "Employee not found" });
-      }
-      const preeItem = [];
-
-      const imageUrl = await getImage(ans[0].image_link);
-
-      // console.log(imageUrl);
-      preeItem.push({
-        ...ans[0],
-        image_url: imageUrl,
-      });
-
-      return res.json({ preeItem });
-    });
-  } catch (error) {
-    console.log(" error in get employee", error);
-    return res.json({ Message: "Error inside server" });
-  }
-});
-
-// UpdateEmployee.get("/updateEmployee/:id", async (req, res) => {
-//   const { id } = req.params;
-//   console.log(id);
-//   try {
-//     const sql = "SELECT * FROM employer WHERE empID = ?";
-
-//     db.query(sql, [id], async (err, ans) => {
-//       if (err) {
-//         return res.json({ Message: "Error inside server" });
-//       }
-//       if (ans.length === 0) {
-//         return res.status(404).json({ Message: "Employee not found" });
-//       }
-//       const preemployees = [];
-
-//       const imageUrl = await getImage(ans[0].image_link);
-
-//       preemployees.push({
-//         ...ans[0],
-//         image_url: imageUrl,
-//       });
-
-//       console.log(preemployees[0].name);
-//       console.log(preemployees[0].address);
-
-//       return res.json({ preemployees });
-//     });
-//   } catch (error) {
-//     console.log(" error in get employee", error);
-//     return res.json({ Message: "Error inside server" });
-//   }
-// });
-
+// Update item details
 Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
   const { id } = req.params;
-  console.log("211",id);
-  const { name, category, sub_category, price, prepare_time, description } =
-    req.body;
+  const { name, category, sub_category, price, prepare_time, description } = req.body;
+
   try {
     const sql = `
       UPDATE item
@@ -222,31 +130,23 @@ Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
       [name, category, sub_category, price, prepare_time, description, id],
       (err, result) => {
         if (err) {
-          console.error("Database error:", err);
-          return res
-            .status(500)
-            .json({ message: "Error in updating employee" });
+          return res.status(500).json({ message: "Error in updating item" });
         }
         return res.json({ message: "success" });
       }
     );
 
+    // If new image is provided, update it
     if (req.file) {
-      const fileExtension =! req.file.originalname;
-  
-      const filename = "item_bucket/" + fileExtension;
-      const upload_image = await uploadImage(
-        req.file.mimetype,
-        filename,
-        req.file.buffer
-      );
+      const filename = "item_bucket/" + req.file.originalname;
+      await uploadImage(req.file.mimetype, filename, req.file.buffer);
     }
   } catch (error) {
-    console.error("Server error:", error);
     return res.status(500).json({ message: "Error inside server" });
   }
 });
 
+// Delete an item
 Item.delete("/delete_item/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -254,7 +154,6 @@ Item.delete("/delete_item/:id", async (req, res) => {
     const sql1 = "SELECT * FROM item WHERE itemID = ?";
     db.query(sql1, [id], async (err, ans) => {
       if (err) {
-        console.error("Error in getting item from database:", err);
         return res.status(500).json({ message: "Database query error" });
       }
 
@@ -263,37 +162,45 @@ Item.delete("/delete_item/:id", async (req, res) => {
       }
 
       const filename = ans[0].image_link;
+      const deleteImageResult = await deleteImage(filename);
 
-      try {
-        const deleteImageResult = await deleteImage(filename);
-
-        if (deleteImageResult.message !== "Success") {
-          return res.status(500).json({ message: "Error in image deletion" });
-        }
-
-        const sql = "DELETE FROM item WHERE itemID = ?";
-        db.query(sql, [id], (err, result) => {
-          if (err) {
-            console.error("Error in deleting item from database:", err);
-            return res.status(500).json({ message: "Database query error" });
-          }
-
-          if (result.affectedRows === 0) {
-            return res
-              .status(404)
-              .json({ message: "Item not found or already deleted" });
-          }
-
-          res.json({ message: "Item deleted successfully" });
-        });
-      } catch (deleteError) {
-        console.error("Error in deleting image:", deleteError);
+      if (deleteImageResult.message !== "Success") {
         return res.status(500).json({ message: "Error in image deletion" });
       }
+
+      const sql = "DELETE FROM item WHERE itemID = ?";
+      db.query(sql, [id], (err, result) => {
+        if (err) {
+          return res.status(500).json({ message: "Database query error" });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Item not found or already deleted" });
+        }
+
+        res.json({ message: "Item deleted successfully" });
+      });
     });
   } catch (error) {
-    console.error("Unexpected error:", error);
-    res.status(500).json({ message: "Unexpected error occurred" });
+    return res.status(500).json({ message: "Unexpected error occurred" });
+  }
+});
+
+// Update availability status
+Item.put("/updateAvailable/:id", async (req, res) => {
+  const { id } = req.params;
+  const { available } = req.body;
+
+  try {
+    const sql = "UPDATE item SET available = ? WHERE itemID = ?";
+    db.query(sql, [available, id], (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Database query error" });
+      }
+      return res.status(200).json({ message: "Status updated successfully" });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Unexpected error occurred" });
   }
 });
 
