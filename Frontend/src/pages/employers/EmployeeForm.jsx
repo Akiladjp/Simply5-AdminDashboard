@@ -12,7 +12,8 @@ import { MdDriveFileRenameOutline } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
-
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 function EmployeeForm() {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
@@ -239,11 +240,20 @@ function EmployeeForm() {
             CANCEL
           </button>
           <button
-            type="submit"
-            className="flex w-1/3 justify-center rounded-none bg-[rgb(0,127,168)] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[rgb(81,191,228)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(81,191,228)]"
-          >
-            SAVE
-          </button>
+						type={`${data["image"] ? "submit" : "button"}`}
+						
+						onClick={() => {
+							if (!data["image"])
+								toastr.error("Please select an image to upload.");
+						}}
+						className={`flex w-1/3 justify-center rounded-none px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm cursor-pointer
+          ${
+						data["image"]
+							? "bg-[rgb(0,127,168)] hover:bg-[rgb(81,191,228)]"
+							: "bg-gray-400"
+					}`}>
+						Upload
+					</button>
         </div>
       </form>
     </div>
