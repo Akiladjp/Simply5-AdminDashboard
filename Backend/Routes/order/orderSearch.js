@@ -5,23 +5,31 @@ import session from "express-session";
 
 const OrderSearch = express.Router();
 
-OrderSearch.get("/searchMobile", (req, res) => {
-  const mobileNumber = req.body.search;
+OrderSearch.get('/suggestPhoneNumbers', async (req, res) => {
+  const { phone } = req.query;
 
-  const sql = "SELECT * FROM orders WHERE mobileNo = ?";
+  if (!phone || phone.length < 3) {
+    return res.status(400).json({ message: 'Please provide at least 3 digits.' });
+  }
 
-  db.query(sql, [mobileNumber], (err, result) => {
-    if (err) {
-      return res.status(500).send({ message: "Database query failed", error: err });
-    }
-    if (result.length === 0) {
-      return res
-        .status(404)
-        .send({ message: "No orders found for this mobile number" });
-    }
+  try {
+    const sql = `SELECT phone_number FROM users WHERE phone_number LIKE ? LIMIT 10`;
+    const searchPattern = `${phone}%`;
 
-    res.status(200).send(result);
-  });
+    db.query(sql, [searchPattern], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ message: 'Database error.' });
+      }
+      
+      const suggestions = results.map(row => row.phone_number);
+
+      return res.json({ suggestions });
+    });
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return res.status(500).json({ message: 'Unexpected server error.' });
+  }
 });
 
 export default OrderSearch;
