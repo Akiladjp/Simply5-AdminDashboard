@@ -26,7 +26,7 @@ router.get('/orderpending', (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'pending' AND orders.date = CURDATE()
+        WHERE orders.status = 'pending'
         GROUP BY orders.orderID;
     `;
 
@@ -45,7 +45,9 @@ router.get('/orderpending', (req, res) => {
 });
 
 router.get('/orderaccepted', (req, res) => {
-    const sql = `
+    const { mobileNo } = req.query;
+
+    let sql = `
         SELECT 
             orders.orderID, 
             orders.status, 
@@ -62,13 +64,19 @@ router.get('/orderaccepted', (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'accept' AND orders.date = CURDATE()
-        GROUP BY orders.orderID;
+        WHERE orders.status = 'accept'
     `;
+
+    if (mobileNo) {
+        sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
+    }
+
+    sql += `GROUP BY orders.orderID`;
+
 
     db.query(sql, [], (err, rows) => {
         if (err) {
-            res.status(400).json({ "error": err.message });
+            res.status(500).json({ "error": err.message });
             return;
         }
         res.json({
@@ -76,7 +84,10 @@ router.get('/orderaccepted', (req, res) => {
         });
     });
 });
+
+
 router.get('/orderdelivered', (req, res) => {
+
     const sql = `
         SELECT 
             orders.orderID, 
@@ -110,7 +121,9 @@ router.get('/orderdelivered', (req, res) => {
 });
 
 router.get('/orderpaid', (req, res) => {
-    const sql = `
+    const { mobileNo } = req.query;
+
+    let sql = `
         SELECT 
             orders.orderID, 
             orders.status, 
@@ -127,9 +140,14 @@ router.get('/orderpaid', (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'paid' AND orders.date = CURDATE()
-        GROUP BY orders.orderID;
+        WHERE orders.status = 'paid'
     `;
+
+    if (mobileNo) {
+        sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
+    }
+
+    sql += `GROUP BY orders.orderID`;
 
     db.query(sql, [], (err, rows) => {
         if (err) {

@@ -1,47 +1,48 @@
-import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
+import { debounce } from "lodash";
 
-export const SearchComp = () => {
-  const [usesearch, setUseSearch] = useState({
-    search: "",
-  });
+export const SearchComp = ({ setSearchTerm }) => {
+  const [searchInput, setSearchInput] = useState("");
+
+  const debouncedSearch = debounce((value) => {
+    setSearchTerm(value);
+  }, 300);
 
   const handleChange = (event) => {
-    setUseSearch({
-      ...usesearch,
-      [event.target.name]: event.target.value,
-    });
+    const { value } = event.target;
+    
+    // If the input is not exactly "0", proceed
+    if (value !== "0") {
+      setSearchInput(value);
+      debouncedSearch(value);
+    }
   };
 
-  const handleClick = (event) => {
-    event.preventDefault();
-    console.log("Search for phone number:", usesearch.search);
-  };
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, []);
 
   return (
     <div className="w-full justify-end flex">
       <div className="w-[280px] py-1 border-2 border-[rgb(0,127,168)] rounded-full mb-8">
-        <form action="">
+        <form>
           <div className="flex">
             <div className="w-[80%] flex justify-center items-center">
               <input
                 type="text"
                 id="search"
                 name="search"
-                value={usesearch.search}
+                value={searchInput}
                 onChange={handleChange}
-                placeholder="Search phone number"
+                placeholder="Search by phone number"
                 className="text-sm outline-none"
               />
             </div>
             <div className="flex w-[20%] justify-center">
-              <button
-                className="flex justify-center items-center"
-                onClick={handleClick}
-              >
-                <CiSearch />
-              </button>
+              <CiSearch />
             </div>
           </div>
         </form>
