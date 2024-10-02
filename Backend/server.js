@@ -63,6 +63,7 @@ import UpdateEmployee from "../Backend/Routes/employee/updateEmployee.js";
 
 import orderSearch from "./Routes/order/orderSearch.js";
 import offer from "./Routes/offer/offer.js";
+import waiterProfile from "./Routes/waiter/waiterProfile.js";
 
 app.use("/", orderSearch);
 app.use("/", itemTodayRouter);
@@ -87,7 +88,7 @@ app.use("/", item);
 app.use("/", UpdateEmployee);
 
 app.use("/", offer);
-
+app.use("/", waiterProfile);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
