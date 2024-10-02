@@ -38,7 +38,8 @@ const navigate = useNavigate();
           dispatch(resetTimerState()); // Reset timer state after 5 seconds
         }, 25000);
         
-        navigate("/Waiter/accepted-orders");
+       window.location.reload()
+       
         // window.location.reload();
         // setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
       })

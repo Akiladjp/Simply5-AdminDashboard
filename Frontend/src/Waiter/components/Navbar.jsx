@@ -27,6 +27,7 @@ useEffect(() => {
 }, []);
 
 const handleMenuClick = (index) => {
+  
   setActive(index);
   sessionStorage.setItem('activeMenuIndex', index); 
 };

@@ -105,7 +105,7 @@ router.get('/orderdelivered', (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'delivered' AND orders.date = CURDATE()
+        WHERE orders.status = 'delivered'
         GROUP BY orders.orderID;
     `;
 
@@ -114,6 +114,7 @@ router.get('/orderdelivered', (req, res) => {
             res.status(400).json({ "error": err.message });
             return;
         }
+        console.log(rows)
         res.json({
             "data": rows
         });
