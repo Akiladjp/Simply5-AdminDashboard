@@ -1,12 +1,88 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { FaPhoneAlt } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { IoLocationSharp } from "react-icons/io5";
+import { FaUserCheck } from "react-icons/fa";
+import { FaBuildingUser } from "react-icons/fa6";
 
 function Profile() {
+  const email = "k9185.dhanuska@gmail.com";
+
+  const [data, setData] = useState({
+    name: "",
+    position: "", // Fixed typo here
+    contact: "",
+    address: "",
+    email,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8081/waiterProfile/${email}`
+        );
+
+        if (response && response.data) {
+          setData({
+            name: response.data.name || "",
+            position: response.data.position || "",
+            contact: response.data.phoneNo || "",
+            address: response.data.address || "",
+            email,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching profile data:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div>
-      
+    <div className="pt-20 px-4 md:px-8 lg:px-12">
+      <div className="border-[#007FA8] border text-black rounded-lg p-8">
+        <h2 className="text-2xl font-bold mb-4">User Profile</h2>
+        <div className="space-y-4">
+          <p className="flex items-center">
+            <FaUserCheck className="mr-3 text-xl" />{" "}
+            <span className="text-lg">{data.name}</span>
+          </p>
+          <p className="flex items-center">
+            <FaBuildingUser className="mr-3 text-xl" />{" "}
+            <span className="text-lg">{data.position}</span>
+          </p>
+          <p className="flex items-center">
+            <FaPhoneAlt className="mr-3 text-xl" />{" "}
+            <span className="text-lg">{data.contact}</span>
+          </p>
+          <p className="flex items-center">
+            <MdEmail className="mr-3 text-xl" />{" "}
+            <span className="text-lg">{email}</span>
+          </p>
+          <p className="flex items-center">
+            <IoLocationSharp className="mr-3 text-xl" />{" "}
+            <span className="text-lg">{data.address}</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="px-4 md:px-8 lg:px-12 border-[#007FA8] border text-black rounded-lg p-8 mt-8">
+        <div className=" flex flex-col mr-3 text-xl">
+          <h2 className="mb-4">Today orders:</h2>
+          <h2>Monthly orders:</h2>
+        </div>
+      </div>
+
+      <div className="flex justify-center mt-6">
+        <button className="py-3 px-8 absolute bottom-28 bg-[#007FA8] text-white font-semibold rounded-md shadow-lg hover:scale-105 active:scale-95">
+          Logout
+        </button>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Profile
+export default Profile;

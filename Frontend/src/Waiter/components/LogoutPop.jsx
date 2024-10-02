@@ -1,25 +1,7 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
-function Logout() {
-
-  const navigate = useNavigate();
-
-  const handleDelete = async () => {
-    // Your delete logic here
-    if (sessionStorage.getItem("username")) {
-      sessionStorage.removeItem("username");
-      console.log('Logout');
-      navigate("/");
-    }
-  };
-
-  const handleCancel = async() => {
-
-  }
-
+export const LogoutPop = ({ handleCancel, handleDelete }) => {
   return (
-    //
     <div className="relative">
       <div className="flex justify-center space-x-4">
         <button
@@ -37,6 +19,4 @@ function Logout() {
       </div>
     </div>
   );
-}
-
-export default Logout;
+};
