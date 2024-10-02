@@ -9,7 +9,6 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 		return null; // Return nothing if data is undefined
 	}
 
-
 	const items = data.items ? JSON.parse(data.items) : [];
 
 	const handleDelete = () => {
@@ -26,6 +25,7 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 			.then(() => {
 				if (onAccept) {
 					onAccept(data.orderID);
+					
 				}
 			})
 			.catch((err) => console.log(err));
