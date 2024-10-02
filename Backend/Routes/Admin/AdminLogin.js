@@ -6,35 +6,44 @@ import session from "express-session";
 const adminLogin = express.Router();
 
 adminLogin.post("/adminlogin", async (req, res) => {
- // console.log(req.body);
   try {
     const sql = "SELECT * FROM admin WHERE email = ?";
     db.query(sql, [req.body.email], (err, result) => {
       if (err) return res.status(500).json({ Message: "Server error" });
 
       if (result.length > 0) {
-        bcrypt.compare(
-          req.body.password,
-          result[0].password,
-          (err, response) => {
-            //console.log("response", response);
-            if (err) return res.status(500).json("Error");
+        bcrypt.compare(req.body.password, result[0].password, (err, response) => {
+          if (err) return res.status(500).json("Error");
 
-            console.log("response",response);
-            if (response) {
-              console.log(result[0].username);
+          if (response) {
+            const empID = result[0].empID;
 
-              //req.session.name = result[0].username;
-             // console.log(result[0].username);
-              console.log("session name",req.session.name);
-              return res.json({ Login: true,username:result[0].username });
-            } else {
-              return res.json({ Message: "Password is incorrect!" });
-            }
+            // check the position
+            const positionSql = "SELECT position FROM employer WHERE empID = ?";
+            db.query(positionSql, [empID], (err, positionResult) => {
+              if (err) return res.status(500).json({ Message: "Server error" });
+
+              if (positionResult.length > 0) {
+                const position = positionResult[0].position;
+
+                // Redirect based on position
+                if (position === "Waiter") {
+                  return res.json({ Login: true, redirectURL: "/Waiter/pending-orders" });
+                } else if (position === "Manager" || position === "Cashier") {
+                  return res.json({ Login: true, redirectURL: "/app/order/pending" });
+                } else {
+                  return res.status(403).json({ Message: "Unauthorized position" });
+                }
+              } else {
+                return res.status(404).json({ Message: "Position not found" });
+              }
+            });
+          } else {
+            return res.json({ Message: "Password is incorrect!" });
           }
-        );
+        });
       } else {
-        res.json({ Message: "Password is incorrect!" });
+        return res.json({ Message: "Email is incorrect!" });
       }
     });
   } catch (error) {
