@@ -62,6 +62,7 @@ import item from "./Routes/Item/item.js";
 import UpdateEmployee from "../Backend/Routes/employee/updateEmployee.js";
 
 import orderSearch from "./Routes/order/orderSearch.js";
+import offer from "./Routes/offer/offer.js";
 
 app.use("/", orderSearch);
 app.use("/", itemTodayRouter);
@@ -84,6 +85,8 @@ app.use("/", ordercard);
 
 app.use("/", item);
 app.use("/", UpdateEmployee);
+
+app.use("/", offer);
 
 
 app.listen(PORT, () => {

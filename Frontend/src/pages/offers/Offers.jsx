@@ -1,8 +1,11 @@
 import React from 'react'
+import { OfferComp } from '../../components/offerComponent/OfferComp'
 
 function Offers() {
   return (
-    <div>Offers</div>
+    <div>
+      <OfferComp/>
+    </div>
   )
 }
 
