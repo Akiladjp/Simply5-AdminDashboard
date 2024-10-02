@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import logo from "../../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
+
 function Login() {
-  
   const navigate = useNavigate();
   const [data, setdata] = useState({
     email: "",
@@ -14,47 +14,31 @@ function Login() {
   const handleChange = (e) => {
     setdata((data) => ({ ...data, [e.target.name]: e.target.value }));
   };
-  //console.log(data);
 
   const handleSubmit = async (e) => {
-    console.log("submit clicked");
     e.preventDefault();
-    
+    try {
+      const res = await axios.post("http://localhost:8081/adminlogin", data);
 
-    await axios
-      .post("http://localhost:8081/adminlogin", data)
-      .then((res) => {
-       
-
-        if(res.data.Login ){
-         
-          sessionStorage.setItem('username', res.data.username);
-          navigate("/app/order/pending");
-        }
-        
-        if (res.data.Message  == "Password is incorrect!") {
-          alert("Email or Password incorrect");
-        } else {
-          navigate("/app/order/pending");
-        }
-      })
-      .catch((err) => {
-        console.error("Error during login:", err);
-      });
+      if (res.data.Login) {
+        sessionStorage.setItem('username', res.data.username);
+        navigate(res.data.redirectURL); // Redirect the URL
+      } else {
+        alert(res.data.Message);
+      }
+    } catch (err) {
+      console.error("Error during login:", err);
+    }
   };
 
-
-
-  //check session  was created or not-----
-  useEffect(()=>{
-    if(sessionStorage.getItem("username")){
-      
-      navigate('/app/order/pending')
+  useEffect(() => {
+    if (sessionStorage.getItem("username")) {
+      navigate('/app/order/pending');
+    } else {
+      navigate('/');
     }
-    else{
-      navigate('/')
-    }
-  },[])
+  }, [navigate]);
+
   return (
     <div className="">
       <Header />
