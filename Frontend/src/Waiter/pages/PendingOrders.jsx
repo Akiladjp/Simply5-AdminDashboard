@@ -33,6 +33,7 @@ function PendingOrders() {
 			.catch((err) => console.log(err));
 	};
 
+
 	const handleAcceptOrder = (orderID) => {
 		axios
 			.put(`http://localhost:8081/orderaccept/${orderID}`)
@@ -63,6 +64,7 @@ function PendingOrders() {
 				))}
 		</div>
 	);
+
 }
 
 export default PendingOrders;

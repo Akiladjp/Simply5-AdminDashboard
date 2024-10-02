@@ -26,11 +26,11 @@ export const SearchComp = ({ setSearchTerm }) => {
   }, []);
 
   return (
-    <div className="w-full justify-end flex">
-      <div className="w-[280px] py-1 border-2 border-[rgb(0,127,168)] rounded-full mb-8">
+    <div className="w-full justify-end flex ">
+      <div className="w-[290px] py-1 border-2 border-[rgb(0,127,168)] rounded-full mb-8">
         <form>
-          <div className="flex">
-            <div className="w-[80%] flex justify-center items-center">
+          <div className="flex bg-green-500">
+            <div className="w-[80%] flex justify-center items-center ">
               <input
                 type="text"
                 id="search"
@@ -38,10 +38,10 @@ export const SearchComp = ({ setSearchTerm }) => {
                 value={searchInput}
                 onChange={handleChange}
                 placeholder="Search by phone number"
-                className="text-sm outline-none"
+                className="text-sm outline-none w-full overflow-hidden "
               />
             </div>
-            <div className="flex w-[20%] justify-center">
+            <div className="flex w-[20%] justify-center items-center">
               <CiSearch />
             </div>
           </div>
