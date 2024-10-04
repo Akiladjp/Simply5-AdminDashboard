@@ -28,9 +28,11 @@ adminLogin.post("/adminlogin", async (req, res) => {
 
                 // Redirect based on position
                 if (position === "Waiter") {
-                  return res.json({ Login: true, redirectURL: "/Waiter/pending-orders" });
+                  console.log("position",position,req.body.email)
+                  return res.json({ Login: true, redirectURL: "/Waiter/pending-orders",email:req.body.email,role:position });
                 } else if (position === "Manager" || position === "Cashier") {
-                  return res.json({ Login: true, redirectURL: "/app/order/pending" });
+                  console.log("position",position,req.body.email)
+                  return res.json({ Login: true, redirectURL: "/app/order/pending" ,email:req.body.email,role:position });
                 } else {
                   return res.status(403).json({ Message: "Unauthorized position" });
                 }
