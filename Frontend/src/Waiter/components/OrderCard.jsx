@@ -115,7 +115,7 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 						</div>
 					</div>
 				))}
-				<div className={`${data.status === "accept" ? "flex" : "hidden"}`}>
+				<div className={`${data.status === "accept" || data.status=="delivered" ? "flex" : "hidden"}`}>
 					{/* <Stopwatch orderID={data.orderID} /> */}
 				</div>
 			</div>

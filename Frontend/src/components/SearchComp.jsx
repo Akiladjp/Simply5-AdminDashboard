@@ -29,7 +29,7 @@ export const SearchComp = ({ setSearchTerm }) => {
     <div className="w-full justify-end flex ">
       <div className="w-[290px] py-1 border-2 border-[rgb(0,127,168)] rounded-full mb-8">
         <form>
-          <div className="flex bg-green-500">
+          <div className="flex ">
             <div className="w-[80%] flex justify-center items-center ">
               <input
                 type="text"

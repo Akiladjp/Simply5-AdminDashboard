@@ -16,7 +16,7 @@ function DeliveredOreders() {
 
   const handleDeleteOrder = (orderID) => {
     console.log(orderID)
-    axios.delete(`http://localhost:8081/orderdelete/${orderID}`)
+    axios.put(`http://localhost:8081/order_deleverd_delete/${orderID}`)
       .then(() => {
         setOrderAccept((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
       })
