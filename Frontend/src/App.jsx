@@ -56,7 +56,7 @@ import DeliveredOreders from "./Waiter/pages/DeliveredOreders.jsx";
 const MainLayout = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
-		if (sessionStorage.getItem("username")) {
+		if (sessionStorage.getItem("email")) {
 			// navigate("/app/order/pending")
 		} else {
 			navigate("/");
@@ -81,7 +81,7 @@ const MainLayout = () => {
 const WaiterLayOut = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
-		if (sessionStorage.getItem("username")) {
+		if (sessionStorage.getItem("email")) {
 			// navigate("/app/order/pending")
 		} else {
 			navigate("/");
