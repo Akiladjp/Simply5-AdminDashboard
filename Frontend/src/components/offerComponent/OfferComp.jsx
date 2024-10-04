@@ -1,18 +1,22 @@
-import React, { useState } from "react";
-import offer_banner from "./food-offer-1.png";
+import React, { useEffect, useState } from "react";
+import preview_image from "../../assets/preview_Image.png";
 import { MdDelete } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
-
+import { RxCross1 } from "react-icons/rx";
 
 export const OfferComp = (props) => {
   const navigate = useNavigate();
 
   const [imageUpload, setImageUpload] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
+
+  const [bannerShow, setbannerShow] = useState([]);
+
+  const [show, setshow] = useState(true);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -28,7 +32,7 @@ export const OfferComp = (props) => {
 
     const formData = new FormData();
     imageUpload.forEach((file) => {
-      formData.append("image", file); // Send the actual image files
+      formData.append("image", file);
     });
 
     try {
@@ -48,11 +52,35 @@ export const OfferComp = (props) => {
       }
 
       console.log(res);
+
+      if (res.data.message === "Success") {
+        setImagePreview([]);
+      }
     } catch (err) {
       console.error("Error during form submission:", err);
       alert("An error occurred during form submission. Please try again.");
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:8081/showoffer");
+        if (res.data.offerBanner) {
+          setbannerShow(res.data.offerBanner);
+          console.log(res.data.offerBanner);
+        } else {
+          setbannerShow([]);
+          console.log("no data");
+        }
+      } catch (err) {
+        console.error("Error fetching offers:", err);
+        setbannerShow([]);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleRemoveImage = () => {
     setImageUpload([]);
@@ -63,23 +91,68 @@ export const OfferComp = (props) => {
     document.getElementById("fileInput").click();
   };
 
+  const removePopup = () => {
+    setshow(false);
+  };
+
+  const showPopup = () => {
+    setshow(true);
+  };
+
   return (
     <div className="pb-4">
-      <div className="flex justify-center mt-4">
-        <div className="w-[1200px] h-[400px]">
-          <img src={offer_banner} alt="Offer banner" />
+      <div
+        className={`${
+          show === false
+            ? "flex justify-center mt-4"
+            : " flex justify-center mt-4 overflow-hidden"
+        }`}
+      >
+        <div
+          className="fixed right-8 top-24 bg-blue-500 w-10 h-10 rounded-md text-white flex justify-center items-center shadow-md hover:scale-105 hover:bg-blue-600 active:scale-100"
+          onClick={showPopup}
+        >
+          {""}+{""}
+        </div>
+        <div className="w-[1200px]">
+          {bannerShow.length > 0 ? (
+            <div className="flex flex-col gap-6">
+              {bannerShow.map((data, index) => (
+                <div
+                  key={index}
+                  className="relative w-full h-[400px] overflow-hidden rounded-lg shadow-lg"
+                >
+                  <img
+                    src={data.image_url}
+                    alt={`banner-${data.offerID}`}
+                    className="w-full h-full object-cover bg-center rounded-md transition-transform duration-500 hover:scale-105 hover:shadow-xl"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No offer banners to display</p>
+          )}
         </div>
       </div>
-      <div className="flex flex-col items-center mt-16 py-10 relative">
-        <div className="flex flex-col w-full max-w-4xl bg-white rounded-lg shadow-lg p-8 relative">
+
+      <div
+        className={`${
+          show === true
+            ? "flex flex-col fixed top-0 justify-center w-[100%] h-screen bg-slate-400 bg-opacity-50 backdrop-blur-md"
+            : "hidden"
+        }`}
+      >
+        <div className="flex flex-col w-full max-w-4xl h-[550px] mx-auto bg-white rounded-lg shadow-lg p-8">
           {imagePreview.length !== 0 && (
-            <div
-              className={`bg-red-600 text-white rounded-full w-6 h-6 absolute top-36 left-6 flex justify-center items-center cursor-pointer hover:scale-110 hover:transition-transform`}
-            >
-              <MdDelete onClick={handleRemoveImage} className="hover:scale-110" />
+            <div className="bg-red-600 text-white rounded-full w-6 h-6 flex justify-center items-center cursor-pointer relative top-[135px] right-2 hover:scale-110 transition-transform">
+              <MdDelete onClick={handleRemoveImage} />
             </div>
           )}
 
+          <div className="absolute left-[1390px] top-[175px]  bg-red-500 w-6 h-6 flex items-center justify-center text-white rounded-md hover:bg-red-700">
+            <RxCross1 onClick={removePopup} />
+          </div>
           <h2 className="text-2xl font-semibold mb-6 text-gray-800">
             Upload Offer Banner
           </h2>
@@ -87,7 +160,7 @@ export const OfferComp = (props) => {
           <div className="w-full">
             <button
               onClick={triggerFileInput}
-              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-gray-700"
+              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-gray-700 transition-colors"
             >
               Select Image
             </button>
@@ -100,15 +173,23 @@ export const OfferComp = (props) => {
             />
           </div>
 
-          <div className="flex gap-6 mt-6">
-            {imagePreview.map((preview, index) => (
+          <div className="flex flex-col gap-6 mt-6">
+            {imagePreview.length === 0 ? (
               <img
-                key={index}
-                src={preview}
-                alt={`preview-${index}`}
-                className="w-1/3 object-cover rounded-lg shadow-md"
+                src={preview_image}
+                alt="single preview"
+                className="w-[600px] h-[200px] object-cover rounded-lg shadow-md transition-transform duration-500"
               />
-            ))}
+            ) : (
+              imagePreview.map((preview, index) => (
+                <img
+                  key={index}
+                  src={preview}
+                  alt={`preview-${index}`}
+                  className="w-[600px] h-[200px] object-cover rounded-lg shadow-md transition-transform duration-500"
+                />
+              ))
+            )}
           </div>
 
           <div className="mt-10 flex justify-center">
