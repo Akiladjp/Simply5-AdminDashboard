@@ -10,7 +10,7 @@ function AcceptedOrders() {
 	const waiterID = 15;
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/orderaccepted")
+			.get("http://localhost:8081/order_waiter_accepted")
 			.then((res) => {
 				setOrderAccept(res.data.data); // Update to set the data array
 				// Log the response data

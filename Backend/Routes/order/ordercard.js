@@ -41,8 +41,48 @@ router.get("/orderpending", (req, res) => {
 		});
 	});
 });
-
+// for admin
 router.get("/orderaccepted", (req, res) => {
+	const { mobileNo } = req.query;
+
+	let sql = `
+        SELECT 
+            orders.orderID, 
+            orders.status, 
+            orders.mobileNo, 
+            orders.tableNo, 
+            orders.date, 
+            orders.total,
+            CONCAT('[', GROUP_CONCAT(
+                CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
+                SEPARATOR ', '
+            ), ']') AS items,
+            user.name AS userName
+        FROM orders
+        JOIN contains ON orders.orderID = contains.orderID
+        JOIN item ON contains.itemID = item.itemID
+        JOIN user ON orders.mobileNo = user.phoneNo
+        WHERE orders.status = 'accept' OR orders.status ='delivered'
+    `;
+
+	if (mobileNo) {
+		sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
+	}
+
+	sql += `GROUP BY orders.orderID`;
+
+	db.query(sql, [], (err, rows) => {
+		if (err) {
+			res.status(500).json({ error: err.message });
+			return;
+		}
+		res.json({
+			data: rows,
+		});
+	});
+});
+// for waiter
+router.get("/order_waiter_accepted", (req, res) => {
 	const { mobileNo } = req.query;
 
 	let sql = `
@@ -104,7 +144,6 @@ router.get("/orderdelivered", (req, res) => {
         GROUP BY orders.orderID;
     `;
 
-
 	db.query(sql, [], (err, rows) => {
 		if (err) {
 			res.status(400).json({ error: err.message });
@@ -114,7 +153,6 @@ router.get("/orderdelivered", (req, res) => {
 			data: rows,
 		});
 	});
-
 });
 
 router.get("/orderpaid", (req, res) => {
@@ -174,28 +212,77 @@ router.delete("/orderdelete/:orderID", (req, res) => {
 				});
 			}
 
-			// Delete from orders table
-			const deleteOrderSQL = "DELETE FROM orders WHERE orderID = ?";
-			db.query(deleteOrderSQL, [orderID], (err, result) => {
+		// Delete from orders table
+		const deleteOrderSQL =
+			"DELETE FROM orders WHERE orderID = ?";
+		db.query(deleteOrderSQL, [orderID], (err, result) => {
+			if (err) {
+				console.log(err)
+				return db.rollback(() => {
+					res.status(400).json({ error: err.message });
+				});
+			}
+			console.log(result);
+			db.commit((err) => {
 				if (err) {
+					
 					return db.rollback(() => {
 						res.status(400).json({ error: err.message });
 					});
 				}
 
-				db.commit((err) => {
-					if (err) {
-						return db.rollback(() => {
-							res.status(400).json({ error: err.message });
-						});
-					}
-
-					res.status(200).send({
-						message: `Order ${orderID} and associated items deleted successfully`,
-					});
+				res.status(200).send({
+					message: `Order ${orderID} and associated items deleted successfully`,
 				});
 			});
 		});
+		}
+		);
+	});
+});
+router.put("/order_deleverd_delete/:orderID", (req, res) => {
+	const { orderID } = req.params;
+
+	db.beginTransaction((err) => {
+		if (err) {
+			return res.status(400).json({ error: err.message });
+		}
+
+		// Delete from contains table
+		// const deleteContainsSQL = "DELETE FROM contains WHERE orderID = ?";
+		// db.query(deleteContainsSQL, [orderID], (err, result) => {
+		// 	if (err) {
+		// 		return db.rollback(() => {
+		// 			res.status(400).json({ error: err.message });
+		// 		});
+		// 	}
+
+		// Delete from orders table
+		const deleteOrderSQL =
+			"UPDATE orders SET `status`='hidden' WHERE orderID = ?";
+		db.query(deleteOrderSQL, [orderID], (err, result) => {
+			if (err) {
+				console.log(err)
+				return db.rollback(() => {
+					res.status(400).json({ error: err.message });
+				});
+			}
+			console.log(result);
+			db.commit((err) => {
+				if (err) {
+					
+					return db.rollback(() => {
+						res.status(400).json({ error: err.message });
+					});
+				}
+
+				res.status(200).send({
+					message: `Order ${orderID} and associated items deleted successfully`,
+				});
+			});
+		});
+		// }
+		// );
 	});
 });
 
@@ -223,8 +310,8 @@ router.put("/orderaccept/:orderID", (req, res) => {
 				// Check if mobileNo exists before attempting to delete
 				if (result.length > 0) {
 					const mobileNo = result[0].mobileNo;
-					const deleteCartSQL = "DELETE FROM add_cart WHERE mobileNo = ?";
-					db.query(deleteCartSQL, [mobileNo], (err, result) => {
+					// const deleteCartSQL = "DELETE FROM add_cart WHERE mobileNo = ?";
+					// db.query(deleteCartSQL, [mobileNo], (err, result) => {
 						if (err) {
 							// Send error and return to prevent further execution
 							return res.status(404).send({
@@ -237,7 +324,7 @@ router.put("/orderaccept/:orderID", (req, res) => {
 						return res.status(200).send({
 							message: `Order ${orderID} status updated to accept and cart cleared for mobile number ${mobileNo}`,
 						});
-					});
+					// });
 				} else {
 					// Send error if mobileNo not found
 					return res.status(404).send({
@@ -251,7 +338,6 @@ router.put("/orderaccept/:orderID", (req, res) => {
 		}
 	});
 });
-
 
 router.put("/orderstatusdelivered/:orderID", (req, res) => {
 	const { orderID } = req.params;
