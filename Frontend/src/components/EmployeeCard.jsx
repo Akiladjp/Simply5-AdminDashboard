@@ -52,7 +52,7 @@ function EmployeeCard({ data }) {
                     <div className="flex items-center w-auto h-auto justifey-center gap-x-4">
                     <Link to={`/app/employers/updateEmployee/${data.empID}`}>
                 <button className="flex h-auto">
-                  <RiEdit2Fill className="text-xl text-black bg-white rounded hover:bg-gray-400 hover:scale-2" />
+                  <RiEdit2Fill className="text-xl text-black bg-white rounded hover:bg-blue-400 hover:scale-2" />
                 </button>
                 {/* <DeleteOutlinedIcon/>  */}
               </Link>
@@ -62,7 +62,7 @@ function EmployeeCard({ data }) {
                   ItemDelete(`${data.empID}`);
                 }}
               >
-                <RiDeleteBin5Line className="text-xl text-black bg-white rounded hover:bg-gray-400 " />
+                <RiDeleteBin5Line className="text-xl text-black bg-white rounded hover:bg-red-500 " />
               </button>
             </div>
                 </div>

@@ -5,14 +5,18 @@ function Logout() {
 
   const navigate = useNavigate();
 
-  const handleDelete = async () => {
-    // Your delete logic here
-    if (sessionStorage.getItem("username")) {
-      sessionStorage.removeItem("username");
-      console.log('Logout');
-      navigate("/");
+
+
+  const logout=()=>{
+    console.log("in logout")
+    sessionStorage.removeItem("email")
+    sessionStorage.removeItem("role")
+    if(!sessionStorage.getItem("email") && !sessionStorage.getItem("role")){
+      
+      navigate("/")
     }
-  };
+  }
+
 
   const handleCancel = async() => {
 
@@ -23,7 +27,7 @@ function Logout() {
     <div className="relative">
       <div className="flex justify-center space-x-4">
         <button
-          onClick={handleDelete}
+          onClick={logout}
           className="text-[16px] bg-red-500 py-1 px-8 rounded-md mt-2 text-white font-bold"
         >
           Logout

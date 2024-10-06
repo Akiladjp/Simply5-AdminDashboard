@@ -103,7 +103,9 @@ function UpdateEmployee() {
     }
   };
   console.log(data);
-
+const handleCancel =()=>{
+  navigate("/app/employers/employee")
+}
   return (
     <div className="flex justify-center w-full p-1 mt-1 rounded-xl">
       <form onSubmit={handleSubmit} className="lg:w-[35%] md:w-3/5">
@@ -230,9 +232,10 @@ function UpdateEmployee() {
         <div className="flex justify-center gap-8 p-5 lg:gap-16 md:gap-12 lg:mt-8">
           <button
             type="button"
-            className="flex w-1/3 justify-center rounded-none bg-white border-[rgb(0,127,168)] border-[2px] px-1 py-1.5 text-sm font-semibold leading-6 text-[rgb(0,127,168)] shadow-sm"
+            className="flex w-1/3 justify-center rounded-none bg-white border-[rgb(0,127,168)] border-[2px] px-1 py-1.5 text-sm font-semibold leading-6 text-[rgb(0,127,168)] shadow-sm hover:bg-red-500 hover:text-white hover:border-white"
+            onClick={()=>(handleCancel())}
           >
-            DELETE
+            CANCEL
           </button>
           <button
             type="submit"

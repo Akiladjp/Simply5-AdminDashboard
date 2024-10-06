@@ -10,8 +10,7 @@ import { useDispatch } from "react-redux";
 function AcceptedOrders() {
 	const [orderAcceptdata, setOrderAccept] = useState([]);
 	const dispatch = useDispatch();
-	const [waiterID,setOrderID] = useState(0);
-	const email = sessionStorage.getItem("email");
+
 	useEffect(() => {
 		axios
 			.get("http://localhost:8081/order_waiter_accepted")
@@ -21,16 +20,8 @@ function AcceptedOrders() {
 			})
 			.catch((err) => console.log(err));
 	}, []);
-	useEffect(() => {
-		const fetchData = async () => {
-			const response = await axios.get(`http://localhost:8081/waiterID/${email}`)
-		if(response){
-			setOrderID(response.data.waiterID)
-			}
-		};
-		fetchData();
-	}, []);
-	console.log(waiterID)
+
+
 	const handleDeleteOrder = (orderID) => {
 		console.log(orderID);
 		axios
@@ -45,17 +36,11 @@ function AcceptedOrders() {
 
 	const handleAcceptOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderstatusdelivered/${orderID}`, {
-				waiterID,
-			})
+			.put(`http://localhost:8081/orderstatusdelivered/${orderID}`,)
 			.then(() => {
-				dispatch(
-					setTimerState(orderAcceptdata[0]["orderID"].toString() + "-" + false)
-				);
-				setTimeout(() => {
-					dispatch(resetTimerState()); // Reset timer state after 5 seconds
-				}, 25000);
+				
 				window.location.reload();
+			console.log("fadsfadsfadsfadsfads")
 				// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
 			})
 			.catch((err) => console.log(err));

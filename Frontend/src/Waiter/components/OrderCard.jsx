@@ -26,10 +26,15 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 				if (onAccept) {
 					onAccept(data.orderID);
 					
+					// Reload the page after 5 seconds (5000 milliseconds)
+					setTimeout(() => {
+						window.location.reload();
+					}, 500);
 				}
 			})
 			.catch((err) => console.log(err));
 	};
+	
 
 	// const handleAcceptOrder = () => {
 	//   const currentTimestamp = new Date();

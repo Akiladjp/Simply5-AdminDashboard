@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -8,7 +9,7 @@ import { FaBuildingUser } from "react-icons/fa6";
 
 function Profile() {
   const email = "k9185.dhanuska@gmail.com";
-
+const navigate = useNavigate();
   const [data, setData] = useState({
     name: "",
     position: "", // Fixed typo here
@@ -41,6 +42,16 @@ function Profile() {
     fetchData();
   }, []);
 
+  const logout=()=>{
+    console.log("in logout")
+    sessionStorage.removeItem("email")
+    sessionStorage.removeItem("role")
+    sessionStorage.removeItem("activeMenuIndex")
+    if(!sessionStorage.getItem("email") && !sessionStorage.getItem("role")){
+      
+      navigate("/")
+    }
+  }
   return (
     <div className="pt-20 px-4 md:px-8 lg:px-12">
       <div className="border-[#007FA8] border text-black rounded-lg p-8">
@@ -77,7 +88,7 @@ function Profile() {
       </div>
 
       <div className="flex justify-center mt-6">
-        <button className="py-3 px-8 absolute bottom-28 bg-[#007FA8] text-white font-semibold rounded-md shadow-lg hover:scale-105 active:scale-95">
+        <button className="py-3 px-8 absolute bottom-28 bg-[#007FA8] text-white font-semibold rounded-md shadow-lg hover:scale-105 active:scale-95" onClick={()=>(logout())}>
           Logout
         </button>
       </div>
