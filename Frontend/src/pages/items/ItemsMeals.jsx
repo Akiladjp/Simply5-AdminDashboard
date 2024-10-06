@@ -39,7 +39,6 @@ function ItemsMeals() {
          {items.map((item, index) => (
                     <ItemsCard key={index} data={item} />
                 ))}
-       *
     </div>
   )
 }
