@@ -15,10 +15,11 @@ const upload = multer({ storage: storage });
 
 offer.post("/addoffer", upload.single("image"), async (req, res) => {
   const filename = "offers_bucket/" + req.file.originalname;
+  const status = "enable";
 
-  const sql = "INSERT INTO offers (`image_link`) VALUES (?)";
+  const sql = "INSERT INTO offers (`image_link`, `status`) VALUES (?)";
 
-  const values = [filename];
+  const values = [filename, status];
 
   db.query(sql, [values], async (err, data) => {
     if (err) {
@@ -76,5 +77,44 @@ offer.get("/showoffer", async (req, res) => {
   }
 });
 
+offer.put("/update-status/:id", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const sql = `UPDATE offers SET status = ? WHERE id = ?`;
+    db.query(sql, [status, id], (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Database query error" });
+      }
+      return res
+        .status(200)
+        .json({ message: "Status updated successfully", result });
+    });
+  } catch (error) {
+    console.error("Error updating status", error);
+    res.status(500).json({ message: "Error updating status", error });
+  }
+});
+
+offer.put("/deleteImage/:id", async (req, res) => {
+  const offerID = req.params;
+
+  try {
+    const sql = "DELETE * FROM offers WHERE offerID = ?";
+ 
+    db.query(sql, (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Database query error" });
+      }
+      return res
+        .status(200)
+        .json({ message: "Offer deleted successfully", result });
+    });
+  } catch (err) {
+    console.error("Error updating status", err);
+    res.status(500).json({ message: "Error updating status", err });
+  }
+});
 
 export default offer;

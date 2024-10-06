@@ -7,16 +7,18 @@ import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 import { RxCross1 } from "react-icons/rx";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
 
 export const OfferComp = (props) => {
   const navigate = useNavigate();
 
   const [imageUpload, setImageUpload] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
-
   const [bannerShow, setbannerShow] = useState([]);
-
   const [show, setshow] = useState(false);
+  const [showEye, setShowEye] = useState({});
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -99,6 +101,31 @@ export const OfferComp = (props) => {
     setshow(true);
   };
 
+  const handleEye = (id) => {
+    setShowEye((prev) => {
+      // Check if the current offer is "enable", and toggle the status
+      const newStatus = prev[id] === "enable" ? "disable" : "enable";
+
+      // Update the status in the backend
+      axios
+        .put(`http://localhost:8081/update-status/${id}`, { status: newStatus })
+        .then((response) => {
+          console.log("Status updated successfully", response.data);
+        })
+        .catch((error) => {
+          console.error("Error updating status", error);
+        });
+
+      // Update the state locally to toggle the visibility
+      return {
+        ...prev,
+        [id]: newStatus, // Update the status for this specific id
+      };
+    });
+  };
+
+  const handleDeleteOffer = () => {};
+
   return (
     <div className="pb-4">
       <div
@@ -120,13 +147,25 @@ export const OfferComp = (props) => {
               {bannerShow.map((data, index) => (
                 <div
                   key={index}
-                  className="relative w-full h-[400px] overflow-hidden rounded-lg shadow-lg"
+                  className="relative w-full h-[400px] overflow-hidden flex gap-2"
                 >
                   <img
                     src={data.image_url}
                     alt={`banner-${data.offerID}`}
-                    className="w-full h-full object-cover bg-center rounded-md transition-transform duration-500 hover:scale-105 hover:shadow-xl"
+                    className="w-full h-full object-cover bg-center rounded-md hover:shadow-xl hover:"
                   />
+                  <div className="flex flex-col gap-2">
+                    <div className="" onClick={() => handleEye(data.offerID)}>
+                      {showEye[data.offerID] === "enable" ? (
+                        <FaRegEye className="text-blue-500" size={24} />
+                      ) : (
+                        <FaRegEyeSlash className="text-red-500" size={24} />
+                      )}
+                    </div>
+                    <div className="" onClick={handleDeleteOffer}>
+                      <MdDeleteOutline className="text-red-500" size={24} />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
