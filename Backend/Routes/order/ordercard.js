@@ -1,4 +1,4 @@
-import Express from "express";
+import Express, { response } from "express";
 const router = Express.Router();
 import db from "../../config/DatabaseConfig.js";
 import cors from "cors";
@@ -212,32 +212,29 @@ router.delete("/orderdelete/:orderID", (req, res) => {
 				});
 			}
 
-		// Delete from orders table
-		const deleteOrderSQL =
-			"DELETE FROM orders WHERE orderID = ?";
-		db.query(deleteOrderSQL, [orderID], (err, result) => {
-			if (err) {
-				console.log(err)
-				return db.rollback(() => {
-					res.status(400).json({ error: err.message });
-				});
-			}
-			console.log(result);
-			db.commit((err) => {
+			// Delete from orders table
+			const deleteOrderSQL = "DELETE FROM orders WHERE orderID = ?";
+			db.query(deleteOrderSQL, [orderID], (err, result) => {
 				if (err) {
-					
+					console.log(err);
 					return db.rollback(() => {
 						res.status(400).json({ error: err.message });
 					});
 				}
+				console.log(result);
+				db.commit((err) => {
+					if (err) {
+						return db.rollback(() => {
+							res.status(400).json({ error: err.message });
+						});
+					}
 
-				res.status(200).send({
-					message: `Order ${orderID} and associated items deleted successfully`,
+					res.status(200).send({
+						message: `Order ${orderID} and associated items deleted successfully`,
+					});
 				});
 			});
 		});
-		}
-		);
 	});
 });
 router.put("/order_deleverd_delete/:orderID", (req, res) => {
@@ -262,7 +259,7 @@ router.put("/order_deleverd_delete/:orderID", (req, res) => {
 			"UPDATE orders SET `status`='hidden' WHERE orderID = ?";
 		db.query(deleteOrderSQL, [orderID], (err, result) => {
 			if (err) {
-				console.log(err)
+				console.log(err);
 				return db.rollback(() => {
 					res.status(400).json({ error: err.message });
 				});
@@ -270,7 +267,6 @@ router.put("/order_deleverd_delete/:orderID", (req, res) => {
 			console.log(result);
 			db.commit((err) => {
 				if (err) {
-					
 					return db.rollback(() => {
 						res.status(400).json({ error: err.message });
 					});
@@ -288,60 +284,86 @@ router.put("/order_deleverd_delete/:orderID", (req, res) => {
 
 router.put("/orderaccept/:orderID", (req, res) => {
 	const { orderID } = req.params;
+	const { waiterID } = req.body;
+	console.log("orderID");
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["accept", orderID], (err, result) => {
 		if (err) {
-			// Send error and return to prevent further execution
+			console.log(err);
 			return res.status(400).json({ error: err.message });
 		}
 
-		if (result.affectedRows > 0) {
+		if (result.affectedRows === 0) {
+			console.log("not found");
+
+			return res.status(404).json({ message: `Order ${orderID} not found` });
+		}
+
+		const updateWaiterSQL = "UPDATE orders SET waiterID = ? WHERE orderID = ?";
+		db.query(updateWaiterSQL, [waiterID, orderID], (err) => {
+			if (err) {
+				return res
+					.status(400)
+					.json({ message: "Error in adding waiter ID to table", error: err });
+			}
+
 			const getMobileSQL = "SELECT mobileNo FROM orders WHERE orderID = ?";
 			db.query(getMobileSQL, [orderID], (err, result) => {
 				if (err) {
-					// Send error and return to prevent further execution
-					return res.status(404).send({
-						message: "Error in getting mobile number for order",
-						err,
-					});
+					return res
+						.status(404)
+						.json({ message: "Error in retrieving mobile number", error: err });
 				}
 
-				// Check if mobileNo exists before attempting to delete
-				if (result.length > 0) {
-					const mobileNo = result[0].mobileNo;
-					// const deleteCartSQL = "DELETE FROM add_cart WHERE mobileNo = ?";
-					// db.query(deleteCartSQL, [mobileNo], (err, result) => {
-						if (err) {
-							// Send error and return to prevent further execution
-							return res.status(404).send({
-								message: "Error in deleting cart values for mobile number",
-								err,
+				if (result.length === 0) {
+					return res
+						.status(404)
+						.json({ message: `Mobile number not found for order ${orderID}` });
+				}
+
+				const mobileNo = result[0].mobileNo;
+
+				const gettingItemID = "SELECT itemID FROM contains WHERE `orderID`=?";
+				db.query(gettingItemID, [orderID], (err, result) => {
+					if (err) {
+						console.log("SQL ERR IN GETTINGiTEMid", err);
+						return;
+					}
+					console.log(result);
+					const OrderItems = result.map((row) => row.itemID);
+					for (let i = 0; i < OrderItems.length; i++) {
+						const update_addcartSTate =
+							"UPDATE add_cart SET `state` = ? WHERE mobileno = ? AND itemID=?";
+							db.query(update_addcartSTate,["accept",mobileNo,OrderItems[i]],(err,result)=>{
+								if(err){
+									console.log("sql err in updating add cart state",err)
+
+								}
+								
 							});
-						}
+					}
+				});
+				// const update_addcartSTate = "DELETE FROM add_cart WHERE mobileNo = ?";
+				// db.query(deleteCartSQL, [mobileNo], (err) => {
+				//   if (err) {
+				//     return res.status(404).json({
+				//       message: "Error in deleting cart items",
+				//       error: err,
+				//     });
+				//   }
 
-						// Send the success response after everything is completed
-						return res.status(200).send({
-							message: `Order ${orderID} status updated to accept and cart cleared for mobile number ${mobileNo}`,
-						});
-					// });
-				} else {
-					// Send error if mobileNo not found
-					return res.status(404).send({
-						message: `Mobile number not found for order ${orderID}`,
-					});
-				}
+				return res.status(200).json({
+					message: `Order ${orderID} status updated to 'accept' and cart cleared for mobile number ${mobileNo}`,
+				});
+				// });
 			});
-		} else {
-			// Send error if orderID not found
-			return res.status(404).send({ message: `Order ${orderID} not found` });
-		}
+		});
 	});
 });
 
 router.put("/orderstatusdelivered/:orderID", (req, res) => {
 	const { orderID } = req.params;
-	const waiterID = req.body.waiterID;
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
@@ -349,20 +371,7 @@ router.put("/orderstatusdelivered/:orderID", (req, res) => {
 			res.status(400).json({ error: err.message });
 			return;
 		}
-
 		if (result.affectedRows > 0) {
-			const sql1 = "UPDATE orders SET waiterID =? WHERE orderID =?";
-			db.query(sql1, [waiterID, orderID], (err, result) => {
-				if (err) {
-					res
-						.status(400)
-						.send({ massage: "error in adding waiter id to table" });
-				} else {
-					res.status(200).send({
-						message: "status updated to paid and waiter ID successfully added",
-					});
-				}
-			});
 		} else {
 			res.status(404).send({ message: `Order ${orderID} not found` });
 		}

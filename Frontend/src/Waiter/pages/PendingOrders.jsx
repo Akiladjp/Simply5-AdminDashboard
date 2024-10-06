@@ -9,10 +9,21 @@ import {
 import { useNavigate } from "react-router-dom";
 
 function PendingOrders() {
+	const [waiterID,setWaiterID] = useState(0);
 	const [orderPendingdata, setOrderPending] = useState([]);
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
-
+	// const navigate = useNavigate();
+	const email = sessionStorage.getItem("email");
+	//gettinhh setWaiterID
+	useEffect(() => {
+		const fetchData = async () => {
+			const response = await axios.get(`http://localhost:8081/waiterID/${email}`)
+		if(response){
+			setWaiterID(response.data.waiterID)
+			}
+		};
+		fetchData();
+	}, []);
 	useEffect(() => {
 		axios
 			.get("http://localhost:8081/orderpending")
@@ -36,16 +47,12 @@ function PendingOrders() {
 
 	const handleAcceptOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderaccept/${orderID}`)
+			.put(`http://localhost:8081/orderaccept/${orderID}`,{waiterID})
 			.then(() => {
-				dispatch(
-					setTimerState(orderPendingdata[0]["orderID"].toString() + "-" + true)
-				);
+				
 				console.log(orderID);
-				setTimeout(() => {
-					dispatch(resetTimerState()); // Reset timer state after 5 seconds
-				}, 25000);
-          window.location.reload();
+				
+          //  window.location.reload();
 				// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
 			})
 			.catch((err) => console.log(err));

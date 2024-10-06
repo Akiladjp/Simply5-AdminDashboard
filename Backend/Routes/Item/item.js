@@ -64,7 +64,7 @@ Item.post("/additemevalues", upload.single("image"), async (req, res) => {
 Item.get("/getiteMeal", async (req, res) => {
 
 	try {
-		const sql = 'SELECT * FROM item WHERE category = "Meals"';
+		const sql = 'SELECT * FROM item WHERE category = "Meal"';
 
 		var imageUrl;
 		db.query(sql, async (err, ans) => {

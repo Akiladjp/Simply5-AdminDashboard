@@ -64,6 +64,7 @@ import UpdateEmployee from "../Backend/Routes/employee/updateEmployee.js";
 import orderSearch from "./Routes/order/orderSearch.js";
 import offer from "./Routes/offer/offer.js";
 import waiterProfile from "./Routes/waiter/waiterProfile.js";
+import summaryEmployee from "./Routes/employee/summaryEmployee.js";
 
 app.use("/", orderSearch);
 app.use("/", itemTodayRouter);
@@ -80,15 +81,13 @@ app.use("/", resetRoute);
 app.use("/", addemployee);
 app.use("/", editemployee);
 app.use("/", reademployee);
-
 app.use("/", ordercard);
-
-
 app.use("/", item);
 app.use("/", UpdateEmployee);
-
 app.use("/", offer);
 app.use("/", waiterProfile);
+app.use("/", summaryEmployee);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
