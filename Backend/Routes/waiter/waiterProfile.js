@@ -33,4 +33,20 @@ waiterProfile.get("/waiterProfile/:email", (req, res) => {
   });
 });
 
+waiterProfile.get("/waiterID/:email",(req,res)=>{
+  const  email = req.params.email;
+  try{
+    const sql = "SELECT `empID` FROM admin WHERE email=?"
+    db.query(sql,[email],(err,result)=>{
+      if(err){
+        console.log("server error",err)
+      }
+      // console.log(result[0]["empID"])
+      return res.json({waiterID:result[0]["empID"]})
+    })
+  }catch(err){
+    console.log("server Error",err)
+  }
+})
+
 export default waiterProfile;
