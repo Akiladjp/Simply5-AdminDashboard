@@ -1,6 +1,6 @@
 import React from 'react'
 
-function EployeeSummary() {
+function EmployeeSummary() {
   return (
     <div className='w-full h-screen flex items-start bg-blue-300 justify-center mt-32 overflow-scroll '>
       <h1 className='text-4xl'>EMPLOOYE SUMMARY</h1>
@@ -10,4 +10,4 @@ function EployeeSummary() {
   )
 }
 
-export default EployeeSummary
+export default EmployeeSummary

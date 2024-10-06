@@ -15,6 +15,7 @@ import Logout from "./pages/loginSystem/Logout";
 
 import OrderPending from "./pages/orders/OrderPending";
 import OrderAccept from "./pages/orders/OrderAccept";
+import OrderDelivered from "./pages/orders/OrderDelivered.jsx";
 import OrderPaid from "./pages/orders/OrderPaid";
 
 import ItemsMeals from "./pages/items/ItemsMeals";
@@ -31,6 +32,8 @@ import AnalysisTimeMonth from "./pages/analysis/AnalysisTimeMonth";
 import Employee from "./pages/employers/Employee";
 import EmployeeForm from "./pages/employers/EmployeeForm";
 import UpdateEmployee from "./pages/employers/UpdateEmployee";
+import EmployeeSummary from "./pages/employers/EmployeeSummary";
+import EmpAdmin from "./pages/employers/EmpAdmin";
 
 import MealsForm from "./pages/items/MealsForm";
 import UpdateItem from "./pages/items/UpdateItem";
@@ -112,6 +115,7 @@ const router = createBrowserRouter([
 		children: [
 			{ path: "/app/order/pending", element: <OrderPending /> },
 			{ path: "/app/order/accept", element: <OrderAccept /> },
+			{ path: "/app/order/delivered", element: <OrderDelivered /> },
 			{ path: "/app/order/paid", element: <OrderPaid /> },
 
 			{ path: "/app/items/meals", element: <ItemsMeals /> },
@@ -126,6 +130,8 @@ const router = createBrowserRouter([
 			{ path: "/app/analysis/monthitem", element: <AnalysisItemMonth /> },
 
 			{ path: "/app/employers/employee", element: <Employee /> },
+			{ path: "/app/employers/admin", element: <EmpAdmin /> },
+			{ path: "/app/employers/summaryemployee", element: <EmployeeSummary /> },
 			{ path: "/app/employers/employeeform", element: <EmployeeForm /> },
 			{
 				path: "/app/employers/updateEmployee/:empID",

@@ -6,13 +6,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function ItemCard({ data }) {
-  const [buttonText, setButtonText] = useState(data.available ? 'AVAILABLE' : 'UNAVAILABLE'); // Initialize from data
+  const [buttonText, setButtonText] = useState(data.available ? data.available : 'UNAVAILABLE'); // Initialize from data
   
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // If necessary, fetch additional data or refresh availability on mount.
-  }, []);
 
   const handleClick = () => {
     const newStatus = buttonText === 'AVAILABLE' ? 'UNAVAILABLE' : 'AVAILABLE';

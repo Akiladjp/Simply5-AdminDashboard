@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import EmployeeCard from "../../components/EmployeeCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import EployeeSummary from "./EployeeSummary";
+import EmployeeSummary from "./EmployeeSummary";
 
 function Employee() {
 	const [employees, setEmployees] = useState([]);
@@ -62,7 +62,7 @@ function Employee() {
 								? " w-full h-screen   flex items-center justify-center"
 								: "hidden"
 						}`}>
-						<EployeeSummary />
+						<EmployeeSummary />
 					</div>
 				</div>
 
