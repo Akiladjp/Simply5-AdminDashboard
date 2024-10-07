@@ -62,7 +62,7 @@ router.get("/orderaccepted", (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'accept' OR orders.status ='delivered'
+        WHERE orders.status = 'accept'
     `;
 
 	if (mobileNo) {
@@ -123,6 +123,46 @@ router.get("/order_waiter_accepted", (req, res) => {
 });
 
 router.get("/orderdelivered", (req, res) => {
+	const { mobileNo } = req.query;
+
+	let sql = `
+        SELECT 
+            orders.orderID, 
+            orders.status, 
+            orders.mobileNo, 
+            orders.tableNo, 
+            orders.date, 
+            orders.total,
+            CONCAT('[', GROUP_CONCAT(
+                CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
+                SEPARATOR ', '
+            ), ']') AS items,
+            user.name AS userName
+        FROM orders
+        JOIN contains ON orders.orderID = contains.orderID
+        JOIN item ON contains.itemID = item.itemID
+        JOIN user ON orders.mobileNo = user.phoneNo
+        WHERE orders.status = 'delivered'
+    `;
+
+	if (mobileNo) {
+		sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
+	}
+
+	sql += `GROUP BY orders.orderID`;
+
+	db.query(sql, [], (err, rows) => {
+		if (err) {
+			res.status(500).json({ error: err.message });
+			return;
+		}
+		res.json({
+			data: rows,
+		});
+	});
+});
+
+router.get("/order_waiter_delivered", (req, res) => {
 	const sql = `
         SELECT 
             orders.orderID, 

@@ -13,7 +13,7 @@ OrderSearch.get('/suggestPhoneNumbers', async (req, res) => {
   }
 
   try {
-    const sql = `SELECT phone_number FROM users WHERE phone_number LIKE ? LIMIT 10`;
+    const sql = `SELECT phoneNo FROM users WHERE phoneNo LIKE ? LIMIT 10`;
     const searchPattern = `${phone}%`;
 
     db.query(sql, [searchPattern], (err, results) => {
