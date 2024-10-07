@@ -58,6 +58,13 @@ export default function Sidebar() {
       }
     } else if (location.pathname.startsWith('/app/employers')) {
       setActiveButton('employers');
+      setActiveDropdown('employers');
+      const pathParts = location.pathname.split('/');
+      if (pathParts.length > 3) {
+        const firstFourChars = pathParts[3].substring(0, 4);
+        console.log(firstFourChars)
+        setActiveMenuItem(firstFourChars);
+      }
     }
   }, [location.pathname]);
 
@@ -117,6 +124,15 @@ export default function Sidebar() {
                 onClick={() => handleMenuItemClick('accept')}
               >
                 ACCEPT
+              </Link>
+              <Link
+                to="/app/order/delivered"
+                className={`block py-1 px-2 rounded mb-1 ${
+                  activeMenuItem === 'delivered' ? 'bg-white text-[#007FA8]' : 'text-white'
+                }`}
+                onClick={() => handleMenuItemClick('delivered')}
+              >
+                DELIVERED
               </Link>
               <Link
                 to="/app/order/paid"
@@ -231,8 +247,49 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/*side bar employers*/}
+        {/* side bar employers */}
         <div className={`relative p-4 ${activeButton === 'employers' ? 'bg-[#027297] hover:bg-[#056A8B]' : 'bg-[#007FA8] hover:bg-[#056A8B]'}`}>
+          <button
+            onClick={() => toggleDropdown('employers')}
+            className="flex items-center w-full text-base font-medium lg:text-lg"
+          >
+            <GrUserWorker className="mr-2" />
+            EMPLOYEES
+          </button>
+          {activeDropdown === 'employers' && (
+            <div className="p-2 pb-0 mt-2 ml-6 text-sm border-l-2 border-white lg:text-base">
+               <Link
+                to="/app/employers/employee"
+                className={`block py-1 px-2 rounded mb-1 ${
+                  activeMenuItem === 'empl' ? 'bg-white text-[#007FA8]' : 'text-white'
+                }`}
+                onClick={() => handleMenuItemClick('profile')}
+              >
+                PROFILE
+              </Link>
+              <Link
+                to="/app/employers/admin"
+                className={`block py-1 px-2 rounded mb-1 ${
+                  activeMenuItem === 'admi' ? 'bg-white text-[#007FA8]' : 'text-white'
+                }`}
+                onClick={() => handleMenuItemClick('admin')}
+              >
+                ADMIN
+              </Link>
+              <Link
+                to="/app/employers/summaryemployee"
+                className={`block py-1 px-2 rounded mb-1 ${
+                  activeMenuItem === 'summ' ? 'bg-white text-[#007FA8]' : 'text-white'
+                }`}
+                onClick={() => handleMenuItemClick('summary')}
+              >
+                SUMMARY
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* <div className={`relative p-4 ${activeButton === 'employers' ? 'bg-[#027297] hover:bg-[#056A8B]' : 'bg-[#007FA8] hover:bg-[#056A8B]'}`}>
           <Link 
             to="/app/employers/employee"
             className="flex items-center w-full text-base font-medium lg:text-lg"
@@ -245,7 +302,7 @@ export default function Sidebar() {
             <GrUserWorker className="mr-2" />
             EMPLOYEES
           </Link>
-        </div>
+        </div> */}
 
         {/*side bar logout*/}
         <div className={`relative p-4 ${activeButton === 'logout' ? 'bg-[#027297] hover:bg-[#056A8B]' : 'bg-[#007FA8] hover:bg-[#056A8B]'}`}>
