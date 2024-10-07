@@ -76,7 +76,7 @@ function Employee() {
 					<div className="grid grid-cols-2 gap-8 mx-auto lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6  mt-8">
 						{/* Add New Employee Button */}
 						<Link to="/app/employers/employeeform">
-							<button className="flex flex-col items-center justify-center h-[337px] w-[237px] bg-[rgb(0,127,168,0.15)] border-2 rounded-lg border-dashed border-[#027297] hover:bg-[rgb(0,127,168,0.25)]">
+							<button className="flex flex-col items-center justify-center h-[390px] w-[237px] bg-[rgb(0,127,168,0.15)] border-2 rounded-lg border-dashed border-[#027297] hover:bg-[rgb(0,127,168,0.25)]">
 								<div className="flex items-center justify-center h-12 w-12 bg-[#007FA8] opacity-75 rounded-full -z-50">
 									<span className="text-2xl font-bold text-white">+</span>
 								</div>
