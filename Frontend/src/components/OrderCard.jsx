@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 
-export const OrderCard = ({ data, onDelete ,onAccept, title}) => {
+export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,borderColor,buttonColor }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const toggleDetails = () => {
@@ -10,12 +10,6 @@ export const OrderCard = ({ data, onDelete ,onAccept, title}) => {
 
   // Parse the items JSON string if it exists
   const items = data.items ? JSON.parse(data.items) : [];
-
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(data.orderID);
-    }
-  };
 
   const handleAccept = () => {
     axios.put(`http://localhost:8081/orderaccept/${data.orderID}`)
@@ -26,7 +20,6 @@ export const OrderCard = ({ data, onDelete ,onAccept, title}) => {
       })
       .catch(err => console.log(err));
   };
-
 
   return (
     <div className="border-[rgb(0,127,168)] border-[1px] px-4 w-full p-2 relative">
@@ -59,11 +52,17 @@ export const OrderCard = ({ data, onDelete ,onAccept, title}) => {
           >
             {showDetails ? "HIDE" : "VIEW"}
           </button>
-          <button className="bg-[rgb(0,127,168)] w-[110px] py-1.5 border-none text-white font-semibold lg:text-xl" onClick={handleAccept}>
-          {title}
-          </button>
+          {data.status !== 'paid' && (
+            <button
+              className={`${buttontextColor} ${buttonColor} w-[110px] py-1.5 border-2 ${borderColor} font-semibold lg:text-xl`}
+              onClick={handleAccept}
+            >
+              {title}
+            </button>
+          )}
         </div>
       </div>
+
       {showDetails && (
         <div className="m-0 xl:m-9">
           <table className="w-full border-collapse">
@@ -95,7 +94,10 @@ export const OrderCard = ({ data, onDelete ,onAccept, title}) => {
 
           {data.status !== 'paid' && (
             <div className="pt-4 flex justify-end">
-              <button className="bg-[rgb(0,127,168)] px-4 py-1.5 border-none text-white font-semibold lg:text-xl" onClick={handleDelete}>  
+              <button
+                className={`${buttonColor} px-4 py-1.5 border-none text-white font-semibold lg:text-xl`}
+                onClick={handleDelete}
+              >
                 DECLINE
               </button>
             </div>

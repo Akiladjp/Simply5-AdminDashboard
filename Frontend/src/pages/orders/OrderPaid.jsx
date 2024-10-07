@@ -22,13 +22,13 @@ function OrderPaid() {
       .catch(err => console.log(err));
   }, [searchTerm]);
 
-  const handleAcceptOrder = (orderID) => {
-    axios.delete(`http://localhost:8081/orderpaiddelete/${orderID}`)
-      .then(() => {
-        setOrderPaid((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
-      })
-      .catch(err => console.log(err));
-  };
+  // const handleAcceptOrder = (orderID) => {
+  //   axios.delete(`http://localhost:8081/orderpaiddelete/${orderID}`)
+  //     .then(() => {
+  //       setOrderPaid((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
+  //     })
+  //     .catch(err => console.log(err));
+  // };
 
   return (
     <div className='w-full flex flex-col mt-8 p-4'>
@@ -41,8 +41,8 @@ function OrderPaid() {
             <OrderCard 
               key={index} 
               data={orderpaiddata} 
-              onAccept={handleAcceptOrder} 
-              title={orderpaiddata.status === 'paid' ? 'DELETE' : ''} 
+              // onAccept={handleAcceptOrder} 
+              // title={orderpaiddata.status === 'paid' ? 'DELETE' : ''} 
             />
           ))
         ) : (

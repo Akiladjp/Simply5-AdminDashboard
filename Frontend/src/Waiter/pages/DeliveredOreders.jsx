@@ -6,7 +6,7 @@ function DeliveredOreders() {
   const [orderAcceptdata, setOrderAccept] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/orderdelivered')
+    axios.get('http://localhost:8081/order_waiter_delivered')
       .then(res => {
         setOrderAccept(res.data.data); // Update to set the data array
         console.log(res.data.data); // Log the response data

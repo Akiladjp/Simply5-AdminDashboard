@@ -17,6 +17,7 @@ function OrderAccept() {
 			try {
 				const res = await axios.get(url);
 				setOrderAccept(res.data.data);
+				console.log(res.data.data);
 			} catch (err) {
 				console.log(err);
 			}
@@ -25,31 +26,31 @@ function OrderAccept() {
 		fetchOrders();
 	}, [searchTerm]);
 
-	const handleDeleteOrder = (orderID) => {
-		console.log(orderID);
-		axios
-			.delete(`http://localhost:8081/orderdelete/${orderID}`)
-			.then(() => {
-				setOrderAccept((prevOrders) =>
-					prevOrders.filter((order) => order.orderID !== orderID)
-				);
-			})
-			.catch((err) => console.log(err));
-	};
+	// const handleDeleteOrder = (orderID) => {
+	// 	console.log(orderID);
+	// 	axios
+	// 		.delete(`http://localhost:8081/orderdelete/${orderID}`)
+	// 		.then(() => {
+	// 			setOrderAccept((prevOrders) =>
+	// 				prevOrders.filter((order) => order.orderID !== orderID)
+	// 			);
+	// 		})
+	// 		.catch((err) => console.log(err));
+	// };
 
-	const handleAcceptOrder = (orderID) => {
-		axios
-			.put(`http://localhost:8081/orderstatuspaid/${orderID}`)
-			.then(() => {
-				setOrderAccept((prevOrders) =>
-					prevOrders.map((order) =>
-						order.orderID === orderID ? { ...order, status: "paid" } : order
-					)
-				);
-				window.location.reload();
-			})
-			.catch((err) => console.log(err));
-	};
+	// const handleAcceptOrder = (orderID) => {
+	// 	axios
+	// 		.put(`http://localhost:8081/orderstatuspaid/${orderID}`)
+	// 		.then(() => {
+	// 			setOrderAccept((prevOrders) =>
+	// 				prevOrders.map((order) =>
+	// 					order.orderID === orderID ? { ...order, status: "paid" } : order
+	// 				)
+	// 			);
+	// 			window.location.reload();
+	// 		})
+	// 		.catch((err) => console.log(err));
+	// };
 
 	return (
 		<div className="w-full flex flex-col mt-8 p-4">
@@ -62,14 +63,15 @@ function OrderAccept() {
 						<OrderCard
 							key={index}
 							data={orderacceptdata}
-							onDelete={handleDeleteOrder}
-							onAccept={handleAcceptOrder}
+							// onDelete={handleDeleteOrder}
+							// onAccept={handleAcceptOrder}
 							title={
-								orderacceptdata.status === "accept" ||
-								orderacceptdata.status === "delivered"
-									? "PAID"
+								orderacceptdata.status === "accept"	
+									? "Delivering"
 									: ""
 							}
+							buttontextColor={orderacceptdata.status === "accept" ? "text-[rgb(225,0,0)]" : "text-[rgb(255,255,255)]]"}
+							borderColor={orderacceptdata.status === "accept" ? "border-[rgb(225,0,0)]" : "border-[rgb(0,127,168)]"}
 						/>
 					))
 				) : (

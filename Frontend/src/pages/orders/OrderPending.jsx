@@ -37,7 +37,7 @@ function OrderPending() {
     <div className="flex w-full p-4 mt-8 ">
       <div className="flex flex-col w-full gap-6 lg:w-full">
         {Array.isArray(orderPendingdata) && orderPendingdata.map((orderpendingdata, index) => (
-          <OrderCard key={index} data={orderpendingdata} onDelete={handleDeleteOrder} onAccept={handleAcceptOrder} title={orderpendingdata.status === 'pending' ? 'ACCEPT' : 'PAID'}/>
+          <OrderCard key={index} data={orderpendingdata} onDelete={handleDeleteOrder} onAccept={handleAcceptOrder} title={orderpendingdata.status === 'pending' ? 'ACCEPT' : ''} buttontextColor={orderpendingdata.status === "pending" ? "text-[rgb(255,255,255)]": ""} borderColor={orderpendingdata.status === "pending" ? "border-[rgb(0,127,168)]": ""} buttonColor={orderpendingdata.status === "pending" ? "bg-[rgb(0,127,168)]": ""}/>
         ))}
       </div>
     </div>
