@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { BiSolidCategoryAlt } from "react-icons/bi";
+import { BiSolidCategoryAlt, BiSolidCloudUpload } from "react-icons/bi";
 import { GiMeal } from "react-icons/gi";
 import { IoIosPricetags } from "react-icons/io";
 import { IoTime } from "react-icons/io5";
@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 export default function UpdateItem() {
   const navigate = useNavigate();
   const { itemID } = useParams();
-console.log(itemID);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     name: "",
     category: "",
@@ -21,15 +21,16 @@ console.log(itemID);
     new_image: "",
     Pre_imageUrl: "",
   });
+  const [image, setImage] = useState(null);
+  const [fileName, setFileName] = useState("");
 
   useEffect(() => {
-    const fetchEmployeeData = async () => {
+    const fetchItemData = async () => {
       try {
         const response = await axios.get(
           `http://localhost:8081/updateItem/${itemID}`
         );
 
-        // Check if the data is valid before setting the state
         if (response.data.preeItem) {
           setData({
             name: response.data.preeItem[0].name || "",
@@ -38,45 +39,52 @@ console.log(itemID);
             price: response.data.preeItem[0].price || "",
             prepare_time: response.data.preeItem[0].prepare_time || "",
             description: response.data.preeItem[0].description || "",
-
             Pre_imageUrl: response.data.preeItem[0].image_url || "",
-           // imageUrl: response.data.preeItem[0].image_url || "",
           });
         }
       } catch (error) {
-        console.error("Error fetching employee data:", error);
+        console.error("Error fetching item data:", error);
       }
     };
-    //console.log(data);
 
-    // Ensure empID is defined before making the request
-    fetchEmployeeData();
+    fetchItemData();
   }, [itemID]);
 
   const handleChange = (e) => {
-    e.preventDefault();
     const { name, value, type, files } = e.target;
-    
+
     if (type === "file") {
-      setData((prevData) => ({ ...prevData, new_image: files[0] }));
-      console.log("new image",files[0]);
-      console.log("imageURl",data.Pre_imageUrl);
-     
-    }else{
+      const file = files[0];
+      setImage(URL.createObjectURL(file)); // Preview the image
+      setFileName(file.name);
+      setData((prevData) => ({ ...prevData, new_image: file }));
+    } else {
       setData((prevData) => ({ ...prevData, [name]: value }));
     }
-   
   };
-  console.log(data);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic validation for empty fields
+    if (
+      !data.name ||
+      !data.category ||
+      !data.price ||
+      !data.prepare_time ||
+      !data.description ||
+      !data.new_image
+    ) {
+      alert("Please fill out all fields and upload an image.");
+      return;
+    }
+
+    setLoading(true);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value);
-
-     // console.log(formData);
     });
+
     try {
       const res = await axios.put(
         `http://localhost:8081/updateItem/${itemID}`,
@@ -87,12 +95,12 @@ console.log(itemID);
           },
         }
       );
-      
+
       if (res.data.message === "success") {
         alert("Update Successful");
-        if (data.category == "Meal") {
+        if (data.category === "Meal") {
           navigate("/app/items/meals");
-        } else if (data.category == "Drinks") {
+        } else if (data.category === "Drinks") {
           navigate("/app/items/drinks");
         } else {
           navigate("/app/items/desserts");
@@ -102,70 +110,61 @@ console.log(itemID);
       }
     } catch (error) {
       console.error("Error during update:", error);
-      alert("An error occurred while updating the employee. Please try again.");
+      alert("An error occurred while updating the item. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
-  const handleCnacel = () => {
-    if (data.category == "Meal") {
+
+  const handleCancel = () => {
+    if (data.category === "Meal") {
       navigate("/app/items/meals");
-    } else if (data.category == "Drinks") {
+    } else if (data.category === "Drinks") {
       navigate("/app/items/drinks");
     } else {
       navigate("/app/items/desserts");
     }
   };
+
   return (
     <div className="flex justify-center w-full p-1 mt-1 rounded-xl">
       <form
         className="w-3/4 lg:w-[35%] md:w-3/5 xl:w-[35%]"
-        action=""
         onSubmit={handleSubmit}
         encType="multipart/form-data"
       >
-        {/* ======================= */}
-
-        {/* <input type="text" name='category' value={category} hidden onChange={handleChange}/> */}
-
-        {/* ======================== */}
-
         <div>
-          <div className="flex justify-center w-full mb-5">
-            {/* <label className="flex flex-col items-center justify-center order-2 lg:w-32 lg:h-32 md:w-28 md:h-28  sm:w-20 sm:h-20  xl:h-32 xl:w-32 w-20 h-20 p-2 md:mt-8 md:mb-8 lg:mt-10 lg:mb-10 mt-6 mb-6  bg-white shadow-md rounded-full cursor-pointe shadow-[rgb(81,191,228)]">
-          <div className="flex flex-col items-center justify-center pt-5 pb-6 ">
-          <svg className="w-3 h-3 lg:w-5 lg:h-5 md:w-4 md:h-4 mx-auto text-[rgb(81,191,228)]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" />
-              </svg>
-          </div>
-          </label> */}
-          </div>
-
-          {/* ============================== */}
-          <div className="flex object-cover w-40 h-40 my-16 bg-red-100 item-center justifey-center">
-            <img src={data.Pre_imageUrl} alt={`${data.name} profile`} />
-          </div>
-          {/* =============================== */}
-          <div>
-            {/* <input
-            type="file"
-            accept="image/*"
-            onChange={handleChange}
-            className="mb-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700 file:cursor-pointer hover:file:bg-gray-100"
-            required
-          /> */}
-          </div>
-
-          <div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleChange}
-              className="mb-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700 file:cursor-pointer hover:file:bg-gray-100"
-            />
+          <div
+            className="flex justify-center items-center rounded-lg h-80 border-0 cursor-pointer w-full mb-8"
+            onClick={() => document.querySelector(".input-field").click()}
+          >
+            <div className="text-center object-cover w-full overflow-hidden h-full flex items-center justify-center ">
+              {image ? (
+                <div className="mb-5 flex flex-col items-center justify-center text-center">
+                  <img src={image} alt="" />
+                </div>
+              ) : (
+                <img
+                  src={data.Pre_imageUrl}
+                  alt={fileName}
+                  className="mb-4 rounded-md shadow-lg flex items-center justify-center text-center"
+                />
+              )}
+              <input
+                required
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
+                hidden
+                className="input-field file:py-2 file:px-4 file:border-0 file:rounded-xl file:bg-white file:text-black file:cursor-pointer hover:file:bg-gray-200"
+              />
+            </div>
           </div>
         </div>
-        <div className="flex justify-center ">
-          <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)]  ring-1 ring-inset ring-gray-300   sm:text-sm sm:leading-6 px-3 ">
-            <label className="p-2 text-[#027297] " htmlFor="">
+
+        <div className="flex justify-center">
+          <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3 ">
+            <label className="p-2 text-[#027297]">
               <GiMeal size="1.0rem" />
             </label>
             <input
@@ -178,8 +177,9 @@ console.log(itemID);
             />
           </div>
         </div>
-        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)]  ring-1 ring-inset ring-gray-300  sm:text-sm sm:leading-6 px-3 ">
-          <label className="p-2 text-[#027297] " htmlFor="">
+
+        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3 ">
+          <label className="p-2 text-[#027297]">
             <BiSolidCategoryAlt size="1.0rem" />
           </label>
           <input
@@ -191,60 +191,64 @@ console.log(itemID);
             className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
           />
         </div>
-        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)]  ring-1 ring-inset ring-gray-300  sm:text-sm sm:leading-6 px-3 ">
-          <label className="p-2 text-[#027297] " htmlFor="">
+
+        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3 ">
+          <label className="p-2 text-[#027297]">
             <IoIosPricetags size="1.0rem" />
           </label>
           <input
             onChange={handleChange}
-            type="decimal"
+            type="number"
             placeholder="  Price"
             value={data.price}
             name="price"
             className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
           />
         </div>
-        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)]  ring-1 ring-inset ring-gray-300   sm:text-sm sm:leading-6 px-3 ">
-          <label className="p-2 text-[#027297]" htmlFor="">
+
+        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3 ">
+          <label className="p-2 text-[#027297]">
             <IoTime size="1.0rem" />
           </label>
           <input
             onChange={handleChange}
             type="text"
             placeholder="  Delivery time"
-            name="prepare_time"
             value={data.prepare_time}
+            name="prepare_time"
             className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
           />
         </div>
-        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)]  ring-1 ring-inset ring-gray-300   sm:text-sm sm:leading-6 px-3 ">
-          <label className="p-2 text-[#027297] " htmlFor="">
+
+        <div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3 ">
+          <label className="p-2 text-[#027297]">
             <MdDescription size="1.0rem" />
           </label>
           <textarea
             onChange={handleChange}
-            cols="30"
-            rows="2"
-            value={data.description}
             placeholder="  Description"
+            value={data.description}
             name="description"
-            className="w-full py-1 ml-1 bg-white rounded-md outline-none resize-none placeholder:text-black"
+            className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
           />
         </div>
 
-        <div className="flex justify-center gap-8 p-5 lg:gap-16 md:gap-12 lg:mt-8">
+        <div className="flex justify-center w-full py-2">
           <button
-            onClick={handleCnacel}
-            className="flex w-1/3 justify-center rounded-none bg-white  border-[rgb(0,127,168)] border-[2px] px-1 py-1.5 text-sm font-semibold leading-6 text-[rgb(0,127,168)] shadow-sm "
+            onClick={handleCancel}
+            type="button"
+            className="flex w-1/3 justify-center rounded-none bg-gray-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 mx-4"
           >
             Cancel
           </button>
-
           <button
             type="submit"
-            className="flex w-1/3 justify-center rounded-none bg-[rgb(0,127,168)]  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[rgb(81,191,228)]  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(81,191,228)]"
+            disabled={loading}
+            className={`flex w-1/3 justify-center rounded-none ${
+              loading ? "bg-gray-300" : "bg-[rgb(0,127,168)]"
+            }  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[rgb(81,191,228)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(81,191,228)]`}
           >
-            Update
+            {loading ? "Updating..." : "Update"}
           </button>
         </div>
       </form>
