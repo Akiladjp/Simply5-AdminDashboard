@@ -64,7 +64,7 @@ const MainLayout = () => {
 				sessionStorage.getItem("role") == "Manager") ||
 			sessionStorage.getItem("role") == "Cashier"
 		) {
-			navigate("/app/order/pending");
+			// navigate("/app/order/pending");
 		} else {
 			navigate("/");
 		}
@@ -92,7 +92,7 @@ const WaiterLayOut = () => {
 			sessionStorage.getItem("email") &&
 			sessionStorage.getItem("role") === "Waiter"
 		) {
-			navigate("/Waiter/pending-orders");
+			// navigate("/Waiter/pending-orders");
 		} else {
 			navigate("/");
 		}

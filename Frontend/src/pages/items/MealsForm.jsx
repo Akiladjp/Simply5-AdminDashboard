@@ -185,8 +185,8 @@ function MealsForm() {
 					<input
 						required
 						onChange={handleChange}
-						type="decimal"
-						placeholder="  Price"
+						type="number"
+						placeholder=" Price"
 						name="price"
 						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
 					/>
@@ -198,7 +198,7 @@ function MealsForm() {
 					<input
 						required
 						onChange={handleChange}
-						type="text"
+						type="number"
 						placeholder="  Delivery time"
 						name="prepare_time"
 						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"

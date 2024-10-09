@@ -53,7 +53,7 @@ function EmployeeSummary() {
 	}, []);
 
 	return (
-		<div className="w-full h-screen items-start  justify-start mt-32 overflow-scroll flex flex-col">
+		<div className="w-full h-screen items-start  justify-start mt-32  flex flex-col">
 			<h1 className="text-4xl text-center w-full">EMPLOYEE SUMMARY</h1>
 			<div className="w-[90%] mx-auto">
 				{summaryDetails.length > 0 ? (

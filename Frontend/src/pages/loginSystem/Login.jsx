@@ -19,6 +19,7 @@ function Login() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
 		try {
 			const res = await axios.post("http://localhost:8081/adminlogin", data);
 
@@ -28,7 +29,7 @@ function Login() {
 				console.log(res.data.redirectURL);
 				navigate(res.data.redirectURL); // Redirect the URL
 			} else {
-				alert(res.data.Message);
+				toastr.warning(res.data.Message);
 			}
 		} catch (err) {
 			console.error("Error during login:", err);
@@ -58,6 +59,7 @@ function Login() {
 					<form onSubmit={handleSubmit}>
 						<div className="mb-10">
 							<input
+								required
 								placeholder="EMAIL"
 								type="text"
 								name="email"
@@ -69,6 +71,7 @@ function Login() {
 
 						<div className="mb-6">
 							<input
+								required
 								type="password"
 								name="password"
 								placeholder="Password"

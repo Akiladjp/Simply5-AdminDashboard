@@ -234,8 +234,8 @@ console.log(data.new_image)
 					</label>
 					<input
 						onChange={handleChange}
-						type="text"
-						placeholder="Preparation Time (optional)"
+						type="number"
+						placeholder="Delivery Time"
 						value={data.prepare_time}
 						name="prepare_time"
 						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
@@ -261,12 +261,12 @@ console.log(data.new_image)
 					<button
 						type="button"
 						onClick={handleCancel}
-						className="py-2 px-4 bg-gray-400 text-white rounded-md mr-3 hover:bg-red-500 ">
+						className="py-2 px-4 bg-gray-400 text-white  mr-3 hover:bg-red-500 ">
 						Cancel
 					</button>
 					<button
 						type="submit"
-						className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-900"
+						className="py-2 px-4 bg-blue-600 text-white  hover:bg-blue-900"
 						disabled={loading}>
 						{loading ? "Updating..." : "Update Item"}
 					</button>
