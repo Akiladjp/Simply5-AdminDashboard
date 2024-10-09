@@ -65,6 +65,7 @@ import orderSearch from "./Routes/order/orderSearch.js";
 import offer from "./Routes/offer/offer.js";
 import waiterProfile from "./Routes/waiter/waiterProfile.js";
 import summaryEmployee from "./Routes/employee/summaryEmployee.js";
+import waiterPicture from "./Routes/waiter/waiterPicture.js";
 
 app.use("/", orderSearch);
 app.use("/", itemTodayRouter);
@@ -87,6 +88,7 @@ app.use("/", UpdateEmployee);
 app.use("/", offer);
 app.use("/", waiterProfile);
 app.use("/", summaryEmployee);
+app.use("/", waiterPicture);
 
 
 app.listen(PORT, () => {
