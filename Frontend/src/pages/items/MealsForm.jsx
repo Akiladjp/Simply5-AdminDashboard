@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GiMeal } from "react-icons/gi";
-import { BiSolidCategoryAlt } from "react-icons/bi";
-import { BiSolidCloudUpload } from "react-icons/bi";
+import { BiSolidCategoryAlt, BiSolidCloudUpload } from "react-icons/bi";
 import { IoIosPricetags } from "react-icons/io";
 import { IoTime } from "react-icons/io5";
 import { MdDescription } from "react-icons/md";
@@ -9,23 +8,21 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
-import "toastr/build/toastr.min.css";
-
+import loadingGif from "../../assets/loading.gif"
 function MealsForm() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const params = useParams();
-	const [loading, setloading] = useState(false);
+	const API_URL = import.meta.env.VITE_API_URL;
+	const [subCategory, setSubcategory] = useState([]);
 	const categoryFromLocation = location.state?.category;
-
+	const [isFocused, setIsFocused] = useState(false);
 	const categoryFromParams = params.category;
-
 	const category = categoryFromLocation || categoryFromParams;
-	console.log("category_value", category);
-
 	const [image, setImage] = useState(null);
+	const [loading, setLoading] = useState(false);
 	const [fileName, setFileName] = useState(["No selected file"]);
-
+	const dropdownRef = useRef(null);
 	const [data, setData] = useState({
 		name: "",
 		category: "",
@@ -36,6 +33,44 @@ function MealsForm() {
 		image: "",
 	});
 
+	const handleFocus = () => {
+		setIsFocused(true); // Show the list when input is focused
+	};
+
+	const handleSelectCat = (category) => {
+		setIsFocused(false);
+		setData((prevData) => ({ ...prevData, sub_category: category }));
+	};
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(
+					`${API_URL}/get_subCategory/${category}`
+				);
+				if (response) {
+					setSubcategory(response.data.sub_category);
+				}
+			} catch (err) {
+				console.log("server error", err);
+			}
+		};
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+				setIsFocused(false); // Hide dropdown when clicking outside
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
 	const handleChange = (e) => {
 		const { name, value, type, files } = e.target;
 		if (type === "file") {
@@ -43,20 +78,23 @@ function MealsForm() {
 			setData((prevData) => ({ ...prevData, image: files[0] }));
 			setFileName(files[0].name);
 		} else {
-			setData((prevData) => ({ ...prevData, [name]: value }));
-			setData((prevData) => ({ ...prevData, category: category }));
+			setData((prevData) => ({ ...prevData, [name]: value, category }));
 		}
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		// Check if the image is selected
+		if (!data.image) {
+			toastr.error("Please select an image to upload.");
+			return; // Prevent form submission
+		}
+		setLoading(true);
 		const formData = new FormData();
 		Object.entries(data).forEach(([key, value]) => {
 			formData.append(key, value);
 		});
-
-		// Check if the image is selected
 
 		try {
 			const res = await axios.post(
@@ -70,27 +108,11 @@ function MealsForm() {
 			);
 
 			if (res.data.message === "Success") {
-				console.log("message", res.data.message);
-
-				// Success toast for image upload
-				toastr.success("Image uploaded successfully.", {
-					timeOut: 3000, // Increased timeout to 3 seconds
+				toastr.success("Image and item uploaded successfully.", {
+					timeOut: 3000,
 				});
-
-				// Success toast for item upload
-				toastr.success("Item uploaded successfully.", {
-					timeOut: 3000, // Increased timeout
-				});
-
-				// Redirect based on category
-				if (category === "Meals") {
-					navigate("/app/items/meals");
-				} else if (category === "Drinks") {
-					navigate("/app/items/drinks");
-				} else {
-					navigate("/app/items/desserts");
-				}
-			} else if (res.data.message === "error in uploading to database") {
+				navigate(`/app/items/${category.toLowerCase()}`);
+			} else {
 				toastr.error("Error in uploading to database.", {
 					timeOut: 3000,
 				});
@@ -101,17 +123,13 @@ function MealsForm() {
 				"An error occurred during form submission. Please try again.",
 				{ timeOut: 3000 }
 			);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	const handleCancel = () => {
-		if (category === "Meals") {
-			navigate("/app/items/meals");
-		} else if (category === "Drinks") {
-			navigate("/app/items/drinks");
-		} else {
-			navigate("/app/items/desserts");
-		}
+		navigate(`/app/items/${category.toLowerCase()}`);
 	};
 
 	return (
@@ -140,12 +158,14 @@ function MealsForm() {
 								</div>
 							)}
 							<input
-								required
+								name="image"
+								id="image"
+								value=""
 								type="file"
 								accept="image/*"
 								onChange={handleChange}
 								hidden
-								className="input-field file:py-2 file:px-4 file:border-0  file:rounded-xl file:bg-white file:text-black file:cursor-pointer hover:file:bg-gray-200"
+								className="input-field file:py-2 file:px-4 file:border-0 file:rounded-xl file:bg-white file:text-black file:cursor-pointer hover:file:bg-gray-200"
 							/>
 						</div>
 					</div>
@@ -165,18 +185,47 @@ function MealsForm() {
 						/>
 					</div>
 				</div>
-				<div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3">
-					<label className="p-2 text-[#027297] " htmlFor="">
-						<BiSolidCategoryAlt size="1.0rem" />
-					</label>
-					<input
-						required
-						onChange={handleChange}
-						type="text"
-						placeholder="  Sub category"
-						name="sub_category"
-						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
-					/>
+				<div
+					className="flex justify-center w-full py-1 mb-5 rounded-md border-0 text-black ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3 flex-col"
+					ref={dropdownRef}>
+					<div className="w-full flex shadow-sm shadow-[rgb(81,191,228)] ">
+						<label className="p-2 text-[#027297] " htmlFor="">
+							<BiSolidCategoryAlt size="1.0rem" />
+						</label>
+						<input
+							required
+							onChange={handleChange}
+							type="text"
+							placeholder="  Sub category"
+							name="sub_category"
+							className="w-full py-1 ml-1 rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black "
+							onClick={handleFocus}
+							value={data.sub_category}
+						/>
+					</div>
+
+					<div>
+						{isFocused && (
+							<ul className="w-full   h-auto float-end flex flex-col  gap-y-1 ">
+								{subCategory
+									.filter((category) =>
+										category
+											.toLowerCase()
+											.includes(data.sub_category.toLowerCase())
+									) // Filter based on input
+									.map((category, index) => (
+										<li
+											key={index}
+											className="w-[92%] list-none hover:bg-blue-200 cursor-pointer text-gray-800 ml-[8%]"
+											onClick={() => {
+												handleSelectCat(category);
+											}}>
+											{category}
+										</li>
+									))}
+							</ul>
+						)}
+					</div>
 				</div>
 				<div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3">
 					<label className="p-2 text-[#027297] " htmlFor="">
@@ -192,14 +241,14 @@ function MealsForm() {
 					/>
 				</div>
 				<div className="flex justify-center w-full py-1 mb-5 bg-white rounded-md border-0 text-black shadow-sm shadow-[rgb(81,191,228)] ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 px-3">
-					<label className="p-2 text-[#027297]" htmlFor="">
+					<label className="p-2 text-[#027297] " htmlFor="">
 						<IoTime size="1.0rem" />
 					</label>
 					<input
 						required
 						onChange={handleChange}
-						type="number"
-						placeholder="  Delivery time"
+						type="text"
+						placeholder="Preparation Time (min)"
 						name="prepare_time"
 						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
 					/>
@@ -208,38 +257,28 @@ function MealsForm() {
 					<label className="p-2 text-[#027297] " htmlFor="">
 						<MdDescription size="1.0rem" />
 					</label>
-					<input
+					<textarea
 						required
 						onChange={handleChange}
-						cols="30"
-						rows="2"
-						placeholder="  Description"
+						type="text"
+						placeholder="Description"
 						name="description"
-						className="w-full h-8 py-1 ml-1 bg-white rounded-md outline-none resize-none placeholder:text-black text-wrap placeholder:items-start"
+						rows="3"
+						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
 					/>
 				</div>
-
-				<div className="flex justify-center gap-8 p-5 lg:gap-16 md:gap-12 lg:mt-8">
+				<div className="flex justify-center mb-10 flex-row-reverse gap-x-12 items-center">
 					<button
-						onClick={handleCancel}
-						className="flex w-1/3 justify-center rounded-none bg-white border-[rgb(0,127,168)] border-[2px] px-1 py-1.5 text-sm font-semibold leading-6 text-[rgb(0,127,168)] shadow-sm">
-						Cancel
+						type="submit"
+						className="bg-blue-600 text-white w-20 justify-center py-2 px-4 h-12 flex items-center rounded-md hover:bg-blue-800 transition duration-300"
+							disabled={loading}>
+							{loading ? (<img src={loadingGif} className="w-16 "/>) :"ADD" }
 					</button>
-
 					<button
-						type={`${data["image"] ? "submit" : "button"}`}
-						
-						onClick={() => {
-							if (!data["image"])
-								toastr.error("Please select an image to upload.");
-						}}
-						className={`flex w-1/3 justify-center rounded-none px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm cursor-pointer
-          ${
-						data["image"]
-							? "bg-[rgb(0,127,168)] hover:bg-[rgb(81,191,228)]"
-							: "bg-gray-400"
-					}`}>
-						Upload
+						type="button"
+						onClick={handleCancel}
+						className="bg-red-600 h-12 text-white py-2 px-4 rounded-md hover:bg-red-800 transition duration-300 ml-4">
+						Cancel
 					</button>
 				</div>
 			</form>
