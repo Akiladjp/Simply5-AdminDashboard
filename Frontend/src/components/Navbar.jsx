@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaUtensils } from 'react-icons/fa';
 import { MdFastfood } from "react-icons/md";
 import { PiChartBarFill } from "react-icons/pi";
@@ -9,9 +9,12 @@ import { BiSolidOffer } from "react-icons/bi";
 
 export default function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeMenuItem, setActiveMenuItem] = useState('');
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [activeButton, setActiveButton] = useState('');
+
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   useEffect(() => {
     const storedActiveButton = localStorage.getItem('activeButton');
@@ -92,6 +95,13 @@ export default function Sidebar() {
 
   const getButtonClass = (button) => 
     `relative p-4 ${activeButton === button ? 'bg-[#027297] hover:bg-[#056A8B]' : 'bg-[#007FA8] hover:bg-[#056A8B]'}`;
+
+  const handleLogout = () => {
+    setShowLogoutPopup(false);
+    sessionStorage.removeItem("email");
+    sessionStorage.removeItem("role");
+    navigate('/'); // Redirect to logout URL
+  };
 
   return (
     <div className="fixed top-16 left-0 w-[20%] lg:w-[16%] xl:w-[12%] h-[screen-64px] text-white tracking-wide ">
@@ -289,32 +299,40 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* <div className={`relative p-4 ${activeButton === 'employers' ? 'bg-[#027297] hover:bg-[#056A8B]' : 'bg-[#007FA8] hover:bg-[#056A8B]'}`}>
-          <Link 
-            to="/app/employers/employee"
-            className="flex items-center w-full text-base font-medium lg:text-lg"
-            onClick={() => {
-              setActiveButton('employers');
-              handleMenuItemClick('');
-              setActiveDropdown(null);
-            }}
-          >
-            <GrUserWorker className="mr-2" />
-            EMPLOYEES
-          </Link>
-        </div> */}
-
         {/*side bar logout*/}
         <div className={`relative p-4 ${activeButton === 'logout' ? 'bg-[#027297] hover:bg-[#056A8B]' : 'bg-[#007FA8] hover:bg-[#056A8B]'}`}>
-         <Link to="/app/logout">
-          <button 
-            className="flex items-center w-full pr-1 text-base font-medium lg:text-lg lg:pr-3">
+          <button
+            className="flex items-center w-full pr-1 text-base font-medium lg:text-lg lg:pr-3"
+            onClick={() => setShowLogoutPopup(true)} // Show the popup
+          >
             <IoIosLogOut className="mr-2" />
-              LOG OUT
+            LOG OUT
           </button>
-              </Link>
         </div>
       </div>
+
+      {/* Logout Confirmation Popup */}
+      {showLogoutPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p className="mb-4 text-black text-xl font-medium">Are you sure you want to logout?</p>
+            <div className="space-x-4">
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowLogoutPopup(false)} // Close the popup
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

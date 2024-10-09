@@ -11,7 +11,6 @@ import { store } from "./Redux/Store";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import Login from "./pages/loginSystem/Login";
-import Logout from "./pages/loginSystem/Logout";
 
 import OrderPending from "./pages/orders/OrderPending";
 import OrderAccept from "./pages/orders/OrderAccept";
@@ -149,8 +148,6 @@ const router = createBrowserRouter([
 			{ path: "/app/items/add/:category", element: <MealsForm /> },
 
 			{ path: "/app/offers", element: <Offers /> },
-
-			{ path: "/app/logout", element: <Logout /> },
 		],
 	},
 	//try this url::-- /Waiter/pending-orders
