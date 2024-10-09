@@ -52,7 +52,7 @@ function Login() {
 		<div className="">
 			<Header />
 			<div className="flex flex-col justify-center min-h-full px-6 py-12 lg:px-8">
-				<div className="mx-auto w-[450px]">
+				<div className="mx-auto">
 					<div className="flex justify-center mt-14">
 						<img src={logo} alt="Logo" />
 					</div>

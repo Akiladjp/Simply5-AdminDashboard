@@ -16,7 +16,7 @@ export default function Header() {
   }, []);
   return (
     <div className="bg-[#056A8B] text-white flex md:pb-4 md:pt-4 fixed w-full h-16 font-medium z-50">
-      <div className="flex w-[70%] mt-1 text-center ml-4 tracking-wider text-xl">
+      <div className="flex items-center w-[70%] mt-1 text-center ml-4 tracking-wider text-sm md:text-base lg:text-lg">
           <h1>ADMIN DASHBOARD</h1>
       </div>
       <div className="w-full ">
