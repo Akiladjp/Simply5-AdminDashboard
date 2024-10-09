@@ -72,7 +72,7 @@ function EmployeeSummary() {
 										)}
 									</span>
 								</p>
-								<p>
+								<p> n 
 									Monthly Orders:
 									<span>
 										{MonthOrdersCount[employee.empID] ? (

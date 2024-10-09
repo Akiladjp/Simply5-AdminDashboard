@@ -8,12 +8,11 @@ import { deleteImage } from "../../AWS/delete_image.js";
 const Item = express.Router();
 
 // Configure multer for image uploads
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage(); // or multer.diskStorage({...}) for saving to disk
 const upload = multer({ storage: storage });
 
 // Add new item
 Item.post("/additemevalues", upload.single("image"), async (req, res) => {
-
 	const fileExtension = req.file.originalname;
 	const filename = "item_bucket/" + fileExtension;
 	const sql =
@@ -57,12 +56,10 @@ Item.post("/additemevalues", upload.single("image"), async (req, res) => {
 			});
 		}
 	});
-
 });
 
 // Get all meals
 Item.get("/getiteMeal", async (req, res) => {
-
 	try {
 		const sql = 'SELECT * FROM item WHERE category = "Meal"';
 
@@ -88,12 +85,10 @@ Item.get("/getiteMeal", async (req, res) => {
 		console.log(" error in get employee", error);
 		return res.json({ Message: "Error inside server" });
 	}
-
 });
 
 // Get all drinks
 Item.get("/getiteDrinks", async (req, res) => {
-
 	try {
 		const sql = 'SELECT * FROM item WHERE category = "Drinks"';
 
@@ -119,12 +114,10 @@ Item.get("/getiteDrinks", async (req, res) => {
 		console.log(" error in get employee", error);
 		return res.json({ Message: "Error inside server" });
 	}
-
 });
 
 // Get all desserts
 Item.get("/getiteDesserts", async (req, res) => {
-
 	try {
 		const sql = 'SELECT * FROM item WHERE category = "Desserts"';
 
@@ -182,27 +175,81 @@ Item.get("/updateItem/:id", async (req, res) => {
 		console.log(" error in get employee", error);
 		return res.json({ Message: "Error inside server" });
 	}
-
 });
 
 // Update item details
 Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
-
+	console.log(req.body);
 	const { id } = req.params;
-	console.log("211", id);
 	const { name, category, sub_category, price, prepare_time, description } =
 		req.body;
-	try {
-		const sql = `
 
+	try {
+
+		if(!req.file){
+
+			const sql = `
+			
       UPDATE item
-      SET name = ?, category = ?, sub_category = ?, price = ?, prepare_time = ?, description = ? 
+      SET name = ?, category = ?, sub_category = ?, price = ?, prepare_time = ?, description = ?
       WHERE itemID = ?;
     `;
 
 		db.query(
 			sql,
-			[name, category, sub_category, price, prepare_time, description, id],
+			[
+				name,
+				category,
+				sub_category,
+				price,
+				prepare_time,
+				description,
+				id,
+			],
+			(err, result) => {
+				if (err) {
+					console.error("Database error:", err);
+					return res
+					.status(500)
+					.json({ message: "Error in updating employee" });
+				}
+				return res.json({ message: "success" });
+			}
+		);
+	}
+		console.log(req.file);
+		if (req.file) {
+			const fileExtension = !req.file.originalname;
+
+			const filename = "item_bucket/" + fileExtension;
+			const upload_image = await uploadImage(
+				req.file.mimetype,
+				filename,
+				req.file.buffer
+			);
+			if(upload_image.message==="Successfully uploaded"){
+				const sql = `
+
+      UPDATE item
+      SET name = ?, category = ?, sub_category = ?, price = ?, prepare_time = ?, description = ? ,image_link=?
+      WHERE itemID = ?;
+    `;
+
+		const fileExtension = !req.file.originalname;
+
+		const filename = "item_bucket/" + fileExtension;
+		db.query(
+			sql,
+			[
+				name,
+				category,
+				sub_category,
+				price,
+				prepare_time,
+				description,
+				filename,
+				id,
+			],
 			(err, result) => {
 				if (err) {
 					console.error("Database error:", err);
@@ -213,27 +260,17 @@ Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
 				return res.json({ message: "success" });
 			}
 		);
-
-		if (req.file) {
-			const fileExtension = !req.file.originalname;
-
-			const filename = "item_bucket/" + fileExtension;
-			const upload_image = await uploadImage(
-				req.file.mimetype,
-				filename,
-				req.file.buffer
-			);
+			}
+			console.log(req.file);
 		}
 	} catch (error) {
 		console.error("Server error:", error);
 		return res.status(500).json({ message: "Error inside server" });
 	}
-
 });
 
 // Delete an item
 Item.delete("/delete_item/:id", async (req, res) => {
-
 	const { id } = req.params;
 
 	try {
@@ -281,26 +318,24 @@ Item.delete("/delete_item/:id", async (req, res) => {
 		console.error("Unexpected error:", error);
 		res.status(500).json({ message: "Unexpected error occurred" });
 	}
-
 });
 
 // Update availability status
 Item.put("/updateAvailable/:id", async (req, res) => {
-  const { id } = req.params;
-  const { available } = req.body;
+	const { id } = req.params;
+	const { available } = req.body;
 
-  try {
-    const sql = "UPDATE item SET available = ? WHERE itemID = ?";
-    db.query(sql, [available, id], (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: "Database query error" });
-      }
-      return res.status(200).json({ message: "Status updated successfully" });
-    });
-  } catch (error) {
-    return res.status(500).json({ message: "Unexpected error occurred" });
-  }
-
+	try {
+		const sql = "UPDATE item SET available = ? WHERE itemID = ?";
+		db.query(sql, [available, id], (err, result) => {
+			if (err) {
+				return res.status(500).json({ message: "Database query error" });
+			}
+			return res.status(200).json({ message: "Status updated successfully" });
+		});
+	} catch (error) {
+		return res.status(500).json({ message: "Unexpected error occurred" });
+	}
 });
 
 export default Item;
