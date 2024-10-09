@@ -59,8 +59,12 @@ import DeliveredOreders from "./Waiter/pages/DeliveredOreders.jsx";
 const MainLayout = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
-		if (sessionStorage.getItem("email")) {
-			// navigate("/app/order/pending")
+		if (
+			(sessionStorage.getItem("email") &&
+				sessionStorage.getItem("role") == "Manager") ||
+			sessionStorage.getItem("role") == "Cashier"
+		) {
+			navigate("/app/order/pending");
 		} else {
 			navigate("/");
 		}
@@ -84,8 +88,11 @@ const MainLayout = () => {
 const WaiterLayOut = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
-		if (sessionStorage.getItem("email")) {
-			// navigate("/app/order/pending")
+		if (
+			sessionStorage.getItem("email") &&
+			sessionStorage.getItem("role") === "Waiter"
+		) {
+			navigate("/Waiter/pending-orders");
 		} else {
 			navigate("/");
 		}
@@ -151,7 +158,6 @@ const router = createBrowserRouter([
 		path: "/Waiter",
 		element: <WaiterLayOut />,
 		children: [
-			
 			{ path: "pending-orders", element: <PendingOrders /> },
 			{ path: "accepted-orders", element: <AcceptedOrders /> },
 			{ path: "delevered-orders", element: <DeliveredOreders /> },
@@ -165,7 +171,6 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-
 	return (
 		<Provider store={store}>
 			<RouterProvider router={router} />
