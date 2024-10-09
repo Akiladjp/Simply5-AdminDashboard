@@ -209,9 +209,9 @@ Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
 		}
 		console.log(req.file);
 		if (req.file) {
-			const fileExtension = req.file.originalname;
+			const fileExtension = req.file.originalname.split(".").pop();
+			const filename = "item_bucket/" + req.body.name + "." + fileExtension;
 
-			const filename = "item_bucket/" + fileExtension;
 			const upload_image = await uploadImage(
 				req.file.mimetype,
 				filename,
@@ -225,9 +225,6 @@ Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
       WHERE itemID = ?;
     `;
 
-				const fileExtension = req.file.originalname;
-
-				const filename = "item_bucket/" + fileExtension;
 				db.query(
 					sql,
 					[
