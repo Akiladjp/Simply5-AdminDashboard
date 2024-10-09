@@ -72,7 +72,7 @@ export default function Sidebar() {
   }, [location.pathname]);
 
   const toggleDropdown = (menu) => {
-    if (activeDropdown === menu) {
+    if (activeDropdown === menu && activeButton !== menu) {
       setActiveDropdown(null);
       setActiveButton(null);
       localStorage.removeItem('activeButton');
@@ -82,6 +82,28 @@ export default function Sidebar() {
       setActiveButton(menu);
       localStorage.setItem('activeButton', menu);
       localStorage.setItem('activeDropdown', menu);
+
+      if (menu === 'order') {
+        if (!location.pathname.startsWith('/app/order')) {
+          handleMenuItemClick('pending');
+          navigate('/app/order/pending');
+        }
+      } else if (menu === 'items') {
+        if (!location.pathname.startsWith('/app/items')) {
+          handleMenuItemClick('meals');
+          navigate('/app/items/meals');
+        }
+      } else if (menu === 'analysis') {
+        if (!location.pathname.startsWith('/app/analysis')) {
+          handleMenuItemClick('today');
+          navigate('/app/analysis/todayitem');
+        }
+      }else if(menu === 'employers'){
+        if (!location.pathname.startsWith('/app/employers')) {
+          handleMenuItemClick('employers');
+          navigate('/app/employers/employee');
+        }
+      }
     }
   };
 
