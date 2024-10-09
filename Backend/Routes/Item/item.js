@@ -13,8 +13,8 @@ const upload = multer({ storage: storage });
 
 // Add new item
 Item.post("/additemevalues", upload.single("image"), async (req, res) => {
-	const fileExtension = req.file.originalname;
-	const filename = "item_bucket/" + fileExtension;
+	const fileExtension = req.file.originalname.split(".").pop();
+	const filename = "item_bucket/" + req.body.name + "." + fileExtension;
 	const sql =
 		"INSERT INTO item (`name`,`category`,`sub_category`,`price`,`prepare_time`,`description`,`image_link`) VALUES (?)";
 	const values = [
@@ -61,7 +61,7 @@ Item.post("/additemevalues", upload.single("image"), async (req, res) => {
 // Get all meals
 Item.get("/getiteMeal", async (req, res) => {
 	try {
-		const sql = 'SELECT * FROM item WHERE category = "Meal"';
+		const sql = 'SELECT * FROM item WHERE category = "Meals"';
 
 		var imageUrl;
 		db.query(sql, async (err, ans) => {
@@ -248,7 +248,6 @@ Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
 					}
 				);
 			}
-			console.log(req.file);
 		}
 	} catch (error) {
 		console.error("Server error:", error);
@@ -325,4 +324,21 @@ Item.put("/updateAvailable/:id", async (req, res) => {
 	}
 });
 
+Item.get("/get_subCategory/:category", (req, res) => {
+	const category = req.params.category;
+	
+	try {
+		const sql = "SELECT DISTINCT `sub_category` FROM item WHERE category=?";
+		db.query(sql, [category], (err, result) => {
+			if (err) {
+				console.log("sql errror in getting sub cateogry", err);
+			}
+			const sub_category = result.map((row) => row.sub_category);
+
+			return res.json({ sub_category: sub_category });
+		});
+	} catch (err) {
+		console.log("server error", err);
+	}
+});
 export default Item;
