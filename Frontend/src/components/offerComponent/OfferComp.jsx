@@ -13,6 +13,7 @@ import { MdDeleteOutline } from "react-icons/md";
 
 export const OfferComp = (props) => {
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const [imageUpload, setImageUpload] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
@@ -38,7 +39,7 @@ export const OfferComp = (props) => {
     });
 
     try {
-      const res = await axios.post("http://localhost:8081/addoffer", formData, {
+      const res = await axios.post(`${API_URL}/addoffer`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -67,7 +68,7 @@ export const OfferComp = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:8081/showoffer");
+        const res = await axios.get(`${API_URL}/showoffer`);
         if (res.data.offerBanner) {
           setbannerShow(res.data.offerBanner);
           console.log(res.data.offerBanner);
@@ -108,7 +109,7 @@ export const OfferComp = (props) => {
 
       // Update the status in the backend
       axios
-        .put(`http://localhost:8081/update-status/${id}`, { status: newStatus })
+        .put(`${API_URL}/update-status/${id}`, { status: newStatus })
         .then((response) => {
           console.log("Status updated successfully", response.data);
         })
