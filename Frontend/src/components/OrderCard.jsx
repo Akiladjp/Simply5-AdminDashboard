@@ -11,6 +11,16 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
   // Parse the items JSON string if it exists
   const items = data.items ? JSON.parse(data.items) : [];
 
+  const handleDelete = () => {
+    axios.delete(`http://localhost:8081/orderdelete/${data.orderID}`)
+      .then(() => {
+        if (onDelete) {
+          onDelete(data.orderID);
+        }
+      })
+      .catch(err => console.error("Error deleting the order:", err));
+  };
+
   const handleAccept = () => {
     axios.put(`http://localhost:8081/orderaccept/${data.orderID}`)
       .then(() => {
@@ -92,7 +102,7 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
             <span className="font-semibold">TOTAL: Rs.{data.total}</span>
           </div>
 
-          {data.status !== 'paid' && (
+          {data.status === 'pending' && (
             <div className="pt-4 flex justify-end">
               <button
                 className={`${buttonColor} px-4 py-1.5 border-none text-white font-semibold lg:text-xl`}
