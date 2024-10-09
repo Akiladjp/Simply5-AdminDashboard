@@ -71,12 +71,12 @@ function EmployeeCard({ data }) {
             </button>
           </div>
         </div>
-        <div className={`flex justify-center my-3`}>
+        <div className={`flex justify-center my-3  w-full`}>
           <button
-            className={`${admin === true ? "py-1 px-2 rounded-lg bg-[#056A8B] hover:bg-[#3698b9] text-white flex justify-center active:scale-95 " : "py-1 px-2 rounded-lg bg-[#e24327] hover:bg-[#b14431] text-white flex justify-center active:scale-95 " }`}
+            className={`${admin  ? "py-1 px-2 rounded-sm bg-[#056A8B] hover:bg-[#3698b9] text-white flex justify-center active:scale-95 " : "py-1 px-2 rounded-sm bg-[#e24327] hover:bg-[#b14431] text-white flex justify-center active:scale-95 " }`}
             onClick={handleAdmin}
           >
-            {admin === true ? "make an admin" : "remove admin"}
+            {admin ? "make an admin" : "remove admin"}
           </button>
         </div>
       </div>
