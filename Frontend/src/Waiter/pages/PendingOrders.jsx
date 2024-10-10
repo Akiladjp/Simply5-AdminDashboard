@@ -58,17 +58,21 @@ function PendingOrders() {
 			.catch((err) => console.log(err));
 	};
 	return (
-		<div className="pt-20 md:pt-28 flex  flex-col gap-y-4">
+		<div className="pt-20 md:pt-28 flex  flex-col gap-y-4 ">
+			<div className="mb-36 gap-y-4 flex flex-col">
+
 			{Array.isArray(orderPendingdata) &&
 				orderPendingdata.map((orderpendingdata, index) => (
+					
 					<OrderCard
-						key={index}
-						data={orderpendingdata}
-						onDelete={handleDeleteOrder}
-						onAccept={handleAcceptOrder}
-						title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}
+					key={index}
+					data={orderpendingdata}
+					onDelete={handleDeleteOrder}
+					onAccept={handleAcceptOrder}
+					title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}
 					/>
 				))}
+				</div>
 		</div>
 	);
 
