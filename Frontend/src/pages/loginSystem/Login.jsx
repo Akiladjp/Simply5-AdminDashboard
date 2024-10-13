@@ -60,7 +60,7 @@ function Login() {
 						<div className="mb-10">
 							<input
 								required
-								placeholder="EMAIL"
+								placeholder="Email"
 								type="text"
 								name="email"
 								onChange={handleChange}
@@ -88,7 +88,7 @@ function Login() {
 							<Link
 								to="/forgotpassword"
 								className="flex text-sm leading-6 text-gray-900 pt-1.5 font-medium mb-4 justify-end mt-2">
-								Forgot Password?
+								Update Your Password?
 							</Link>
 
 							<div className="text-[8px] text-center">
