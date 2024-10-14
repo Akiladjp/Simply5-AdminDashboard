@@ -335,7 +335,7 @@ export default function Sidebar() {
 
       {/* Logout Confirmation Popup */}
       {showLogoutPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-xl">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <p className="mb-4 text-black text-xl font-medium">Are you sure you want to logout?</p>
             <div className="space-x-4">
