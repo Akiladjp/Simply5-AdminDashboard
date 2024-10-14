@@ -153,7 +153,7 @@ export const OfferComp = (props) => {
                   <img
                     src={data.image_url}
                     alt={`banner-${data.offerID}`}
-                    className="w-full h-full object-cover bg-center rounded-md hover:shadow-xl hover:"
+                    className="w-full h-full object-cover bg-center rounded-md hover:shadow-xl hover bg-no-repeat:"
                   />
                   <div className="flex flex-col gap-2">
                     <div className="" onClick={() => handleEye(data.offerID)}>

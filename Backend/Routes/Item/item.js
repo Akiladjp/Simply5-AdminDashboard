@@ -72,10 +72,11 @@ Item.get("/getiteMeal", async (req, res) => {
 			const maxItems = Math.min(15, ans.length);
 			for (var i = 0; i < maxItems; i++) {
 				imageUrl = await getImage(ans[i].image_link);
+				console.log(imageUrl.message);
 
 				items.push({
 					...ans[i],
-					image_url: imageUrl,
+					image_url: imageUrl.url,
 				});
 			}
 
@@ -104,7 +105,7 @@ Item.get("/getiteDrinks", async (req, res) => {
 
 				items.push({
 					...ans[i],
-					image_url: imageUrl,
+					image_url: imageUrl.url,
 				});
 			}
 
@@ -133,7 +134,7 @@ Item.get("/getiteDesserts", async (req, res) => {
 
 				items.push({
 					...ans[i],
-					image_url: imageUrl,
+					image_url: imageUrl.url,
 				});
 			}
 
@@ -326,7 +327,7 @@ Item.put("/updateAvailable/:id", async (req, res) => {
 
 Item.get("/get_subCategory/:category", (req, res) => {
 	const category = req.params.category;
-	
+
 	try {
 		const sql = "SELECT DISTINCT `sub_category` FROM item WHERE category=?";
 		db.query(sql, [category], (err, result) => {
