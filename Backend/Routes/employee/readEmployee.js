@@ -7,7 +7,7 @@ const Employee = express.Router();
 
 Employee.get("/employeecard", async (req, res) => {
 	try {
-		const sql = "SELECT * FROM employer ";
+		const sql = "SELECT employer.*, admin.email FROM employer LEFT JOIN admin ON employer.empID = admin.empID;";
 
 		db.query(sql, async (err, ans) => {
 			if (err) return res.json({ Message: "Error inside server" });

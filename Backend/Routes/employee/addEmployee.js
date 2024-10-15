@@ -202,4 +202,55 @@ Employee.post("/make-admin", (req, res) => {
   });
 });
 
+Employee.put('/remove-admin', (req, res) => {
+  const { empID } = req.body; // Extract empID from the request body
+
+  if (!empID) {
+    return res.status(400).json({ message: "Employee ID is required" });
+  }
+
+  db.beginTransaction(err => {
+    if (err) {
+      console.error("Transaction Start Error: ", err);
+      return res.status(500).json({ message: "Error starting transaction", error: err });
+    }
+
+    // Delete from admin table
+    const sqlDeleteAdmin = `DELETE FROM admin WHERE empID = ?`;
+    db.query(sqlDeleteAdmin, [empID], (err, result) => {
+      if (err) {
+        console.error("Error deleting from admin table: ", err);
+        return db.rollback(() => {
+          return res.status(500).json({ message: "Failed to delete from admin table", error: err });
+        });
+      }
+
+      // Update employee table to remove admin status
+      const sqlUpdateEmployee = `UPDATE employer SET isAdmin = 0 WHERE empID = ?`;
+      db.query(sqlUpdateEmployee, [empID], (err, result) => {
+        if (err) {
+          console.error("Error updating employer table: ", err);
+          return db.rollback(() => {
+            return res.status(500).json({ message: "Failed to update employer admin status", error: err });
+          });
+        }
+
+        // Commit the transaction
+        db.commit(err => {
+          if (err) {
+            console.error("Commit Error: ", err);
+            return db.rollback(() => {
+              return res.status(500).json({ message: "Failed to commit transaction", error: err });
+            });
+          }
+
+          // Successful transaction commit
+          return res.status(200).json({ message: "Admin privileges removed successfully" });
+        });
+      });
+    });
+  });
+});
+
+
 export default Employee;
