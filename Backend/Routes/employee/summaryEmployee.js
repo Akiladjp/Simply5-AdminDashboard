@@ -19,7 +19,7 @@ summaryEmployee.get("/employeeSummary", (req, res) => {
 					.status(500)
 					.json({ message: "Error in querying the database." });
 			}
-			console.log(result);
+			// console.log(result);
 
 			const employeeMap = new Map();
 
@@ -34,7 +34,6 @@ summaryEmployee.get("/employeeSummary", (req, res) => {
 						dates: row.date ? [row.date.toISOString().split("T")[0]] : [],
 						comments: row.comment ? [row.comment] : [],
 					});
-          
 				} else {
 					const employeeDetails = employeeMap.get(empID);
 					if (row.comment) {
@@ -54,6 +53,7 @@ summaryEmployee.get("/employeeSummary", (req, res) => {
 				comments: employee.comments,
 			}));
 
+			// console.log(Details)
 			return res.json({ EmpDetails: Details });
 		});
 	} catch (err) {
@@ -68,11 +68,12 @@ summaryEmployee.get("/OrderCount", (req, res) => {
 	try {
 		// Corrected SQL query to count orders grouped by WaiterID
 		const sql = `
-          SELECT WaiterID, COUNT(*) AS orderCount
-          FROM orders
-          WHERE date = ?
-          GROUP BY WaiterID
-      `;
+		SELECT WaiterID, COUNT(*) AS orderCount
+		FROM orders
+		WHERE DATE(CONVERT_TZ(date, '+00:00', '+05:30')) = ?
+		GROUP BY WaiterID
+	`;
+	
 
 		db.query(sql, [date], (err, result) => {
 			if (err) {
@@ -81,13 +82,13 @@ summaryEmployee.get("/OrderCount", (req, res) => {
 					.status(500)
 					.json({ message: "Error in querying the database." });
 			}
-
+			console.log(result.length);
 			const orderCountMap = {};
 			result.forEach((row) => {
 				orderCountMap[row.WaiterID] = row.orderCount;
 			});
 
-			// console.log(orderCountMap);
+			console.log(orderCountMap);
 			return res.json({ count: orderCountMap });
 		});
 	} catch (err) {
@@ -124,7 +125,7 @@ summaryEmployee.get("/OrderCountMonth", (req, res) => {
 				orderCountMap[row.WaiterID] = row.orderCount;
 			});
 
-			// console.log(orderCountMap);
+			//  console.log(orderCountMap);
 			return res.json({ count: orderCountMap });
 		});
 	} catch (err) {
