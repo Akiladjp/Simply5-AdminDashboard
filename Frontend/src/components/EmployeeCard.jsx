@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
 import { Link, useLocation } from "react-router-dom";
@@ -10,6 +11,25 @@ function EmployeeCard({ data, onAdminClick, onRemoveAdminClick }) {
   const isAdmin = data.isAdmin === 1;
   const location = useLocation();
   const isAdminPage = location.pathname.includes("/app/employers/admin");
+
+  const ItemDelete = async (id) => {
+
+    console.log('Clicked');
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:8081/delete_emp/${id}`
+      );
+      if (response.data.message.includes("Error")) {
+        alert(response.data.message);
+      } else {
+        window.location.reload(); // Reload after successful deletion
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      throw error; // Handle the error if needed
+    }
+  };
 
   return (
     <div className="shadow-lg w-[237px] h-auto shadow-indigo-200 object-cover rounded-xl">
@@ -42,18 +62,16 @@ function EmployeeCard({ data, onAdminClick, onRemoveAdminClick }) {
               <div className="flex items-center w-auto h-auto justify-center gap-x-4">
                 <Link to={`/app/employers/updateEmployee/${data.empID}`}>
                   <button className="flex h-auto">
-                    <RiEdit2Fill className="text-xl text-black bg-white rounded hover:bg-gray-400 hover:scale-2" />
+                    <RiEdit2Fill className="text-xl text-black bg-white rounded hover:text-blue-600 hover:scale-2" />
                   </button>
                 </Link>
-                <button>
-                  <RiDeleteBin5Line className="text-xl text-black bg-white rounded hover:bg-gray-400" />
+                <button onClick={() => ItemDelete(data.empID)}>
+                  <RiDeleteBin5Line className="text-xl text-black bg-white rounded hover:text-red-600" />
                 </button>
               </div>
             </>
           )}
         </div>
-
-
 
         <div className="flex justify-center my-3 w-full">
           {/* Conditional button based on admin status and page */}
