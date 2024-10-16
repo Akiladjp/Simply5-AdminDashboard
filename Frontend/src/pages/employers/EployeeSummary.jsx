@@ -86,11 +86,11 @@ function EmployeeSummary() {
 								summaryDetails.map((employee) => (
 									<tr
 										key={employee.empID}
-										className="border-b hover:bg-[#056A8B] align-top group">
-										<td className="px-6 py-4 text-gray-800 align-top group-hover:text-white">
+										className="border-b hover:bg-[#dfe3e6] align-top group">
+										<td className="px-6 py-4 text-gray-800 align-top">
 											{employee.name}
 										</td>
-										<td className="px-6 py-4 text-gray-600 align-top group-hover:text-gray-100">
+										<td className="px-6 py-4 text-gray-600 align-top">
 											{employee.empID}
 										</td>
 

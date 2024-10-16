@@ -125,7 +125,24 @@ export const OfferComp = (props) => {
     });
   };
 
-  const handleDeleteOffer = () => {};
+  const OfferDelete = async (id) => {
+
+    console.log('Clicked');
+
+    try {
+      const response = await axios.delete(
+        `${API_URL}/delete_offer/${id}`
+      );
+      if (response.data.message.includes("Error")) {
+        alert(response.data.message);
+      } else {
+        window.location.reload(); // Reload after successful deletion
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      throw error; // Handle the error if needed
+    }
+  };
 
   return (
     <div className="pb-4">
@@ -155,16 +172,16 @@ export const OfferComp = (props) => {
                     alt={`banner-${data.offerID}`}
                     className="w-full h-full object-cover bg-center rounded-md hover:shadow-xl hover bg-no-repeat:"
                   />
-                  <div className="flex flex-col gap-2">
-                    <div className="" onClick={() => handleEye(data.offerID)}>
+                  <div className="flex flex-col gap-2 relative">
+                    {/* <div className="" onClick={() => handleEye(data.offerID)}>
                       {showEye[data.offerID] === "enable" ? (
                         <FaRegEye className="text-blue-500" size={24} />
                       ) : (
                         <FaRegEyeSlash className="text-red-500" size={24} />
                       )}
-                    </div>
-                    <div className="" onClick={handleDeleteOffer}>
-                      <MdDeleteOutline className="text-red-500" size={24} />
+                    </div> */}
+                    <div className="bg-red-500 rounded-md p-1 hover:bg-red-700 active:scale-95" onClick={() => OfferDelete(data.offerID)}>
+                      <MdDeleteOutline className="text-white" size={24} />
                     </div>
                   </div>
                 </div>

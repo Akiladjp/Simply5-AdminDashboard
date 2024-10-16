@@ -117,4 +117,58 @@ offer.put("/deleteImage/:id", async (req, res) => {
   }
 });
 
+
+
+offer.delete("/delete_offer/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const sql1 = "SELECT * FROM offers WHERE offerID = ?";
+    db.query(sql1, [id], async (err, ans) => {
+      if (err) {
+        console.error("Error in getting item employer database:", err);
+        return res.status(500).json({ message: "Database query error" });
+      }
+
+      if (ans.length === 0) {
+        return res.status(404).json({ message: "Item not found" });
+      }
+
+      const filename = ans[0].image_link;
+
+      try {
+        const deleteImageResult = await deleteImage(filename);
+
+        if (deleteImageResult.message !== "Success") {
+          return res.status(500).json({ message: "Error in image deletion" });
+        }
+
+        const sql = "DELETE FROM offers WHERE offerID = ?";
+        db.query(sql, [id], (err, result) => {
+          if (err) {
+            console.error("Error in deleting item from database:", err);
+            return res.status(500).json({ message: "Database query error" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res
+              .status(404)
+              .json({ message: "Item not found or already deleted" });
+          }
+
+          res.json({ message: "Item deleted successfully" });
+        });
+      } catch (deleteError) {
+        console.error("Error in deleting image:", deleteError);
+        return res.status(500).json({ message: "Error in image deletion" });
+      }
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Unexpected error occurred" });
+  }
+});
+
+
+
 export default offer;
