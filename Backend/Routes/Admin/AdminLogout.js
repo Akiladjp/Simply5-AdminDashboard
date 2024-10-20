@@ -4,6 +4,7 @@ import db from "../../config/DatabaseConfig.js";
 
 // import cors from "cors";
 import session from "express-session";
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
 
 // router.use(cors());
 
@@ -39,7 +40,7 @@ router.use(session({
 
 // });
 
-router.get('/', (req, res) => {
+router.get('/',AdminAuthorize, (req, res) => {
 
   const username = req.session.name;
   if (username) {

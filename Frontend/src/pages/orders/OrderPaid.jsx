@@ -14,7 +14,7 @@ function OrderPaid() {
       url += `?mobileNo=${searchTerm}`;
     }
 
-    axios.get(url)
+    axios.get(url,{withCredentials:true})
       .then(res => {
         setOrderPaid(res.data.data);
         console.log(res.data.data);

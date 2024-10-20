@@ -15,7 +15,7 @@ function OrderDelivered() {
 			}
 
 			try {
-				const res = await axios.get(url);
+				const res = await axios.get(url,{withCredentials:true});
 				setOrderDelivered(res.data.data);
 				console.log(res.data.data);
 			} catch (err) {
@@ -40,7 +40,7 @@ function OrderDelivered() {
 
 	const handleDeliveredOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderstatuspaid/${orderID}`)
+			.put(`http://localhost:8081/orderstatuspaid/${orderID}`,{},{withCredentials:true})
 			.then(() => {
 				setOrderDelivered((prevOrders) =>
 					prevOrders.map((order) =>

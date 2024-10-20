@@ -5,12 +5,13 @@ import { uploadImage } from "../../AWS/upload_image.js";
 import { getImage } from "../../AWS/get_images.js";
 import { deleteImage } from "../../AWS/delete_image.js";
 import offer from "../offer/offer.js";
+import WaiterAuthorization from "../../Authorization/WaiterAuthorization.js";
 
 const waiterPicture = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-waiterPicture.get("/waiterpicture/:email", async (req, res) => {
+waiterPicture.get("/waiterpicture/:email",WaiterAuthorization, async (req, res) => {
   const { email } = req.params;
 
   try {
@@ -31,7 +32,7 @@ waiterPicture.get("/waiterpicture/:email", async (req, res) => {
           image_url: imageUrl,
         });
       }
-      console.log(offerBanner);
+      // console.log(offerBanner);
       return res.json({ offerBanner });
     });
   } catch (err) {

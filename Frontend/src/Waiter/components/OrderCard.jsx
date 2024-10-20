@@ -21,7 +21,7 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 	const handleAccept = () => {
 		console.log("in accept");
 		axios
-			.put(`http://localhost:8081/orderaccept/${data.orderID}`)
+			.put(`http://localhost:8081/orderaccept/${data.orderID}`,{},{withCredentials:true})
 			.then(() => {
 				if (onAccept) {
 					onAccept(data.orderID);

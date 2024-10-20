@@ -24,7 +24,7 @@ function Profile() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8081/waiterProfile/${email}`
+          `http://localhost:8081/waiterProfile/${email}`,{withCredentials:true}
         );
 
         if (response && response.data) {

@@ -2,12 +2,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import logo from "../../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 function Login() {
 	const navigate = useNavigate();
+	const location= useLocation()
+	console.log("location",location);
 	const [data, setdata] = useState({
 		email: "",
 		password: "",
@@ -21,8 +23,8 @@ function Login() {
 		e.preventDefault();
 
 		try {
-			const res = await axios.post("http://localhost:8081/adminlogin", data);
-
+			const res = await axios.post("http://localhost:8081/adminlogin", data, {withCredentials:true});
+			console.log("loogin",res);
 			if (res.data.Login) {
 				sessionStorage.setItem("email", res.data.email);
 				sessionStorage.setItem("role", res.data.role);
@@ -88,9 +90,7 @@ function Login() {
 							<Link
 								to="/forgotpassword"
 								className="flex text-sm leading-6 text-gray-900 pt-1.5 font-medium mb-4 justify-end mt-2">
-
 								Update Password?
-
 							</Link>
 
 							<div className="text-[8px] text-center">

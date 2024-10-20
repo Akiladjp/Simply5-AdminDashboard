@@ -4,6 +4,7 @@ import multer from "multer";
 import { uploadImage } from "../../AWS/upload_image.js";
 import { getImage } from "../../AWS/get_images.js";
 import { deleteImage } from "../../AWS/delete_image.js";
+import AdminCashier from "../../Authorization/AdminCashierAuthrize.js";
 
 const offer = express.Router();
 
@@ -13,7 +14,7 @@ const upload = multer({ storage: storage });
 
 // Add new offer banner
 
-offer.post("/addoffer", upload.single("image"), async (req, res) => {
+offer.post("/addoffer",AdminCashier, upload.single("image"), async (req, res) => {
   const filename = "offers_bucket/" + req.file.originalname;
   const status = "enable";
 
@@ -51,7 +52,7 @@ offer.post("/addoffer", upload.single("image"), async (req, res) => {
   });
 });
 
-offer.get("/showoffer", async (req, res) => {
+offer.get("/showoffer",AdminCashier, async (req, res) => {
   try {
     const sql = "SELECT * FROM offers";
     db.query(sql, async (err, ans) => {
@@ -77,7 +78,7 @@ offer.get("/showoffer", async (req, res) => {
   }
 });
 
-offer.put("/update-status/:id", async (req, res) => {
+offer.put("/update-status/:id",AdminCashier, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -97,7 +98,7 @@ offer.put("/update-status/:id", async (req, res) => {
   }
 });
 
-offer.put("/deleteImage/:id", async (req, res) => {
+offer.put("/deleteImage/:id", AdminCashier,async (req, res) => {
   const offerID = req.params;
 
   try {
@@ -119,7 +120,7 @@ offer.put("/deleteImage/:id", async (req, res) => {
 
 
 
-offer.delete("/delete_offer/:id", async (req, res) => {
+offer.delete("/delete_offer/:id",AdminCashier, async (req, res) => {
   const { id } = req.params;
 
   try {

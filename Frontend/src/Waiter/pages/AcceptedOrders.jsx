@@ -13,7 +13,7 @@ function AcceptedOrders() {
 
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/order_waiter_accepted")
+			.get("http://localhost:8081/order_waiter_accepted",{withCredentials:true})
 			.then((res) => {
 				setOrderAccept(res.data.data); // Update to set the data array
 				// Log the response data
@@ -25,7 +25,7 @@ function AcceptedOrders() {
 	const handleDeleteOrder = (orderID) => {
 		console.log(orderID);
 		axios
-			.delete(`http://localhost:8081/orderdelete/${orderID}`)
+			.delete(`http://localhost:8081/orderdelete/${orderID}`,{withCredentials:true})
 			.then(() => {
 				setOrderAccept((prevOrders) =>
 					prevOrders.filter((order) => order.orderID !== orderID)
@@ -36,11 +36,11 @@ function AcceptedOrders() {
 
 	const handleAcceptOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderstatusdelivered/${orderID}`,)
+			.put(`http://localhost:8081/orderstatusdelivered/${orderID}`,{},{withCredentials:true})
 			.then(() => {
-				
+				console.log(res.data);
 				window.location.reload();
-			console.log("fadsfadsfadsfadsfads")
+	
 				// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
 			})
 			.catch((err) => console.log(err));

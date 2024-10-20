@@ -23,10 +23,10 @@ function WaiterHeader() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_URL}/waiterpicture/${email}`); // Update with the correct endpoint
+        const res = await axios.get(`${API_URL}/waiterpicture/${email}`,{withCredentials:true}); // Update with the correct endpoint
         if (res.data.offerBanner) {
           setbannerShow(res.data.offerBanner[0]);
-          console.log(res.data.offerBanner);
+          // console.log(res.data.offerBanner);
         } else {
           setbannerShow([]);
           console.log("no data");

@@ -9,7 +9,7 @@ function AllOrders() {
     const [orderPendingdata, setOrderPending] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/orderpending')
+    axios.get('http://localhost:8081/orderpending',{withCredentials:true})
       .then(res => {
         setOrderPending(res.data.data);
       
@@ -19,7 +19,7 @@ function AllOrders() {
 
   const handleDeleteOrder = (orderID) => {
     console.log(orderID)
-    axios.delete(`http://localhost:8081/orderdelete/${orderID}`)
+    axios.delete(`http://localhost:8081/orderdelete/${orderID}`,{withCredentials:true})
       .then(() => {
         setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
       })
@@ -27,7 +27,7 @@ function AllOrders() {
   };
 
   const handleAcceptOrder = (orderID) => {
-    axios.put(`http://localhost:8081/orderaccept/${orderID}`)
+    axios.put(`http://localhost:8081/orderaccept/${orderID}`,{},{withCredentials:true})
       .then(() => {
         window.location.reload();
         // setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));

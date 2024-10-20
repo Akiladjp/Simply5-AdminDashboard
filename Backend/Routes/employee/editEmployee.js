@@ -3,6 +3,7 @@ import express from "express";
 import session from "express-session";
 import { deleteImage } from "../../AWS/delete_image.js";
 import multer from "multer";
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -10,7 +11,7 @@ const Employee = express.Router();
 
 
 
-Employee.put("/updateEmployee", async (req, res) => {
+Employee.put("/updateEmployee", AdminAuthorize,async (req, res) => {
     const sql = "update employer set `name` =?, `position` =?, `phoneNo` =?, `NIC` =?, `birthDate` =?, `joinedDate` =?, `address` =? where empID = ?";
     const values = [
         req.body.name,
@@ -29,7 +30,7 @@ Employee.put("/updateEmployee", async (req, res) => {
 });
 
 
-Employee.delete("/delete_emp/:id", async (req, res) => {
+Employee.delete("/delete_emp/:id",AdminAuthorize, async (req, res) => {
     const { id } = req.params;
   
     try {

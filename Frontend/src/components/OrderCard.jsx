@@ -12,7 +12,7 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
   const items = data.items ? JSON.parse(data.items) : [];
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:8081/orderdelete/${data.orderID}`)
+    axios.delete(`http://localhost:8081/orderdelete/${data.orderID}`,{withCredentials:true})
       .then(() => {
         if (onDelete) {
           onDelete(data.orderID);
@@ -22,7 +22,8 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
   };
 
   const handleAccept = () => {
-    axios.put(`http://localhost:8081/orderaccept/${data.orderID}`)
+    console.log("in handle Accept");
+    axios.put(`http://localhost:8081/orderaccept/${data.orderID}`, {}, { withCredentials: true }) // Note the empty object for data payload
       .then(() => {
         if (onAccept) {
           onAccept(data.orderID);
@@ -30,6 +31,7 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
       })
       .catch(err => console.log(err));
   };
+  
 
   return (
     <div className="border-[rgb(0,127,168)] border-[1px] px-4 w-full p-2 relative">
