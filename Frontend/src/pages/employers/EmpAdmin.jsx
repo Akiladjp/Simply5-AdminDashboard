@@ -8,7 +8,7 @@ function EmpAdmin() {
   // Fetch employees data
   const fetchEmployees = () => {
     axios
-      .get("http://localhost:8081/employeecard/")
+      .get("http://localhost:8081/employeecard/",{withCredentials:true})
       .then((res) => {
         console.log(res.data.employees);
         setEmployees(res.data.employees);
@@ -26,6 +26,7 @@ function EmpAdmin() {
   const handleRemoveAdminClick = async (employee) => {
     try {
       const response = await axios.put("http://localhost:8081/remove-admin", {
+        withCredentials:true,
         empID: employee.empID,
       });
   

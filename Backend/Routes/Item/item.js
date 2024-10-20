@@ -4,6 +4,8 @@ import multer from "multer";
 import { uploadImage } from "../../AWS/upload_image.js";
 import { getImage } from "../../AWS/get_images.js";
 import { deleteImage } from "../../AWS/delete_image.js";
+import AdminCashier from "../../Authorization/AdminCashierAuthrize.js";
+
 
 const Item = express.Router();
 
@@ -12,7 +14,7 @@ const storage = multer.memoryStorage(); // or multer.diskStorage({...}) for savi
 const upload = multer({ storage: storage });
 
 // Add new item
-Item.post("/additemevalues", upload.single("image"), async (req, res) => {
+Item.post("/additemevalues",AdminCashier, upload.single("image"), async (req, res) => {
 	const fileExtension = req.file.originalname.split(".").pop();
 	const filename = "item_bucket/" + req.body.name + "." + fileExtension;
 	const sql =
@@ -59,7 +61,7 @@ Item.post("/additemevalues", upload.single("image"), async (req, res) => {
 });
 
 // Get all meals
-Item.get("/getiteMeal", async (req, res) => {
+Item.get("/getiteMeal", AdminCashier,async (req, res) => {
 	try {
 		const sql = 'SELECT * FROM item WHERE category = "Meals"';
 
@@ -118,7 +120,7 @@ Item.get("/getiteDrinks", async (req, res) => {
 });
 
 // Get all desserts
-Item.get("/getiteDesserts", async (req, res) => {
+Item.get("/getiteDesserts",AdminCashier, async (req, res) => {
 	try {
 		const sql = 'SELECT * FROM item WHERE category = "Desserts"';
 
@@ -146,7 +148,7 @@ Item.get("/getiteDesserts", async (req, res) => {
 	}
 });
 
-Item.get("/updateItem/:id", async (req, res) => {
+Item.get("/updateItem/:id",AdminCashier, async (req, res) => {
 	const { id } = req.params;
 	console.log(id);
 	//console.log(req.file)
@@ -179,7 +181,7 @@ Item.get("/updateItem/:id", async (req, res) => {
 });
 
 // Update item details
-Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
+Item.put("/updateItem/:id",AdminCashier, upload.single("new_image"), async (req, res) => {
 	console.log(req.body);
 	const { id } = req.params;
 	const { name, category, sub_category, price, prepare_time, description } =
@@ -257,7 +259,7 @@ Item.put("/updateItem/:id", upload.single("new_image"), async (req, res) => {
 });
 
 // Delete an item
-Item.delete("/delete_item/:id", async (req, res) => {
+Item.delete("/delete_item/:id",AdminCashier, async (req, res) => {
 	const { id } = req.params;
 
 	try {
@@ -308,7 +310,7 @@ Item.delete("/delete_item/:id", async (req, res) => {
 });
 
 // Update availability status
-Item.put("/updateAvailable/:id", async (req, res) => {
+Item.put("/updateAvailable/:id",AdminCashier, async (req, res) => {
 	const { id } = req.params;
 	const { available } = req.body;
 
@@ -325,7 +327,7 @@ Item.put("/updateAvailable/:id", async (req, res) => {
 	}
 });
 
-Item.get("/get_subCategory/:category", (req, res) => {
+Item.get("/get_subCategory/:category",AdminCashier, (req, res) => {
 	const category = req.params.category;
 
 	try {

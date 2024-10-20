@@ -1,9 +1,10 @@
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
 import db from "../../config/DatabaseConfig.js";
 import express from "express";
 
 const summaryEmployee = express.Router();
 
-summaryEmployee.get("/employeeSummary", (req, res) => {
+summaryEmployee.get("/employeeSummary",AdminAuthorize, (req, res) => {
 	try {
 		const sql = `
           SELECT e.empID, e.name, e.position, s.date, s.comment 
@@ -62,7 +63,7 @@ summaryEmployee.get("/employeeSummary", (req, res) => {
 	}
 });
 
-summaryEmployee.get("/OrderCount", (req, res) => {
+summaryEmployee.get("/OrderCount",AdminAuthorize, (req, res) => {
 	const date = new Date().toISOString().split("T")[0];
 	console.log(date);
 	try {
@@ -97,7 +98,7 @@ summaryEmployee.get("/OrderCount", (req, res) => {
 	}
 });
 
-summaryEmployee.get("/OrderCountMonth", (req, res) => {
+summaryEmployee.get("/OrderCountMonth",AdminAuthorize, (req, res) => {
 	try {
 		// Get the current year and month
 		const today = new Date();

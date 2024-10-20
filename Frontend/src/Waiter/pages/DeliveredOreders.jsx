@@ -6,7 +6,7 @@ function DeliveredOreders() {
   const [orderAcceptdata, setOrderAccept] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/order_waiter_delivered')
+    axios.get('http://localhost:8081/order_waiter_delivered',{withCredentials:true})
       .then(res => {
         setOrderAccept(res.data.data); // Update to set the data array
         console.log(res.data.data); // Log the response data
@@ -16,7 +16,7 @@ function DeliveredOreders() {
 
   const handleDeleteOrder = (orderID) => {
     console.log(orderID)
-    axios.put(`http://localhost:8081/order_deleverd_delete/${orderID}`)
+    axios.put(`http://localhost:8081/order_deleverd_delete/${orderID}`,{},{withCredentials:true})
       .then(() => {
         setOrderAccept((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
       })
@@ -24,7 +24,7 @@ function DeliveredOreders() {
   };
 
   const handleAcceptOrder = (orderID) => {
-    axios.put(`http://localhost:8081/orderstatusdelivered/${orderID}`)
+    axios.put(`http://localhost:8081/orderstatusdelivered/${orderID}`,{},{withCredentials:true})
       .then(() => {
         window.location.reload();
         // setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));

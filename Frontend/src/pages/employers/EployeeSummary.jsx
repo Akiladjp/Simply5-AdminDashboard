@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function EmployeeSummary() {
 	const API_URL = import.meta.env.VITE_API_URL;
@@ -8,12 +8,14 @@ function EmployeeSummary() {
 	const [MonthOrdersCount, setMonthOrderCount] = useState(0);
 
 	// Get today's date in the format: 'YYYY-MM-DD'
-	const today = new Date().toISOString().split('T')[0]; 
+	const today = new Date().toISOString().split("T")[0];
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await axios.get(`${API_URL}/employeeSummary`);
+				const response = await axios.get(`${API_URL}/employeeSummary`, {
+					withCredentials: true,
+				});
 				if (response.data) {
 					setSummary(response.data.EmpDetails);
 				} else {
@@ -29,7 +31,9 @@ function EmployeeSummary() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await axios.get(`${API_URL}/OrderCount`);
+				const response = await axios.get(`${API_URL}/OrderCount`, {
+					withCredentials: true,
+				});
 				if (response) {
 					setOrderCount(response.data.count);
 				}
@@ -43,7 +47,7 @@ function EmployeeSummary() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await axios.get(`${API_URL}/OrderCountMonth`);
+				const response = await axios.get(`${API_URL}/OrderCountMonth`,{withCredentials:true});
 				if (response) {
 					setMonthOrderCount(response.data.count);
 				}

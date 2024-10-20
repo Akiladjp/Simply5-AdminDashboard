@@ -4,12 +4,13 @@ import multer from "multer";
 import nodemailer from "nodemailer"; // Nodemailer for emails
 const Employee = express.Router();
 import { uploadImage } from "../../AWS/upload_image.js";
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
 
 // Configure multer for handling image uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-Employee.post("/employeeform", upload.single("image"), async (req, res) => {
+Employee.post("/employeeform",AdminAuthorize, upload.single("image"), async (req, res) => {
   const filename = "employee_bucket/" + req.file.originalname;
   const sql =
     "INSERT INTO employer (`name`,`position`,`phoneNo`,`NIC`,`birthDate`,`joinedDate`,`address`,`image_link`) VALUES (?)";
@@ -69,7 +70,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-Employee.post("/make-admin", (req, res) => {
+Employee.post("/make-admin",AdminAuthorize, (req, res) => {
   const { email, empID } = req.body;
 
   // Start a transaction for admin promotion
@@ -202,7 +203,7 @@ Employee.post("/make-admin", (req, res) => {
   });
 });
 
-Employee.put('/remove-admin', (req, res) => {
+Employee.put('/remove-admin',AdminAuthorize, (req, res) => {
   const { empID } = req.body; // Extract empID from the request body
 
   if (!empID) {

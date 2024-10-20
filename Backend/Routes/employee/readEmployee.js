@@ -2,10 +2,11 @@ import db from "../../config/DatabaseConfig.js";
 import express from "express";
 import session from "express-session";
 import { getImage } from "../../AWS/get_images.js";
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
 
 const Employee = express.Router();
 
-Employee.get("/employeecard", async (req, res) => {
+Employee.get("/employeecard",AdminAuthorize, async (req, res) => {
 	try {
 		const sql = "SELECT employer.*, admin.email FROM employer LEFT JOIN admin ON employer.empID = admin.empID;";
 

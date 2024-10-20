@@ -135,7 +135,7 @@ function AnalysisItemToday() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8081/today")
+      .get("http://localhost:8081/today",{withCredentials:true})
       .then((res) => {
         setRawData(res.data);
         updateChartData(res.data);

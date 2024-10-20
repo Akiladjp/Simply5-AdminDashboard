@@ -9,7 +9,7 @@ function ItemsMeals() {
   const [items, setItem] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8081/getiteMeal')
+        axios.get('http://localhost:8081/getiteMeal',{withCredentials:true})
             .then(res => {
                // console.log(res.data.items); // Log the employees array from the response
                 setItem(res.data.items); 

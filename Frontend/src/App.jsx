@@ -4,6 +4,7 @@ import {
 	Outlet,
 	useNavigate,
 	useLocation,
+	Navigate,
 } from "react-router-dom";
 
 import { Provider } from "react-redux";
@@ -57,6 +58,7 @@ import DeliveredOreders from "./Waiter/pages/DeliveredOreders.jsx";
 
 const MainLayout = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	useEffect(() => {
 		if (
 			(sessionStorage.getItem("email") &&

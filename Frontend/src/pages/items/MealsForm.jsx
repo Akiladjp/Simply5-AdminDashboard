@@ -46,7 +46,7 @@ function MealsForm() {
 		const fetchData = async () => {
 			try {
 				const response = await axios.get(
-					`${API_URL}/get_subCategory/${category}`
+					`${API_URL}/get_subCategory/${category}`,{withCredentials:true}
 				);
 				if (response) {
 					setSubcategory(response.data.sub_category);

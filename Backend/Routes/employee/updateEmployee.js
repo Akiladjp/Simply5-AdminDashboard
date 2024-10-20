@@ -2,10 +2,11 @@ import db from "../../config/DatabaseConfig.js";
 import express from "express";
 import session from "express-session";
 import { getImage } from "../../AWS/get_images.js";
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
 
 const UpdateEmployee = express.Router();
 
-UpdateEmployee.get("/updateEmployee/:id", async (req, res) => {
+UpdateEmployee.get("/updateEmployee/:id",AdminAuthorize, async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
@@ -38,7 +39,7 @@ UpdateEmployee.get("/updateEmployee/:id", async (req, res) => {
   }
 });
 
-UpdateEmployee.put("/updateEmployee/:id", async (req, res) => {
+UpdateEmployee.put("/updateEmployee/:id",AdminAuthorize,async (req, res) => {
   const { id } = req.params;
   const { name, position, phoneNo, NIC, birthDate, joinedDate, address } = req.body;
 

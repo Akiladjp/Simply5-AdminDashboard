@@ -9,7 +9,7 @@ function ItemsDesserts() {
 
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/getiteDesserts")
+			.get("http://localhost:8081/getiteDesserts",{withCredentials:true})
 			.then((res) => {
 				console.log(res.data.items); // Log the employees array from the response
 				setItem(res.data.items);

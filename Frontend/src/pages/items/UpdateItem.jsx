@@ -22,7 +22,7 @@ export default function UpdateItem() {
 		description: "",
 		new_image: "", // File for the new image
 		Pre_imageUrl: "",
-    image_path:"", // URL for the previous image
+		image_path: "", // URL for the previous image
 	});
 	const [data, setData] = useState(initialData);
 	const [imagePreview, setImagePreview] = useState(""); // URL for image preview
@@ -33,6 +33,7 @@ export default function UpdateItem() {
 			try {
 				const response = await axios.get(
 					`http://localhost:8081/updateItem/${itemID}`
+					,{withCredentials:true}
 				);
 
 				if (response.data.preeItem) {
@@ -45,7 +46,7 @@ export default function UpdateItem() {
 						prepare_time: item.prepare_time || "",
 						description: item.description || "",
 						new_image: "",
-            image_path:"", // Reset new_image for the update
+						image_path: "", // Reset new_image for the update
 					};
 					setInitialData(fetchedData);
 					setData(fetchedData);
@@ -64,10 +65,10 @@ export default function UpdateItem() {
 
 		if (type === "file") {
 			const file = files[0];
-      console.log(files[0])
+			console.log(files[0]);
 			setImagePreview(URL.createObjectURL(file)); // Preview the image
 			setFileName(file.name);
-			setData((prevData) => ({ ...prevData, new_image:file })); // Store the file directly
+			setData((prevData) => ({ ...prevData, new_image: file })); // Store the file directly
 		} else {
 			setData((prevData) => ({ ...prevData, [name]: value }));
 		}
@@ -86,7 +87,10 @@ export default function UpdateItem() {
 		const modifiedData = { ...data };
 		delete modifiedData.Pre_imageUrl; // Exclude previous image URL from submission
 
-		if (JSON.stringify(initialData) === JSON.stringify(modifiedData) && !data.new_image) {
+		if (
+			JSON.stringify(initialData) === JSON.stringify(modifiedData) &&
+			!data.new_image
+		) {
 			toastr.warning("No changes have been made to the form.");
 			return;
 		}
@@ -95,20 +99,20 @@ export default function UpdateItem() {
 		const formData = new FormData();
 
 		// Append fields to FormData, excluding Pre_imageUrl
-    console.log(modifiedData)
+		console.log(modifiedData);
 		Object.entries(modifiedData).forEach(([key, value]) => {
 			if (key !== "Pre_imageUrl") {
 				formData.append(key, value);
 			}
 		});
 
-	
-console.log(data.new_image)
+		console.log(data.new_image);
 		try {
 			const res = await axios.put(
 				`http://localhost:8081/updateItem/${itemID}`,
 				formData,
 				{
+					withCredentials: true,
 					headers: {
 						"Content-Type": "multipart/form-data",
 					},
@@ -176,7 +180,7 @@ console.log(data.new_image)
 								hidden
 								className="input-field file:py-2 file:px-4 file:border-0 file:rounded-xl file:bg-white file:text-black file:cursor-pointer hover:file:bg-gray-200"
 								name="new_image"
-                id="new_image"
+								id="new_image"
 							/>
 						</div>
 					</div>

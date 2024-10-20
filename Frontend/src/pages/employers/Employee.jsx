@@ -18,7 +18,7 @@ function Employee() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8081/employeecard/")
+      .get("http://localhost:8081/employeecard/",{withCredentials:true})
       .then((res) => {
         console.log(res.data.employees);
         setEmployees(res.data.employees);
@@ -36,7 +36,7 @@ function Employee() {
 
   const fetchEmployees = () => {
     axios
-      .get("http://localhost:8081/employeecard/")
+      .get("http://localhost:8081/employeecard/",{withCredentials:true})
       .then((res) => {
         console.log(res.data.employees);
         setEmployees(res.data.employees);
@@ -60,6 +60,7 @@ function Employee() {
     setLoading(true); 
     try {
       const response = await axios.post("http://localhost:8081/make-admin", {
+        withCredentials:true,
         email,
         empID: selectedEmployee.empID,
       });

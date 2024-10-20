@@ -17,7 +17,7 @@ function PendingOrders() {
 	//gettinhh setWaiterID
 	useEffect(() => {
 		const fetchData = async () => {
-			const response = await axios.get(`http://localhost:8081/waiterID/${email}`)
+			const response = await axios.get(`http://localhost:8081/waiterID/${email}`,{withCredentials:true})
 		if(response){
 			setWaiterID(response.data.waiterID)
 			}
@@ -26,7 +26,7 @@ function PendingOrders() {
 	}, []);
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/orderpending")
+			.get("http://localhost:8081/orderpending",{withCredentials:true})
 			.then((res) => {
 				setOrderPending(res.data.data);
 			})
@@ -35,7 +35,7 @@ function PendingOrders() {
 
 	const handleDeleteOrder = (orderID) => {
 		axios
-			.delete(`http://localhost:8081/orderdelete/${orderID}`)
+			.delete(`http://localhost:8081/orderdelete/${orderID}`,{withCredentials:true})
 			.then(() => {
 				setOrderPending((prevOrders) =>
 					prevOrders.filter((order) => order.orderID !== orderID)
@@ -47,7 +47,7 @@ function PendingOrders() {
 
 	const handleAcceptOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderaccept/${orderID}`,{waiterID})
+			.put(`http://localhost:8081/orderaccept/${orderID}`,{},{waiterID,withCredentials:true})
 			.then(() => {
 				
 				console.log(orderID);

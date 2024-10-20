@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import ApexCharts from 'react-apexcharts';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -77,7 +77,7 @@ function AnalysisTimeToday() {
   }, []);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/timetoday?selectedOption=${selectedOption}`)
+    axios.get(`http://localhost:8081/timetoday?selectedOption=${selectedOption}`,{withCredentials:true})
       .then((res) => {
         const { names = [], todayData = [] } = res.data;
         setData({ names, todayData });

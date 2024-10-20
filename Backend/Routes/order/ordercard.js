@@ -1,13 +1,16 @@
 import Express, { response } from "express";
 const router = Express.Router();
 import db from "../../config/DatabaseConfig.js";
-import cors from "cors";
 
-router.use(cors());
+import AdminAuthorize from "../../Authorization/AdminAuthorize.js";
+import WaiterAuthorization from "../../Authorization/WaiterAuthorization.js";
+import AdminCashier from "../../Authorization/AdminCashierAuthrize.js";
+import AdminWaiterAuthorize from "../../Authorization/AdminWaiterAuthorize.js";
+import AllRoleAuthentication from "../../Authorization/AllRoleAuthentication.js";
 
-router.get("/orderpending", (req, res) => {
+router.get("/orderpending", AllRoleAuthentication, (req, res) => {
+	
 	const sql1 = "SELECT * FROM orders";
-
 	const sql = `
         SELECT 
             orders.orderID, 
@@ -35,14 +38,14 @@ router.get("/orderpending", (req, res) => {
 			res.status(400).json({ error: err.message });
 			return;
 		}
-		console.log(rows.length);
+
 		res.json({
 			data: rows,
 		});
 	});
 });
 // for admin
-router.get("/orderaccepted", (req, res) => {
+router.get("/orderaccepted", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.query;
 
 	let sql = `
@@ -82,7 +85,7 @@ router.get("/orderaccepted", (req, res) => {
 	});
 });
 // for waiter
-router.get("/order_waiter_accepted", (req, res) => {
+router.get("/order_waiter_accepted", WaiterAuthorization, (req, res) => {
 	const { mobileNo } = req.query;
 
 	let sql = `
@@ -122,7 +125,7 @@ router.get("/order_waiter_accepted", (req, res) => {
 	});
 });
 
-router.get("/orderdelivered", (req, res) => {
+router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.query;
 
 	let sql = `
@@ -162,7 +165,7 @@ router.get("/orderdelivered", (req, res) => {
 	});
 });
 
-router.get("/order_waiter_delivered", (req, res) => {
+router.get("/order_waiter_delivered", WaiterAuthorization, (req, res) => {
 	const sql = `
         SELECT 
             orders.orderID, 
@@ -195,7 +198,7 @@ router.get("/order_waiter_delivered", (req, res) => {
 	});
 });
 
-router.get("/orderpaid", (req, res) => {
+router.get("/orderpaid", AdminAuthorize, (req, res) => {
 	const { mobileNo } = req.query;
 
 	let sql = `
@@ -235,7 +238,7 @@ router.get("/orderpaid", (req, res) => {
 	});
 });
 
-router.delete("/orderdelete/:orderID", (req, res) => {
+router.delete("/orderdelete/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;
 
 	db.beginTransaction((err) => {
@@ -277,55 +280,60 @@ router.delete("/orderdelete/:orderID", (req, res) => {
 		});
 	});
 });
-router.put("/order_deleverd_delete/:orderID", (req, res) => {
-	const { orderID } = req.params;
+router.put(
+	"/order_deleverd_delete/:orderID",
+	WaiterAuthorization,
+	(req, res) => {
+		const { orderID } = req.params;
 
-	db.beginTransaction((err) => {
-		if (err) {
-			return res.status(400).json({ error: err.message });
-		}
-
-		// Delete from contains table
-		// const deleteContainsSQL = "DELETE FROM contains WHERE orderID = ?";
-		// db.query(deleteContainsSQL, [orderID], (err, result) => {
-		// 	if (err) {
-		// 		return db.rollback(() => {
-		// 			res.status(400).json({ error: err.message });
-		// 		});
-		// 	}
-
-		// Delete from orders table
-		const deleteOrderSQL =
-			"UPDATE orders SET `status`='hidden' WHERE orderID = ?";
-		db.query(deleteOrderSQL, [orderID], (err, result) => {
+		db.beginTransaction((err) => {
 			if (err) {
-				console.log(err);
-				return db.rollback(() => {
-					res.status(400).json({ error: err.message });
-				});
+				return res.status(400).json({ error: err.message });
 			}
-			console.log(result);
-			db.commit((err) => {
+
+			// Delete from contains table
+			// const deleteContainsSQL = "DELETE FROM contains WHERE orderID = ?";
+			// db.query(deleteContainsSQL, [orderID], (err, result) => {
+			// 	if (err) {
+			// 		return db.rollback(() => {
+			// 			res.status(400).json({ error: err.message });
+			// 		});
+			// 	}
+
+			// Delete from orders table
+			const deleteOrderSQL =
+				"UPDATE orders SET `status`='hidden' WHERE orderID = ?";
+			db.query(deleteOrderSQL, [orderID], (err, result) => {
 				if (err) {
+					console.log(err);
 					return db.rollback(() => {
 						res.status(400).json({ error: err.message });
 					});
 				}
+				console.log(result);
+				db.commit((err) => {
+					if (err) {
+						return db.rollback(() => {
+							res.status(400).json({ error: err.message });
+						});
+					}
 
-				res.status(200).send({
-					message: `Order ${orderID} and associated items deleted successfully`,
+					res.status(200).send({
+						message: `Order ${orderID} and associated items deleted successfully`,
+					});
 				});
 			});
+			// }
+			// );
 		});
-		// }
-		// );
-	});
-});
+	}
+);
 
-router.put("/orderaccept/:orderID", (req, res) => {
+router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
+
 	const { orderID } = req.params;
 	const { waiterID } = req.body;
-	console.log("orderID");
+	console.log("orderID",orderID,waiterID);
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["accept", orderID], (err, result) => {
@@ -375,13 +383,15 @@ router.put("/orderaccept/:orderID", (req, res) => {
 					for (let i = 0; i < OrderItems.length; i++) {
 						const update_addcartSTate =
 							"UPDATE add_cart SET `state` = ? WHERE mobileno = ? AND itemID=?";
-							db.query(update_addcartSTate,["accept",mobileNo,OrderItems[i]],(err,result)=>{
-								if(err){
-									console.log("sql err in updating add cart state",err)
-
+						db.query(
+							update_addcartSTate,
+							["accept", mobileNo, OrderItems[i]],
+							(err, result) => {
+								if (err) {
+									console.log("sql err in updating add cart state", err);
 								}
-								
-							});
+							}
+						);
 					}
 				});
 				// const update_addcartSTate = "DELETE FROM add_cart WHERE mobileNo = ?";
@@ -402,22 +412,28 @@ router.put("/orderaccept/:orderID", (req, res) => {
 	});
 });
 
-router.put("/orderstatusdelivered/:orderID", (req, res) => {
-	const { orderID } = req.params;
-
-	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
-	db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
-		if (err) {
-			res.status(400).json({ error: err.message });
-			return;
-		}
-		if (result.affectedRows > 0) {
-		} else {
-			res.status(404).send({ message: `Order ${orderID} not found` });
-		}
-	});
-});
-router.put("/orderstatuspaid/:orderID", (req, res) => {
+router.put(
+	"/orderstatusdelivered/:orderID",
+	WaiterAuthorization,
+	(req, res) => {
+		const { orderID } = req.params;
+		console.log("order id", orderID);
+		const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
+		db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
+			if (err) {
+				console.log(err);
+				res.status(400).json({ error: err.message });
+				return;
+			}
+			if (result.affectedRows > 0) {
+				console.log("changes happen", result);
+			} else {
+				res.status(404).send({ message: `Order ${orderID} not found` });
+			}
+		});
+	}
+);
+router.put("/orderstatuspaid/:orderID", AdminCashier, (req, res) => {
 	const { orderID } = req.params;
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";

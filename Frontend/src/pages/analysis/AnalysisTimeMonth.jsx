@@ -77,7 +77,7 @@ function AnalysisTimeToday() {
   }, []);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/timemonth?selectedOption=${selectedOption}`)
+    axios.get(`http://localhost:8081/timemonth?selectedOption=${selectedOption}`,{withCredentials:true})
       .then((res) => {
         const { names = [], monthData = [] } = res.data;
         setData({ names, monthData });

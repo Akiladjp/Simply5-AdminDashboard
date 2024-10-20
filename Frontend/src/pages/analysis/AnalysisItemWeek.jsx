@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import ApexCharts from 'react-apexcharts';
 import axios from "axios";
 import { Link } from 'react-router-dom';
@@ -127,7 +127,7 @@ function AnalysisItemToday() {
     }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/week')
+    axios.get('http://localhost:8081/week',{withCredentials:true})
     .then(res => {
       setRawData(res.data);
       updateChartData(res.data); 

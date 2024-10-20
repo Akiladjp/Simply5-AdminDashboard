@@ -77,7 +77,7 @@ function AnalysisTimeToday() {
   }, []);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/timeweek?selectedOption=${selectedOption}`)
+    axios.get(`http://localhost:8081/timeweek?selectedOption=${selectedOption}`,{withCredentials:true})
       .then((res) => {
         const { names = [], weekData = [] } = res.data;
         setData({ names, weekData });
