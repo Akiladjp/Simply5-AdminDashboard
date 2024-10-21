@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import TimerReducer from "./Slices/OrderTimerSlice.js"
+import LoginReducer from "./Slices/LogiinSlice"
 export const store = configureStore({
   reducer: {
     
-    timerState:TimerReducer
+    loginslice:LoginReducer
   },
 });

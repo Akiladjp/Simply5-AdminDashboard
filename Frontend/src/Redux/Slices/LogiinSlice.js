@@ -1,36 +1,53 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Load the timer state from localStorage or set the default state
 const loadFromLocalStorage = () => {
-  const email = localStorage.getItem('email') || ""; // Default value corrected
-  const role = localStorage.getItem('role') || ""; // 
-  return { email,role };
+  const email = localStorage.getItem('email') || ""; 
+  const role = localStorage.getItem('role') || ""; 
+  const token= localStorage.getItem("token") || false;
+  return { email, role,token };
 };
 
 const initialState = loadFromLocalStorage();
 
-export const OrderTimerSlice = createSlice({
-  name: "LoginSlice",
+export const LoginSlice = createSlice({
+  name: "loginslice",
   initialState,
   reducers: {
-    setTimerState: (state, action) => {
-      state.timerState = action.payload; // Update Redux state
-      localStorage.setItem('timerState', action.payload); // Persist to localStorage
+    setLoginValue: (state, action) => {
+      const { email, role ,token} = action.payload;
+      state.email = email; 
+      state.role = role;
+      state.token = token;
+      localStorage.setItem('email', email); 
+      localStorage.setItem('role', role); 
+      localStorage.setItem('token', token); 
     },
-    resetTimerState: (state) => {
-      state.timerState = "0-false"; // Reset state in Redux
-      localStorage.setItem('timerState', "0-false"); // Reset in localStorage
+    logoutFun: (state) => {
+      state.email = ""; 
+      state.role = "";
+      state.token = false;
+
+      localStorage.removeItem('email');
+      localStorage.removeItem('role');
+      localStorage.removeItem('token');
+
+      if(localStorage.getItem('email') &&
+      localStorage.getItem('role')){
+
+        console.log("LocalStorege value  removed");
+      }else{
+        console.log("LocalStorege value not removed");
+      }
+
     },
   },
 });
 
-
-// Action to update the timer state
-export const { setTimerState,resetTimerState  } = OrderTimerSlice.actions;
-
-// Selector to get the current timer state from the Redux store
-export const selectTimerState = (state) => state.timerState.timerState;
-
-export default OrderTimerSlice.reducer;
+export const { setLoginValue, logoutFun } = LoginSlice.actions;
 
 
+export const selectEmail = (state) => state.loginslice.email;
+export const selectRole = (state) => state.loginslice.role;
+export const selectToken = (state) => state.loginslice.token;
+
+export default LoginSlice.reducer;

@@ -6,14 +6,48 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
+import { useDispatch, useSelector } from "react-redux";
+import Cookies from "js-cookie";
+import {
+	selectRole,
+	selectToken,
+	setLoginValue,
+} from "../../Redux/Slices/LogiinSlice";
 function Login() {
+	const API_URL = import.meta.env.VITE_API_URL;
 	const navigate = useNavigate();
-	const location= useLocation()
-	console.log("location",location);
+	const dispatch = useDispatch();
+	const role = useSelector(selectRole);
+	const isSetToken = useSelector(selectToken);
 	const [data, setdata] = useState({
 		email: "",
 		password: "",
 	});
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(`${API_URL}/login-validation`, {
+					withCredentials: true,
+				});
+				console.log("response:", response.data.message);
+
+				if (response.data.message === "Token is valid") {
+					if (role === "Waiter") {
+						navigate("/Waiter/pending-orders");
+					} else {
+						navigate("/app/order/pending");
+					}
+				}
+			} catch (err) {
+				console.error("Error in connecting to login validation API:", err);
+			}
+		};
+
+		if (isSetToken) {
+			fetchData();
+		}
+	}, []);
 
 	const handleChange = (e) => {
 		setdata((data) => ({ ...data, [e.target.name]: e.target.value }));
@@ -23,11 +57,19 @@ function Login() {
 		e.preventDefault();
 
 		try {
-			const res = await axios.post("http://localhost:8081/adminlogin", data, {withCredentials:true});
-			console.log("loogin",res);
+			const res = await axios.post("http://localhost:8081/adminlogin", data, {
+				withCredentials: true,
+			});
+			console.log("login", res);
 			if (res.data.Login) {
-				sessionStorage.setItem("email", res.data.email);
-				sessionStorage.setItem("role", res.data.role);
+				dispatch(
+					setLoginValue({
+						email: res.data.email,
+						role: res.data.role,
+						token: true,
+					})
+				);
+
 				console.log(res.data.redirectURL);
 				navigate(res.data.redirectURL); // Redirect the URL
 			} else {
@@ -37,18 +79,6 @@ function Login() {
 			console.error("Error during login:", err);
 		}
 	};
-
-	useEffect(() => {
-		if (sessionStorage.getItem("email")) {
-			if (sessionStorage.getItem("role") === "Waiter") {
-				navigate("/Waiter/pending-orders");
-			} else {
-				navigate("/app/order/pending");
-			}
-		} else {
-			navigate("/");
-		}
-	}, []);
 
 	return (
 		<div className="">

@@ -42,79 +42,21 @@ import Offers from "./pages/offers/Offers";
 
 import "./App.css";
 
-// waiter
-import WaiterHeader from "./Waiter/components/Header.jsx";
-import WaiterNavbar from "./Waiter/components/Navbar.jsx";
 
-import { useEffect, useState } from "react";
 import ForgotPassword from "./pages/loginSystem/ForgotPassword";
 import OTPInput from "./pages/loginSystem/OTPInput";
 import ResetPassword from "./pages/loginSystem/ResetPassword";
-import AllOrders from "./Waiter/pages/AllOrders";
+
 import PendingOrders from "./Waiter/pages/PendingOrders";
 import AcceptedOrders from "./Waiter/pages/AcceptedOrders";
 import Profile from "./Waiter/pages/Profile";
 import DeliveredOreders from "./Waiter/pages/DeliveredOreders.jsx";
 
-const MainLayout = () => {
-	const navigate = useNavigate();
-	const location = useLocation();
-	useEffect(() => {
-		if (
-			(sessionStorage.getItem("email") &&
-				sessionStorage.getItem("role") == "Manager") ||
-			sessionStorage.getItem("role") == "Cashier"
-		) {
-			// navigate("/app/order/pending");
-		} else {
-			navigate("/");
-		}
-	}, []);
+import MainLayout from "./Layout/MainLayout.jsx";
+import WaiterLayOut from "./Layout/WaiterLayout.jsx";
 
-	return (
-		<div className="h-screen">
-			<Header />
-			<div className="flex w-full h-screen pt-16 ">
-				<div className="flex bg-[#007FA8] w-[20%] lg:w-[16%] xl:w-[12%] fixed h-full z-10">
-					<Navbar />
-				</div>
-				<div className=" w-[80%]  ml-[20%] lg:ml-[16%] xl:ml-[12%]   lg:w-full   ">
-					<Outlet />
-				</div>
-			</div>
-		</div>
-	);
-};
 
-const WaiterLayOut = () => {
-	const navigate = useNavigate();
-	useEffect(() => {
-		if (
-			sessionStorage.getItem("email") &&
-			sessionStorage.getItem("role") === "Waiter"
-		) {
-			// navigate("/Waiter/pending-orders");
-		} else {
-			navigate("/");
-		}
-	}, []);
 
-	return (
-		<div className="h-screen">
-			<div>
-				<WaiterHeader />
-			</div>
-
-			<div className="lg:w-full ">
-				<Outlet />
-			</div>
-
-			<div>
-				<WaiterNavbar />
-			</div>
-		</div>
-	);
-};
 
 const router = createBrowserRouter([
 	{
