@@ -7,13 +7,14 @@ import {
 	setTimerState,
 } from "../../Redux/Slices/OrderTimerSlice";
 import { useNavigate } from "react-router-dom";
+import { selectEmail } from "../../Redux/Slices/LogiinSlice";
 
 function PendingOrders() {
 	const [waiterID,setWaiterID] = useState(0);
 	const [orderPendingdata, setOrderPending] = useState([]);
 	const dispatch = useDispatch();
 	// const navigate = useNavigate();
-	const email = sessionStorage.getItem("email");
+	const email = useSelector(selectEmail);
 	//gettinhh setWaiterID
 	useEffect(() => {
 		const fetchData = async () => {

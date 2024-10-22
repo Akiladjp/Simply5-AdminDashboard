@@ -91,7 +91,7 @@ Item.get("/getiteMeal", AdminCashier,async (req, res) => {
 });
 
 // Get all drinks
-Item.get("/getiteDrinks", async (req, res) => {
+Item.get("/getiteDrinks",AdminCashier, async (req, res) => {
 	try {
 		const sql = 'SELECT * FROM item WHERE category = "Drinks"';
 
@@ -313,6 +313,7 @@ Item.delete("/delete_item/:id",AdminCashier, async (req, res) => {
 Item.put("/updateAvailable/:id",AdminCashier, async (req, res) => {
 	const { id } = req.params;
 	const { available } = req.body;
+	console.log("id",id);
 
 	try {
 		const sql = "UPDATE item SET available = ? WHERE itemID = ?";

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import sample_profile from "../../assets/chef.png";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { selectEmail } from "../../Redux/Slices/LogiinSlice";
 
 function WaiterHeader() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -9,7 +11,7 @@ function WaiterHeader() {
   const [bannerShow, setbannerShow] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
-  const email = sessionStorage.getItem("email");
+  const email = useSelector(selectEmail);
 
 
   useEffect(() => {

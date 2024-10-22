@@ -3,6 +3,10 @@ import db from "../../config/DatabaseConfig.js";
 import express from "express";
 import session from "express-session";
 import jwt from "jsonwebtoken";
+import AllRoleAuthentication from "../../Authorization/AllRoleAuthentication.js";
+import WaiterAuthorization from "../../Authorization/WaiterAuthorization.js";
+import AdminWaiterAuthorize from "../../Authorization/AdminWaiterAuthorize.js";
+import AdminCashier from "../../Authorization/AdminCashierAuthrize.js";
 const adminLogin = express.Router();
 
 adminLogin.post("/adminlogin", async (req, res) => {
@@ -35,6 +39,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 										{ id: empID, userType: position },
 										process.env.JWT_SECRET_KEY
 									);
+
 									// Redirect based on position
 									if (position === "Waiter") {
 										return res
@@ -50,7 +55,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 											});
 									} else if (position === "Manager" || position === "Cashier") {
 										console.log("position", position, req.body.email);
-										
+
 										return res
 											.cookie("jwtToken", token, {
 												httpOnly: true,
@@ -86,6 +91,86 @@ adminLogin.post("/adminlogin", async (req, res) => {
 		console.error(error);
 		res.status(500).json({ Message: "Server error" });
 	}
+});
+
+adminLogin.get("/admin-login-validation", AdminCashier, async (req, res) => {
+	console.log("wada");
+	try {
+		// console.log("dasf",AdminCashier.res.message);
+		const token = req.cookies.jwtToken;
+		console.log("ko", token);
+
+		if (!token) {
+			console.log("no token");
+			return res.status(400).json({ message: "Token is missing" });
+		}
+
+		jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+			if (err) {
+				return res.status(400).json({ message: "Unauthorized" });
+			}
+			console.log(err);
+
+			if (decoded.userType === "Manager" || decoded.userType === "Cashier") {
+				return res.status(200).json({ message: "Authorized" });
+			} else {
+				return res.status(403).json({ message: "Forbidden" });
+			}
+		});
+	} catch (err) {
+		console.log("Error in server", err);
+		return res.status(500).json({ message: "Internal server error" });
+	}
+});
+
+adminLogin.get(
+	"/waiter-login-validation",
+	WaiterAuthorization,
+	async (req, res) => {
+		console.log(WaiterAuthorization);
+		try {
+			const token = req.cookies.jwtToken;
+
+			if (!token) {
+				return res.status(400).json({ message: "Token is missing" });
+			}
+
+			jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+				if (err) {
+					return res.status(400).json({ message: "Unauthorized" });
+				}
+
+				if (decoded.userType === "Waiter") {
+					return res.status(200).json({ message: "Authorized" });
+				} else {
+					return res.status(403).json({ message: "Forbidden" });
+				}
+			});
+		} catch (err) {
+			console.log("Error in server", err);
+			return res.status(500).json({ message: "Internal server error" });
+		}
+	}
+);
+
+adminLogin.get("/login-validation", (req, res) => {
+	try {
+		const token = req.cookies.jwtToken;
+		console.log(token);
+		if (!token) {
+			return res.status(400).json({ message: "Token is missing" });
+		}
+
+		return res.status(200).json({ message: "Token is valid" });
+	} catch (err) {
+		console.log("Error in server", err);
+		return res.status(500).json({ message: "Internal server error" });
+	}
+});
+
+adminLogin.get('/token-check', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send({ tokenValid: true });
 });
 
 export default adminLogin;

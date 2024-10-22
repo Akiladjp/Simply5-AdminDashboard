@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
 import { OrderCard } from "../../components/OrderCard";
 import axios from "axios";
+import { selectToken } from "../../Redux/Slices/LogiinSlice";
+import { useSelector } from "react-redux";
 
 function OrderPending() {
   const [orderPendingdata, setOrderPending] = useState([]);
-
+const isSetToken = useSelector(selectToken)
   useEffect(() => {
-    axios.get('http://localhost:8081/orderpending',{withCredentials:true})
+    const fetchOrder= async()=>{
+
+      axios.get('http://localhost:8081/orderpending',{withCredentials:true})
       .then(res => {
         setOrderPending(res.data.data);
         
         console.log(res);
       })
       .catch(err => console.log(err));
+    }
+    if(isSetToken){
+      fetchOrder()
+    }
   }, []);
 
 
