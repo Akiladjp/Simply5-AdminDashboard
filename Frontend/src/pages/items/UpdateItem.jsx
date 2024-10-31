@@ -24,6 +24,7 @@ export default function UpdateItem() {
 		Pre_imageUrl: "",
 		image_path: "", // URL for the previous image
 	});
+	console.log(initialData);
 	const [data, setData] = useState(initialData);
 	const [imagePreview, setImagePreview] = useState(""); // URL for image preview
 	const [fileName, setFileName] = useState("");
@@ -50,7 +51,7 @@ export default function UpdateItem() {
 					};
 					setInitialData(fetchedData);
 					setData(fetchedData);
-					setImagePreview(item.image_url); // Set initial preview
+					setImagePreview(item.image_url["url"]); // Set initial preview
 				}
 			} catch (error) {
 				console.error("Error fetching item data:", error);
