@@ -8,16 +8,12 @@ import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
-import {
-	selectRole,
-	selectToken,
-	setLoginValue,
-} from "../../Redux/Slices/LogiinSlice";
+import { selectRole, selectToken, setLoginValue } from "../../Redux/Slices/LogiinSlice";
 function Login() {
 	const API_URL = import.meta.env.VITE_API_URL;
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const role = useSelector(selectRole);
+	const role = useSelector(selectRole)
 	const isSetToken = useSelector(selectToken);
 	const [data, setdata] = useState({
 		email: "",
@@ -33,9 +29,12 @@ function Login() {
 				console.log("response:", response.data.message);
 
 				if (response.data.message === "Token is valid") {
-					if (role === "Waiter") {
+					if(role ==="Waiter"){
+					
 						navigate("/Waiter/pending-orders");
-					} else {
+					}
+					else{
+
 						navigate("/app/order/pending");
 					}
 				}

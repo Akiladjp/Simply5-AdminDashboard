@@ -171,7 +171,8 @@ Item.get("/updateItem/:id",AdminCashier, async (req, res) => {
 				...ans[0],
 				image_url: imageUrl,
 			});
-
+			
+			console.log("preeItem",preeItem);
 			return res.json({ preeItem });
 		});
 	} catch (error) {

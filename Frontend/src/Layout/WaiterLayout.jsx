@@ -9,17 +9,28 @@ const WaiterLayOut = () => {
 	const API_URL = import.meta.env.VITE_API_URL;
 	const navigate = useNavigate();
 	const [isValied, setIsValied] = useState(false);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const response = await axios.get(`${API_URL}/waiter-login-validation`, {
 					withCredentials: true,
 				});
-			console.log("response",response);
+				console.log("response", response);
 				if (response.status === 200) {
 					console.log("Login validation successful");
 					setIsValied(true);
-					navigate("/Waiter/pending-orders");
+					if (sessionStorage.getItem("activeMenuIndex") == 0) {
+						navigate("/Waiter/pending-orders");
+					} else if (sessionStorage.getItem("activeMenuIndex") == 1) {
+						navigate("/Waiter/accepted-orders");
+					} else if (sessionStorage.getItem("activeMenuIndex") == 2) {
+						navigate("/Waiter/delevered-orders");
+					} else if (sessionStorage.getItem("activeMenuIndex") == 3) {
+						navigate("/Waiter/profile");
+					} else {
+						navigate("/Waiter/pending-orders");
+					}
 				} else if (response.data.message == "Unauthorized") {
 					console.log("Please realod Page");
 					navigate("/");
