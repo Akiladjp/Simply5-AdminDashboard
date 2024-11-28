@@ -3,6 +3,7 @@ import db from "../../config/DatabaseConfig.js";
 import express from "express";
 import session from "express-session";
 import jwt from "jsonwebtoken";
+
 import AllRoleAuthentication from "../../Authorization/AllRoleAuthentication.js";
 import WaiterAuthorization from "../../Authorization/WaiterAuthorization.js";
 import AdminWaiterAuthorize from "../../Authorization/AdminWaiterAuthorize.js";
@@ -34,6 +35,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 
 								if (positionResult.length > 0) {
 									const position = positionResult[0].position;
+									console.log(position);
 									//jwt
 									const token = jwt.sign(
 										{ id: empID, userType: position },
@@ -94,7 +96,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 });
 
 adminLogin.get("/admin-login-validation", AdminCashier, async (req, res) => {
-	console.log("wada");
+	
 	try {
 		// console.log("dasf",AdminCashier.res.message);
 		const token = req.cookies.jwtToken;
@@ -156,11 +158,13 @@ adminLogin.get(
 adminLogin.get("/login-validation", (req, res) => {
 	try {
 		const token = req.cookies.jwtToken;
-		console.log(token);
+		
 		if (!token) {
+			console.log("token is missing");
 			return res.status(400).json({ message: "Token is missing" });
 		}
-
+		
+		console.log("token is valid");
 		return res.status(200).json({ message: "Token is valid" });
 	} catch (err) {
 		console.log("Error in server", err);

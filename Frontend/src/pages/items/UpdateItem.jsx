@@ -123,7 +123,7 @@ export default function UpdateItem() {
 			if (res.data.message === "success") {
 				toastr.success("Update Successful");
 				// Navigate based on the updated category
-				if (data.category === "Meal") {
+				if (data.category === "Meals") {
 					navigate("/app/items/meals");
 				} else if (data.category === "Drinks") {
 					navigate("/app/items/drinks");

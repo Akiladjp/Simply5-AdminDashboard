@@ -8,7 +8,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
-import loadingGif from "../../assets/loading.gif"
+import loadingGif from "../../assets/loading.gif";
 function MealsForm() {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -46,7 +46,8 @@ function MealsForm() {
 		const fetchData = async () => {
 			try {
 				const response = await axios.get(
-					`${API_URL}/get_subCategory/${category}`,{withCredentials:true}
+					`${API_URL}/get_subCategory/${category}`,
+					{ withCredentials: true }
 				);
 				if (response) {
 					setSubcategory(response.data.sub_category);
@@ -131,6 +132,7 @@ function MealsForm() {
 	const handleCancel = () => {
 		navigate(`/app/items/${category.toLowerCase()}`);
 	};
+
 
 	return (
 		<div className="flex justify-center w-full p-1 mt-1 rounded-xl">
@@ -271,8 +273,8 @@ function MealsForm() {
 					<button
 						type="submit"
 						className="bg-blue-600 text-white w-20 justify-center py-2 px-4 h-12 flex items-center rounded-md hover:bg-blue-800 transition duration-300"
-							disabled={loading}>
-							{loading ? (<img src={loadingGif} className="w-16 "/>) :"ADD" }
+						disabled={loading}>
+						{loading ? <img src={loadingGif} className="w-16 " /> : "ADD"}
 					</button>
 					<button
 						type="button"

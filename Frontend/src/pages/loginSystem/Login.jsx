@@ -21,32 +21,40 @@ function Login() {
 	});
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await axios.get(`${API_URL}/login-validation`, {
-					withCredentials: true,
-				});
-				console.log("response:", response.data.message);
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/login-validation`, {
+							withCredentials: true,
+						});
+            console.log("response:", response.data.message);
 
-				if (response.data.message === "Token is valid") {
-					if(role ==="Waiter"){
-					
-						navigate("/Waiter/pending-orders");
-					}
-					else{
+            if (response.data.message === "Token is valid") {
+                if (role === "Waiter") {
+                    navigate("/Waiter/pending-orders");
+                } else {
+                    navigate("/app/order/pending");
+                }
+            } else {
+                console.error("Unexpected response message:", response.data.message);
+            }
+        } catch (err) {
+            if (err.response) {
+                // Server responded with a status outside the 2xx range
+                console.error("Server error:", err.response.data.message || "Unknown error");
+            } else if (err.request) {
+                // Request was made but no response was received
+                console.error("Network error: No response from server");
+            } else {
+                // Something else happened
+                console.error("Unexpected error:", err.message);
+            }
+        }
+    };
 
-						navigate("/app/order/pending");
-					}
-				}
-			} catch (err) {
-				console.error("Error in connecting to login validation API:", err);
-			}
-		};
-
-		if (isSetToken) {
-			fetchData();
-		}
-	}, []);
+    if (isSetToken) {
+        fetchData();
+    }
+}, [isSetToken, role, navigate]);
 
 	const handleChange = (e) => {
 		setdata((data) => ({ ...data, [e.target.name]: e.target.value }));
@@ -54,13 +62,15 @@ function Login() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
+	
 		try {
-			const res = await axios.post("http://localhost:8081/adminlogin", data, {
+			const res = await axios.post(`http://localhost:8081/adminlogin`, data, {
 				withCredentials: true,
 			});
-			console.log("login", res);
+			console.log("login response", res);
+	
 			if (res.data.Login) {
+				// Update state with login values
 				dispatch(
 					setLoginValue({
 						email: res.data.email,
@@ -68,17 +78,32 @@ function Login() {
 						token: true,
 					})
 				);
-
-				console.log(res.data.redirectURL);
-				navigate(res.data.redirectURL); // Redirect the URL
+	
+				// Navigate to the redirect URL
+				console.log("Redirecting to:", res.data.redirectURL);
+				navigate(res.data.redirectURL);
 			} else {
-				toastr.warning(res.data.Message);
+				// Handle messages returned by the backend
+				toastr.warning(res.data.Message || "Login failed!");
 			}
 		} catch (err) {
-			console.error("Error during login:", err);
+			// Network or unexpected errors
+			if (err.response) {
+				// Errors returned by the server
+				console.error("Server error:", err.response.data);
+				toastr.error(err.response.data.Message || "An error occurred on the server.");
+			} else if (err.request) {
+				// No response received
+				console.error("Network error:", err.request);
+				toastr.error("No response from the server. Please check your network.");
+			} else {
+				// Other unexpected errors
+				console.error("Error during login:", err.message);
+				toastr.error("An unexpected error occurred. Please try again.");
+			}
 		}
 	};
-
+	
 	return (
 		<div className="">
 			<Header />
@@ -92,7 +117,7 @@ function Login() {
 							<input
 								required
 								placeholder="Email"
-								type="text"
+								type="email"
 								name="email"
 								onChange={handleChange}
 								value={data.email}
