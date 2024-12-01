@@ -22,7 +22,7 @@ const MainLayout = () => {
 				if (response.status === 200) {
 					console.log("Login validation successful");
 					setIsValied(true);
-					navigate("/app/order/pending");
+					
 				} else if (response.data.message === "Unauthorized") {
 					console.log("Please realod Page");
 					navigate("/");
