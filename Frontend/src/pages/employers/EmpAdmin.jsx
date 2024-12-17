@@ -25,7 +25,7 @@ function EmpAdmin() {
 
   const handleRemoveAdminClick = async (employee) => {
     try {
-      const response = await axios.put("http://localhost:8081/remove-admin", {
+      const response = await axios.put(`${API_URL}/remove-admin`, {
         withCredentials:true,
         empID: employee.empID,
       });

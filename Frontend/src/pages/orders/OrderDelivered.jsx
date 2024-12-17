@@ -6,10 +6,10 @@ import { SearchComp } from "../../components/SearchComp";
 function OrderDelivered() {
     const [orderDelivereddata, setOrderDelivered] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
-
+	const API_URL = import.meta.env.VITE_API_URL;
 	useEffect(() => {
 		const fetchOrders = async () => {
-			let url = "http://localhost:8081/orderdelivered";
+			let url = "${API_URL}/orderdelivered";
 			if (searchTerm) {
 				url += `?mobileNo=${searchTerm}`;
 			}
@@ -29,7 +29,7 @@ function OrderDelivered() {
 	// const handleDeleteOrder = (orderID) => {
 	// 	console.log(orderID);
 	// 	axios
-	// 		.delete(`http://localhost:8081/orderdelete/${orderID}`)
+	// 		.delete(`${API_URL}/orderdelete/${orderID}`)
 	// 		.then(() => {
 	// 			setOrderDelivered((prevOrders) =>
 	// 				prevOrders.filter((order) => order.orderID !== orderID)
@@ -40,7 +40,7 @@ function OrderDelivered() {
 
 	const handleDeliveredOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderstatuspaid/${orderID}`,{},{withCredentials:true})
+			.put(`${API_URL}/orderstatuspaid/${orderID}`,{},{withCredentials:true})
 			.then(() => {
 				setOrderDelivered((prevOrders) =>
 					prevOrders.map((order) =>
@@ -76,7 +76,13 @@ function OrderDelivered() {
 						/>
 					))
 				) : (
-					<div className="text-center text-gray-500">No orders found.</div>
+					<div
+						className={`
+							? "w-[100%] px-32 flex items-center justify-center mx-auto mt-12 h-20 bg-gray-100 shadow-md text-gray-600 text-lg font-semibold uppercase"
+						
+					`}>
+						  No orders at the moment. Waiting for orders to be delivered!
+					</div>
 				)}
 			</div>
 		</div>
