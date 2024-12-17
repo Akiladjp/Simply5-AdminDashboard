@@ -6,6 +6,7 @@ import domtoimage from 'dom-to-image';
 import { IoMdDownload } from "react-icons/io";
 
 function AnalysisItemToday() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [rawData ,setRawData] = useState([]);
   const [currentData, setCurrentData] = useState([]);
   const [chartOptions, setChartOptions] = useState({
@@ -57,7 +58,7 @@ function AnalysisItemToday() {
     },
     yaxis: {
       labels: {
-        formatter: function(value){;
+        formatter: function(value){
           return value.toFixed(1);
         },
         show: true,
@@ -127,7 +128,7 @@ function AnalysisItemToday() {
     }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/week',{withCredentials:true})
+    axios.get('${API_URL}/week',{withCredentials:true})
     .then(res => {
       setRawData(res.data);
       updateChartData(res.data); 

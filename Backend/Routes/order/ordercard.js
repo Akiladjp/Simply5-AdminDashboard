@@ -9,7 +9,6 @@ import AdminWaiterAuthorize from "../../Authorization/AdminWaiterAuthorize.js";
 import AllRoleAuthentication from "../../Authorization/AllRoleAuthentication.js";
 
 router.get("/orderpending", AllRoleAuthentication, (req, res) => {
-	
 	const sql1 = "SELECT * FROM orders";
 	const sql = `
         SELECT 
@@ -34,11 +33,11 @@ router.get("/orderpending", AllRoleAuthentication, (req, res) => {
 
 	db.query(sql, [], (err, rows) => {
 		if (err) {
-			console.log("rows");
+			console.error(err);
 			res.status(400).json({ error: err.message });
 			return;
 		}
-
+		console.log(rows);
 		res.json({
 			data: rows,
 		});
@@ -85,10 +84,14 @@ router.get("/orderaccepted", AllRoleAuthentication, (req, res) => {
 	});
 });
 // for waiter
-router.get("/order_waiter_accepted", WaiterAuthorization, (req, res) => {
-	const { mobileNo } = req.query;
-
-	let sql = `
+router.get(
+	"/order_waiter_accepted/:waiterID",
+	WaiterAuthorization,
+	(req, res) => {
+		const { mobileNo } = req.query;
+		const { waiterID } = req.params;
+		console.log("waiterID", waiterID);
+		let sql = `
         SELECT 
             orders.orderID, 
             orders.status, 
@@ -96,6 +99,7 @@ router.get("/order_waiter_accepted", WaiterAuthorization, (req, res) => {
             orders.tableNo, 
             orders.date, 
             orders.total,
+						orders.waiterID,
             CONCAT('[', GROUP_CONCAT(
                 CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
                 SEPARATOR ', '
@@ -105,25 +109,26 @@ router.get("/order_waiter_accepted", WaiterAuthorization, (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'accept'
+        WHERE orders.status = 'accept' AND orders.waiterID=?
     `;
 
-	if (mobileNo) {
-		sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
-	}
-
-	sql += `GROUP BY orders.orderID`;
-
-	db.query(sql, [], (err, rows) => {
-		if (err) {
-			res.status(500).json({ error: err.message });
-			return;
+		if (mobileNo) {
+			sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
 		}
-		res.json({
-			data: rows,
+
+		sql += `GROUP BY orders.orderID`;
+
+		db.query(sql, [waiterID], (err, rows) => {
+			if (err) {
+				res.status(500).json({ error: err.message });
+				return;
+			}
+			res.json({
+				data: rows,
+			});
 		});
-	});
-});
+	}
+);
 
 router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.query;
@@ -165,8 +170,13 @@ router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
 	});
 });
 
-router.get("/order_waiter_delivered", WaiterAuthorization, (req, res) => {
-	const sql = `
+router.get(
+	"/order_waiter_delivered/:waiterID",
+	WaiterAuthorization,
+	(req, res) => {
+		const { waiterID } = req.params;
+		console.log("waiterID in deleverd", waiterID);
+		const sql = `
         SELECT 
             orders.orderID, 
             orders.status, 
@@ -174,6 +184,7 @@ router.get("/order_waiter_delivered", WaiterAuthorization, (req, res) => {
             orders.tableNo, 
             orders.date, 
             orders.total,
+						orders.waiterID,
             CONCAT('[', GROUP_CONCAT(
                 CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
                 SEPARATOR ', '
@@ -183,20 +194,23 @@ router.get("/order_waiter_delivered", WaiterAuthorization, (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'delivered'
+        WHERE orders.status = 'delivered' AND orders.waiterID = ?
         GROUP BY orders.orderID;
     `;
 
-	db.query(sql, [], (err, rows) => {
-		if (err) {
-			res.status(400).json({ error: err.message });
-			return;
-		}
-		res.json({
-			data: rows,
+		db.query(sql, [waiterID], (err, rows) => {
+			if (err) {
+				console.log("error in order_waiter_delivered ",err);
+				res.status(400).json({ error: err.message });
+				return;
+			}
+			console.log("rows", rows);
+			res.json({
+				data: rows,
+			});
 		});
-	});
-});
+	}
+);
 
 router.get("/orderpaid", AdminAuthorize, (req, res) => {
 	const { mobileNo } = req.query;
@@ -330,10 +344,10 @@ router.put(
 );
 
 router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
-
 	const { orderID } = req.params;
 	const { waiterID } = req.body;
-	console.log("orderID",orderID,waiterID);
+	console.log(waiterID);
+	console.log("orderID", orderID, waiterID);
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["accept", orderID], (err, result) => {
@@ -418,8 +432,9 @@ router.put(
 	(req, res) => {
 		const { orderID } = req.params;
 		console.log("order id", orderID);
-		const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
+		const updateStatusSQL = `UPDATE orders SET status = ? WHERE orderID = ?`;
 		db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
+			console.log("result ", result);
 			if (err) {
 				console.log(err);
 				res.status(400).json({ error: err.message });
@@ -433,6 +448,33 @@ router.put(
 		});
 	}
 );
+
+// router.patch("/orderstatus/:orderID", WaiterAuthorization, (req, res) => {
+// 	const { orderID } = req.params;
+// 	const { status } = req.body; // Accept `status` from the request body
+
+// 	// Validate the `status` field
+// 	if (!status) {
+// 		return res.status(400).json({ error: "Status is required" });
+// 	}
+
+// 	const updateStatusSQL = "UPDATE `orders` SET `status` = ? WHERE `orderID` = ?";
+// 	db.query(updateStatusSQL, [status, orderID], (err, result) => {
+// 		if (err) {
+// 			console.error(err);
+// 			return res.status(500).json({ error: err.message });
+// 		}
+// 		if (result.affectedRows > 0) {
+// 			console.log("Status updated successfully:", result);
+// 			res
+// 				.status(200)
+// 				.json({ message: `Order ${orderID} status updated to '${status}'` });
+// 		} else {
+// 			res.status(404).json({ error: `Order ${orderID} not found` });
+// 		}
+// 	});
+// });
+
 router.put("/orderstatuspaid/:orderID", AdminCashier, (req, res) => {
 	const { orderID } = req.params;
 

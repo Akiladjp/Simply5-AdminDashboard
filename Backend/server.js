@@ -61,6 +61,7 @@ import ordercard from "./Routes/order/ordercard.js"
 
 import item from "./Routes/Item/item.js";
 import UpdateEmployee from "../Backend/Routes/employee/updateEmployee.js";
+import notify from "../Backend/Routes/notification/notification.js"
 
 import orderSearch from "./Routes/order/orderSearch.js";
 import offer from "./Routes/offer/offer.js";
@@ -87,8 +88,10 @@ app.use("/", ordercard);
 app.use("/", item);
 app.use("/", UpdateEmployee);
 app.use("/", offer);
-app.use("/", waiterProfile);
 app.use("/", summaryEmployee);
+app.use("/", notify);
+
+app.use("/", waiterProfile);
 app.use("/", waiterPicture);
 
 

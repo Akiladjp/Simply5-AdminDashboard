@@ -10,7 +10,7 @@ function Employee() {
 	const [email, setEmail] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [loading, setLoading] = useState(false); // Loading state for confirming admin
-
+	const API_URL = import.meta.env.VITE_API_URL;
 	const validateEmail = (email) => {
 		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		return regex.test(email);
@@ -18,7 +18,7 @@ function Employee() {
 
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/employeecard/", { withCredentials: true })
+			.get(`${API_URL}/employeecard/`, { withCredentials: true })
 			.then((res) => {
 				console.log(res.data.employees);
 				setEmployees(res.data.employees);
@@ -36,7 +36,7 @@ function Employee() {
 
 	const fetchEmployees = () => {
 		axios
-			.get("http://localhost:8081/employeecard/", { withCredentials: true })
+			.get("${API_URL}/employeecard/", { withCredentials: true })
 			.then((res) => {
 				console.log(res.data.employees);
 				setEmployees(res.data.employees);
@@ -59,7 +59,7 @@ function Employee() {
 
 		setLoading(true);
 		try {
-			const response = await axios.post("http://localhost:8081/make-admin", {
+			const response = await axios.post("${API_URL}/make-admin", {
 				withCredentials: true,
 				email,
 				empID: selectedEmployee.empID,

@@ -64,7 +64,7 @@ function Login() {
 		e.preventDefault();
 	
 		try {
-			const res = await axios.post(`http://localhost:8081/adminlogin`, data, {
+			const res = await axios.post(`${API_URL}/adminlogin`, data, {
 				withCredentials: true,
 			});
 			console.log("login response", res);

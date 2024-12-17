@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function ItemCard({ data }) {
+	const API_URL = import.meta.env.VITE_API_URL;
 	const [buttonText, setButtonText] = useState(
 		data.available ? data.available : "UNAVAILABLE"
 	); // Initialize from data
@@ -25,7 +26,7 @@ export default function ItemCard({ data }) {
 	const updateDB = async (newStatus, id) => {
 		try {
 			const response = await axios.put(
-				`http://localhost:8081/updateAvailable/${id}`,
+				`${API_URL}/updateAvailable/${id}`,
 				{
 					available: newStatus,
 				},
@@ -45,7 +46,7 @@ export default function ItemCard({ data }) {
 	const ItemDelete = async (id) => {
 		try {
 			const response = await axios.delete(
-				`http://localhost:8081/delete_item/${id}`,
+				`${API_URL}/delete_item/${id}`,
 				{ withCredentials: true }
 			);
 			if (response.data.message.includes("Error")) {

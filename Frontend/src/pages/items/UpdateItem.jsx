@@ -13,6 +13,7 @@ export default function UpdateItem() {
 	const navigate = useNavigate();
 	const { itemID } = useParams();
 	const [loading, setLoading] = useState(false);
+	const API_URL = import.meta.env.VITE_API_URL;
 	const [initialData, setInitialData] = useState({
 		name: "",
 		category: "",
@@ -33,7 +34,7 @@ export default function UpdateItem() {
 		const fetchItemData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:8081/updateItem/${itemID}`
+					`${API_URL}/updateItem/${itemID}`
 					,{withCredentials:true}
 				);
 
@@ -110,7 +111,7 @@ export default function UpdateItem() {
 		console.log(data.new_image);
 		try {
 			const res = await axios.put(
-				`http://localhost:8081/updateItem/${itemID}`,
+				`${API_URL}/updateItem/${itemID}`,
 				formData,
 				{
 					withCredentials: true,
@@ -145,7 +146,7 @@ export default function UpdateItem() {
 
 	const handleCancel = () => {
 		// Navigate back based on the item's category
-		if (data.category === "Meal") {
+		if (data.category === "Meals") {
 			navigate("/app/items/meals");
 		} else if (data.category === "Drinks") {
 			navigate("/app/items/drinks");

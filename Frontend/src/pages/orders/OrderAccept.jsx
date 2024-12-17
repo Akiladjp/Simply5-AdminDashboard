@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { OrderCard } from "../../components/OrderCard";
 import axios from "axios";
 import { SearchComp } from "../../components/SearchComp";
-
+import { FaUserCheck } from "react-icons/fa6";
 function OrderAccept() {
 	const [orderAcceptdata, setOrderAccept] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
-
+	const API_URL = import.meta.env.VITE_API_URL;
 	useEffect(() => {
 		const fetchOrders = async () => {
-			let url = "http://localhost:8081/orderaccepted";
+			let url = `${API_URL}/orderaccepted`;
 			if (searchTerm) {
 				url += `?mobileNo=${searchTerm}`;
 			}
@@ -26,31 +26,6 @@ function OrderAccept() {
 		fetchOrders();
 	}, [searchTerm]);
 
-	// const handleDeleteOrder = (orderID) => {
-	// 	console.log(orderID);
-	// 	axios
-	// 		.delete(`http://localhost:8081/orderdelete/${orderID}`)
-	// 		.then(() => {
-	// 			setOrderAccept((prevOrders) =>
-	// 				prevOrders.filter((order) => order.orderID !== orderID)
-	// 			);
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// };
-
-	// const handleAcceptOrder = (orderID) => {
-	// 	axios
-	// 		.put(`http://localhost:8081/orderstatuspaid/${orderID}`)
-	// 		.then(() => {
-	// 			setOrderAccept((prevOrders) =>
-	// 				prevOrders.map((order) =>
-	// 					order.orderID === orderID ? { ...order, status: "paid" } : order
-	// 				)
-	// 			);
-	// 			window.location.reload();
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// };
 
 	return (
 		<div className="w-full flex flex-col mt-8 p-4">
@@ -67,11 +42,11 @@ function OrderAccept() {
 							// onAccept={handleAcceptOrder}
 							title={
 								orderacceptdata.status === "accept"	
-									? "Delivering"
+									? <FaUserCheck />
 									: ""
 							}
 							buttontextColor={orderacceptdata.status === "accept" ? "text-[rgb(225,0,0)]" : "text-[rgb(255,255,255)]]"}
-							borderColor={orderacceptdata.status === "accept" ? "border-[rgb(225,0,0)]" : "border-[rgb(0,127,168)]"}
+							borderColor={orderacceptdata.status === "accept" ? "border-[rgb(225,255,255)]" : "border-[rgb(0,127,168)]"}
 						/>
 					))
 				) : (

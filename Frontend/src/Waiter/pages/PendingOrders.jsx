@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { selectEmail } from "../../Redux/Slices/LogiinSlice";
 
 function PendingOrders() {
-	const [waiterID,setWaiterID] = useState(0);
+	const API_URL = import.meta.env.VITE_API_URL;
+	const [waiterID, setWaiterID] = useState(0);
 	const [orderPendingdata, setOrderPending] = useState([]);
 	const dispatch = useDispatch();
 	// const navigate = useNavigate();
@@ -18,16 +19,19 @@ function PendingOrders() {
 	//gettinhh setWaiterID
 	useEffect(() => {
 		const fetchData = async () => {
-			const response = await axios.get(`http://localhost:8081/waiterID/${email}`,{withCredentials:true})
-		if(response){
-			setWaiterID(response.data.waiterID)
+			const response = await axios.get(
+				`${API_URL}/waiterID/${email}`,
+				{ withCredentials: true }
+			);
+			if (response) {
+				setWaiterID(response.data.waiterID);
 			}
 		};
 		fetchData();
 	}, []);
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/orderpending",{withCredentials:true})
+			.get(`${API_URL}/orderpending`, { withCredentials: true })
 			.then((res) => {
 				setOrderPending(res.data.data);
 			})
@@ -36,7 +40,9 @@ function PendingOrders() {
 
 	const handleDeleteOrder = (orderID) => {
 		axios
-			.delete(`http://localhost:8081/orderdelete/${orderID}`,{withCredentials:true})
+			.delete(`${API_URL}/orderdelete/${orderID}`, {
+				withCredentials: true,
+			})
 			.then(() => {
 				setOrderPending((prevOrders) =>
 					prevOrders.filter((order) => order.orderID !== orderID)
@@ -45,15 +51,17 @@ function PendingOrders() {
 			.catch((err) => console.log(err));
 	};
 
-
 	const handleAcceptOrder = (orderID) => {
 		axios
-			.put(`http://localhost:8081/orderaccept/${orderID}`,{},{waiterID,withCredentials:true})
+			.put(
+				`${API_URL}/orderaccept/${orderID}`,
+				{ waiterID },
+				{ waiterID, withCredentials: true }
+			)
 			.then(() => {
-				
 				console.log(orderID);
-				
-          //  window.location.reload();
+
+				//  window.location.reload();
 				// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
 			})
 			.catch((err) => console.log(err));
@@ -61,22 +69,19 @@ function PendingOrders() {
 	return (
 		<div className="pt-20 md:pt-28 flex  flex-col gap-y-4 ">
 			<div className="mb-36 gap-y-4 flex flex-col">
-
-			{Array.isArray(orderPendingdata) &&
-				orderPendingdata.map((orderpendingdata, index) => (
-					
-					<OrderCard
-					key={index}
-					data={orderpendingdata}
-					onDelete={handleDeleteOrder}
-					onAccept={handleAcceptOrder}
-					title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}
-					/>
-				))}
-				</div>
+				{Array.isArray(orderPendingdata) &&
+					orderPendingdata.map((orderpendingdata, index) => (
+						<OrderCard
+							key={index}
+							data={orderpendingdata}
+							onDelete={handleDeleteOrder}
+							onAccept={handleAcceptOrder}
+							title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}
+						/>
+					))}
+			</div>
 		</div>
 	);
-
 }
 
 export default PendingOrders;

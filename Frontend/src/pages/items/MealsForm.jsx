@@ -41,10 +41,11 @@ function MealsForm() {
 		setIsFocused(false);
 		setData((prevData) => ({ ...prevData, sub_category: category }));
 	};
-
+	console.log(category);
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
+				
 				const response = await axios.get(
 					`${API_URL}/get_subCategory/${category}`,
 					{ withCredentials: true }
@@ -99,7 +100,7 @@ function MealsForm() {
 
 		try {
 			const res = await axios.post(
-				"http://localhost:8081/additemevalues",
+				`${API_URL}/additemevalues`,
 				formData,
 				{
 					headers: {
@@ -132,7 +133,6 @@ function MealsForm() {
 	const handleCancel = () => {
 		navigate(`/app/items/${category.toLowerCase()}`);
 	};
-
 
 	return (
 		<div className="flex justify-center w-full p-1 mt-1 rounded-xl">

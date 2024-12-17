@@ -5,7 +5,7 @@ import Header from "../../components/Header";
 
 function OTPInput() {
   const navigate = useNavigate();
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const [values, setValues] = useState({
     email: "",
   });
@@ -58,7 +58,7 @@ function OTPInput() {
   const verfiyOTP = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:8081/api/otp", [email, OTPinput])
+      .post(`${API_URL}/api/otp`, [email, OTPinput])
       .then((res) => {
         if (res.data.Status === "Success") {
           navigate("/resetpassword", { state: { some: email } });

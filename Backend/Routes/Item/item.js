@@ -70,11 +70,11 @@ Item.get("/getiteMeal", AdminCashier,async (req, res) => {
 			if (err) return res.json({ Message: "Error inside server" });
 
 			const items = [];
-			console.log(ans.length);
+			
 			const maxItems = Math.min(15, ans.length);
 			for (var i = 0; i < maxItems; i++) {
 				imageUrl = await getImage(ans[i].image_link);
-				console.log(imageUrl.message);
+				// console.log(imageUrl.message);
 
 				items.push({
 					...ans[i],
@@ -172,7 +172,7 @@ Item.get("/updateItem/:id",AdminCashier, async (req, res) => {
 				image_url: imageUrl,
 			});
 			
-			console.log("preeItem",preeItem);
+		
 			return res.json({ preeItem });
 		});
 	} catch (error) {

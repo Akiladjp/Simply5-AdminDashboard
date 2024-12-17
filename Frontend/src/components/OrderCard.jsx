@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,borderColor,buttonColor }) => {
   const [showDetails, setShowDetails] = useState(false);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const toggleDetails = () => {
     setShowDetails((prevShowDetails) => !prevShowDetails);
   };
@@ -12,7 +12,7 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
   const items = data.items ? JSON.parse(data.items) : [];
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:8081/orderdelete/${data.orderID}`,{withCredentials:true})
+    axios.delete(`${API_URL}/orderdelete/${data.orderID}`,{withCredentials:true})
       .then(() => {
         if (onDelete) {
           onDelete(data.orderID);
@@ -23,7 +23,7 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
 
   const handleAccept = () => {
     console.log("in handle Accept");
-    axios.put(`http://localhost:8081/orderaccept/${data.orderID}`, {}, { withCredentials: true }) // Note the empty object for data payload
+    axios.put(`${API_URL}/orderaccept/${data.orderID}`, {}, { withCredentials: true }) // Note the empty object for data payload
       .then(() => {
         if (onAccept) {
           onAccept(data.orderID);
@@ -66,7 +66,7 @@ export const OrderCard = ({ data, onDelete, onAccept, title, buttontextColor,bor
           </button>
           {data.status !== 'paid' && (
             <button
-              className={`${buttontextColor} ${buttonColor} w-[110px] py-1.5 border-2 ${borderColor} font-semibold lg:text-xl`}
+              className={`${buttontextColor} ${buttonColor} flex justify-center items-center w-[110px] py-1.5 border-2 ${borderColor} font-semibold lg:text-xl`}
               onClick={handleAccept}
             >
               {title}
