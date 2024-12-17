@@ -11,14 +11,14 @@ function EmployeeCard({ data, onAdminClick, onRemoveAdminClick }) {
   const isAdmin = data.isAdmin === 1;
   const location = useLocation();
   const isAdminPage = location.pathname.includes("/app/employers/admin");
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const ItemDelete = async (id) => {
 
     console.log('Clicked');
 
     try {
       const response = await axios.delete(
-        `http://localhost:8081/delete_emp/${id}`
+        `${API_URL}/delete_emp/${id}`
       );
       if (response.data.message.includes("Error")) {
         alert(response.data.message);

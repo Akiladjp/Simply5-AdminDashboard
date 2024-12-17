@@ -11,6 +11,7 @@ import { FaUserGroup } from "react-icons/fa6";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 
 function UpdateEmployee() {
+	const API_URL = import.meta.env.VITE_API_URL;
 	const navigate = useNavigate();
 	const { empID } = useParams();
 	const [preemployees, setpreEmployees] = useState([""]);
@@ -32,7 +33,7 @@ function UpdateEmployee() {
 		const fetchEmployeeData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:8081/updateEmployee/${empID}`,
+					`${API_URL}/updateEmployee/${empID}`,
 					{ withCredentials: true }
 				);
 
@@ -69,7 +70,7 @@ function UpdateEmployee() {
 
 		try {
 			const res = await axios.put(
-				`http://localhost:8081/updateEmployee/${empID}`,
+				`${API_URL}/updateEmployee/${empID}`,
 				data,
 				{ withCredentials: true }
 			);

@@ -39,7 +39,8 @@ adminLogin.post("/adminlogin", async (req, res) => {
 									//jwt
 									const token = jwt.sign(
 										{ id: empID, userType: position },
-										process.env.JWT_SECRET_KEY
+										process.env.JWT_SECRET_KEY,
+										{expiresIn: "1d"}
 									);
 
 									// Redirect based on position

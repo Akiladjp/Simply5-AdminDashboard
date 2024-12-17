@@ -6,6 +6,7 @@ import domtoimage from 'dom-to-image';
 import { IoMdDownload } from "react-icons/io";
 
 function AnalysisItemToday() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [rawData ,setRawData] = useState([]);
   const [currentData, setCurrentData] = useState([]);
   const [chartOptions, setChartOptions] = useState({
@@ -127,7 +128,7 @@ function AnalysisItemToday() {
     }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:8081/month',{withCredentials:true})
+    axios.get(`${API_URL}/month`,{withCredentials:true})
     .then(res => {
       setRawData(res.data);
       updateChartData(res.data); 

@@ -4,11 +4,11 @@ import EmployeeCard from "../../components/EmployeeCard";
 
 function EmpAdmin() {
   const [employees, setEmployees] = useState([]);
-
+  const API_URL = import.meta.env.VITE_API_URL;
   // Fetch employees data
   const fetchEmployees = () => {
     axios
-      .get("http://localhost:8081/employeecard/",{withCredentials:true})
+      .get(`${API_URL}/employeecard/`,{withCredentials:true})
       .then((res) => {
         console.log(res.data.employees);
         setEmployees(res.data.employees);

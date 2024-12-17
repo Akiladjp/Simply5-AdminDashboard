@@ -34,7 +34,7 @@ waiterProfile.get("/waiterProfile/:email", WaiterAuthorization, (req, res) => {
 	});
 });
 
-waiterProfile.get("/waiterID/:email",WaiterAuthorization, (req, res) => {
+waiterProfile.get("/waiterID/:email", WaiterAuthorization, (req, res) => {
 	const email = req.params.email;
 	try {
 		const sql = "SELECT `empID` FROM admin WHERE email=?";
@@ -42,12 +42,79 @@ waiterProfile.get("/waiterID/:email",WaiterAuthorization, (req, res) => {
 			if (err) {
 				console.log("server error", err);
 			}
-			// console.log(result[0]["empID"])
+			console.log(result[0]["empID"]);
 			return res.json({ waiterID: result[0]["empID"] });
 		});
 	} catch (err) {
 		console.log("server Error", err);
 	}
 });
+
+waiterProfile.get("/OrderCount/:waiterID", WaiterAuthorization, (req, res) => {
+	console.log("sgsfdjglsfdjgfsd");
+	const date = new Date().toISOString().split("T")[0];
+	const { waiterID } = req.params;
+	console.log(date);
+	try {
+		// Corrected SQL query to count orders grouped by WaiterID
+		const sql = `
+		SELECT WaiterID, COUNT(*) AS orderCount
+		FROM orders
+		WHERE DATE(CONVERT_TZ(date, '+00:00', '+05:30')) = ? AND waiterID =?
+		
+	`;
+
+		db.query(sql, [date, waiterID], (err, result) => {
+			if (err) {
+				console.log("SQL error in getting order count:", err);
+				return res
+					.status(500)
+					.json({ message: "Error in querying the database." });
+			}
+			console.log(result.length);
+
+			return res.json({ count: result.length });
+		});
+	} catch (err) {
+		console.log("Server error:", err);
+		return res.status(500).json({ message: "Server error." });
+	}
+});
+
+waiterProfile.get(
+	"/OrderCountMonth/:waiterID",
+	WaiterAuthorization,
+	(req, res) => {
+		try {
+			// Get the current year and month
+			const today = new Date();
+			const year = today.getFullYear();
+			const month = String(today.getMonth() + 1).padStart(2, "0"); // Month is 0-based
+			const { waiterID } = req.params;
+
+			// SQL query to count orders grouped by WaiterID for the current month
+			const sql = `
+          SELECT WaiterID, COUNT(*) AS orderCount
+          FROM orders
+          WHERE YEAR(date) = ? AND MONTH(date) = ? AND waiterID = ?
+          GROUP BY WaiterID
+      `;
+
+			db.query(sql, [year, month, waiterID], (err, result) => {
+				if (err) {
+					console.log("SQL error in getting order count:", err);
+					return res
+						.status(500)
+						.json({ message: "Error in querying the database." });
+				}
+
+				return res.json({ count: result.length });
+			});
+		} catch (err) {
+			console.log("Server error:", err);
+			return res.status(500).json({ message: "Server error." });
+		}
+	}
+);
 
 export default waiterProfile;

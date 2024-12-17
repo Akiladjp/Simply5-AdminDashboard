@@ -6,10 +6,10 @@ import axios from "axios";
 
 function ItemsDesserts() {
 	const [items, setItem] = useState([]);
-
+	const API_URL = import.meta.env.VITE_API_URL;
 	useEffect(() => {
 		axios
-			.get("http://localhost:8081/getiteDesserts",{withCredentials:true})
+			.get(`${API_URL}/getiteDesserts`,{withCredentials:true})
 			.then((res) => {
 				console.log(res.data.items); // Log the employees array from the response
 				setItem(res.data.items);

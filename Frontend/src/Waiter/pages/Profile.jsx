@@ -22,12 +22,58 @@ function Profile() {
 		address: "",
 		email,
 	});
+	const [waiterID, setWaiterID] = useState(0);
+	const [todayOrders, setTodayOrdes] = useState(0);
+	const [monthOrders, setMonthOrdes] = useState(0);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(`${API_URL}/waiterID/${email}`, {
+					withCredentials: true,
+				});
+				if (response) {
+					console.log(response.data.waiterID);
+					setWaiterID(response.data.waiterID);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const response = await axios.get(`${API_URL}/OrderCount/${waiterID}`, {
+				withCredentials: true,
+			});
+			if (response) {
+				console.log(response.data.count);
+				setTodayOrdes(response.data.count)
+			}
+		};
+		fetchData();
+	}, [waiterID]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const response = await axios.get(`${API_URL}/OrderCountMonth/${waiterID}`, {
+				withCredentials: true,
+			});
+			if (response) {
+				console.log(response.data.orderCountMap);
+				setMonthOrdes(response.data.count)
+			}
+		};
+		fetchData();
+	}, [waiterID]);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:8081/waiterProfile/${email}`,
+					`${API_URL}/waiterProfile/${email}`,
 					{ withCredentials: true }
 				);
 
@@ -73,6 +119,8 @@ function Profile() {
 		handleCookies();
 		sessionStorage.removeItem("activeMenuIndex");
 	};
+
+	useEffect(() => {}, []);
 	return (
 		<div className="pt-20 px-4 md:px-8 lg:px-12">
 			<div className="border-[#007FA8] border text-black rounded-lg p-8">
@@ -103,8 +151,10 @@ function Profile() {
 
 			<div className="px-4 md:px-8 lg:px-12 border-[#007FA8] border text-black rounded-lg p-8 mt-8">
 				<div className=" flex flex-col mr-3 text-xl">
-					<h2 className="mb-4">Today orders:</h2>
-					<h2>Monthly orders:</h2>
+					<h2 className="mb-4 flex gap-x-3">Today orders:<p className="border-2 border-[#007FA8] w-10 flex justify-center items-center  h-8 rounded">{todayOrders}</p></h2>
+					<h2 className="flex  gap-x-3">Monthly orders:
+						<p className=" bg-[#007FA8] w-10 flex justify-center items-center  h-8 rounded text-white">{monthOrders}</p>
+					</h2>
 				</div>
 			</div>
 

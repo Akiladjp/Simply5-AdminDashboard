@@ -17,7 +17,7 @@ function EmployeeForm() {
 	const navigate = useNavigate();
 	const [image, setImage] = useState(null);
 	const [fileName, setFileName] = useState(["No selected file"]);
-
+	const API_URL = import.meta.env.VITE_API_URL;
 	const [data, setData] = useState({
 		name: "",
 		position: "",
@@ -50,7 +50,7 @@ function EmployeeForm() {
 
 		try {
 			const res = await axios.post(
-				"http://localhost:8081/employeeform",
+				`${API_URL}/employeeform`,
 
 				formData,
 				{

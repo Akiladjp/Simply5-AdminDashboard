@@ -6,6 +6,7 @@ import domtoimage from 'dom-to-image';
 import { IoMdDownload } from 'react-icons/io';
 
 function AnalysisTimeToday() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [data, setData] = useState({ names: [], todayData: [] });
   const [selectedOption, setSelectedOption] = useState('');
   const [chartOptions, setChartOptions] = useState({
@@ -77,7 +78,7 @@ function AnalysisTimeToday() {
   }, []);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/timetoday?selectedOption=${selectedOption}`,{withCredentials:true})
+    axios.get(`${API_URL}/timetoday?selectedOption=${selectedOption}`,{withCredentials:true})
       .then((res) => {
         const { names = [], todayData = [] } = res.data;
         setData({ names, todayData });

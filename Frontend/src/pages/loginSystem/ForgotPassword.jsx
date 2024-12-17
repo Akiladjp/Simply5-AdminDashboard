@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
 
 function ForgotPassword() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [values, setValues] = useState({
     email: "",
   });
@@ -19,7 +20,7 @@ function ForgotPassword() {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:8081/forget-password", values)
+      .post(`${API_URL}/forget-password`, values)
       .then((res) => {
         if (res.data.Status === "Success") {
           navigate("/api/otp", { state: { some: values.email } });

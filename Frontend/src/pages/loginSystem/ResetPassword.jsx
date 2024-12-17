@@ -8,7 +8,7 @@ function ResetPassword() {
     password: "",
     confirmpassword: ''
   });
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -45,7 +45,7 @@ function ResetPassword() {
     setErrorMessage('');
   
     try {
-      const response = await axios.post('http://localhost:8081/resetpassword', [email,values.password]);
+      const response = await axios.post(`${API_URL}/resetpassword`, [email,values.password]);
       if(response.data.Status==="Success"){
         console.log("changed");
         navigate('/');

@@ -5,27 +5,61 @@ import {
 	resetTimerState,
 	setTimerState,
 } from "../../Redux/Slices/OrderTimerSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { selectEmail } from "../../Redux/Slices/LogiinSlice";
 
 function AcceptedOrders() {
 	const [orderAcceptdata, setOrderAccept] = useState([]);
 	const dispatch = useDispatch();
+	const email = useSelector(selectEmail);
+	const [waiterID, setWaiterID] = useState(0);
 
 	useEffect(() => {
-		axios
-			.get("http://localhost:8081/order_waiter_accepted",{withCredentials:true})
-			.then((res) => {
-				setOrderAccept(res.data.data); // Update to set the data array
-				// Log the response data
-			})
-			.catch((err) => console.log(err));
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(
+					`http://localhost:8081/waiterID/${email}`,
+					{ withCredentials: true }
+				);
+				if (response) {
+					// console.log(response.data.waiterID);
+					setWaiterID(response.data.waiterID);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		fetchData();
 	}, []);
 
+	useEffect(() => {
+		console.log(waiterID);
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(
+					`http://localhost:8081/order_waiter_accepted/${waiterID}`,
+					{
+						withCredentials: true,
+					}
+				);
+				if (response) {
+					setOrderAccept(response.data.data); // Update to set the data array
+				}
+			} catch (error) {
+				console.log(error);
+			}
+
+			// Log the response data
+		};
+		fetchData();
+	}, [waiterID]);
 
 	const handleDeleteOrder = (orderID) => {
 		console.log(orderID);
 		axios
-			.delete(`http://localhost:8081/orderdelete/${orderID}`,{withCredentials:true})
+			.delete(`http://localhost:8081/orderdelete/${orderID}`, {
+				withCredentials: true,
+			})
 			.then(() => {
 				setOrderAccept((prevOrders) =>
 					prevOrders.filter((order) => order.orderID !== orderID)
@@ -34,16 +68,20 @@ function AcceptedOrders() {
 			.catch((err) => console.log(err));
 	};
 
-	const handleAcceptOrder = (orderID) => {
-		axios
-			.put(`http://localhost:8081/orderstatusdelivered/${orderID}`,{},{withCredentials:true})
-			.then(() => {
-				console.log(res.data);
+	const handleAcceptOrder = async (orderID) => {
+		try {
+			const response = await axios.put(
+				`http://localhost:8081/orderstatusdelivered/${orderID}`,
+				{},
+				{ withCredentials: true }
+			);
+			if (response) {
 				window.location.reload();
-	
-				// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
-			})
-			.catch((err) => console.log(err));
+			}
+			console.log("no data");
+		} catch (error) {
+			console.log(error);
+		}
 	};
 	return (
 		<div className="pt-20 md:pt-28 flex flex-col gap-y-4   w-full top-16 overflow-y-scroll  mb-[98px]">

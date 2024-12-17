@@ -19,13 +19,16 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 	};
 
 	const handleAccept = () => {
-		console.log("in accept");
 		axios
-			.put(`http://localhost:8081/orderaccept/${data.orderID}`,{},{withCredentials:true})
+			.put(
+				`http://localhost:8081/orderaccept/${data.orderID}`,
+				{},
+				{ withCredentials: true }
+			)
 			.then(() => {
 				if (onAccept) {
 					onAccept(data.orderID);
-					
+
 					// Reload the page after 5 seconds (5000 milliseconds)
 					setTimeout(() => {
 						window.location.reload();
@@ -34,7 +37,13 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 			})
 			.catch((err) => console.log(err));
 	};
-	
+
+	const handleDone = () => {
+		onAccept(data.orderID);
+		setTimeout(() => {
+			window.location.reload();
+		}, 500);
+	};
 
 	// const handleAcceptOrder = () => {
 	//   const currentTimestamp = new Date();
@@ -67,7 +76,7 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 				return (
 					<button
 						className="px-[12px] py-1 text-sm font-medium text-white  rounded-none  border-[#007FA8] border-[1px] bg-[#007FA8]  md:text-lg md:ml-4  md:px-6 ml-2"
-						onClick={handleAccept}>
+						onClick={handleDone}>
 						DONE
 					</button>
 				);
@@ -120,7 +129,12 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 						</div>
 					</div>
 				))}
-				<div className={`${data.status === "accept" || data.status=="delivered" ? "flex" : "hidden"}`}>
+				<div
+					className={`${
+						data.status === "accept" || data.status == "delivered"
+							? "flex"
+							: "hidden"
+					}`}>
 					{/* <Stopwatch orderID={data.orderID} /> */}
 				</div>
 			</div>
