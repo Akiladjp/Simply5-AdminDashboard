@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
-import loading from '../assets/loading1.gif'
+import loading from "../assets/loading1.gif";
 export const OrderCard = ({
 	data,
 	onDelete,
@@ -10,6 +10,7 @@ export const OrderCard = ({
 	buttontextColor,
 	borderColor,
 	buttonColor,
+	waiterID,
 }) => {
 	const [showDetails, setShowDetails] = useState(false);
 	const API_URL = import.meta.env.VITE_API_URL;
@@ -72,7 +73,6 @@ export const OrderCard = ({
 				if (response) {
 					console.log(response.data.message);
 					window.location.reload();
-					
 				}
 			} catch (error) {
 				console.log(error);
@@ -163,8 +163,6 @@ export const OrderCard = ({
 						</div>
 					</form>
 				</div>
-
-			
 			</div>
 
 			<div className="border-[rgb(0,127,168)] border-[1px] px-4 w-full p-2 ">
@@ -202,9 +200,11 @@ export const OrderCard = ({
 							<button
 								className={`${buttontextColor} ${buttonColor} flex justify-center items-center w-[110px] py-1.5 border-2 ${borderColor} font-semibold lg:text-xl`}
 								onClick={handleAccept}>
-							{title === "delevering" ? <img className="w-20 h-12" src={loading}/> : title}
-
-
+								{title === "delevering" ? (
+									<img className="w-20 h-12" src={loading} />
+								) : (
+									title
+								)}
 							</button>
 						)}
 					</div>
@@ -255,7 +255,18 @@ export const OrderCard = ({
 							</tbody>
 						</table>
 
-						<div className="flex justify-end mt-6 text-lg lg:text-xl xl:text-2xl">
+						<div
+							className={`${
+								data.status == "accept" || data.status=="delivered"
+									? "flex justify-between mt-6 text-lg lg:text-xl xl:text-2xl w-full "
+									: "flex justify-end mt-6 text-lg lg:text-xl xl:text-2xl w-full  "
+							}`}>
+							<span
+								className={`${
+									data.status == "accept" || data.status=="delivered" ? "text-red-600 text-base" : "hidden"
+								}`}>
+								Accept by: {data.waiterName} -{data.waiterID}
+							</span>
 							<span className="font-semibold">TOTAL: Rs.{data.total}</span>
 						</div>
 
