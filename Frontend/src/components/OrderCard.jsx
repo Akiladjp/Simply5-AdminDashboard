@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
+import { IoClose } from "react-icons/io5";
+import loading from '../assets/loading1.gif'
 export const OrderCard = ({
 	data,
 	onDelete,
@@ -15,10 +16,10 @@ export const OrderCard = ({
 	const toggleDetails = () => {
 		setShowDetails((prevShowDetails) => !prevShowDetails);
 	};
+	const [blurEnable, setBlurEnable] = useState(false);
 	const [isAssign, setIsAssign] = useState(false);
 	const [waiteridies, setWaiterID] = useState([]);
 	const [selectWaiterid, setSelectwaiterid] = useState(0);
-
 	// Parse the items JSON string if it exists
 	const items = data.items ? JSON.parse(data.items) : [];
 
@@ -38,6 +39,7 @@ export const OrderCard = ({
 		};
 		fetchData();
 	}, []);
+
 	const handleDelete = () => {
 		axios
 			.delete(`${API_URL}/orderdelete/${data.orderID}`, {
@@ -50,19 +52,32 @@ export const OrderCard = ({
 			})
 			.catch((err) => console.error("Error deleting the order:", err));
 	};
+
 	console.log("selectWaiterid", selectWaiterid);
-	const handleAccept = () => {
+
+	const handleAccept = async () => {
 		console.log("in handle Accept");
 		if (title == "ACCEPT") {
+			setBlurEnable(true);
 			setIsAssign(true);
+		} else if (title == "PAID") {
+			try {
+				const response = await axios.put(
+					`${API_URL}/orderstatuspaid/${data.orderID}`,
+					{},
+					{
+						withCredentials: true,
+					}
+				);
+				if (response) {
+					console.log(response.data.message);
+					window.location.reload();
+					
+				}
+			} catch (error) {
+				console.log(error);
+			}
 		}
-		// axios.put(`${API_URL}/orderaccept/${data.orderID}`, {}, { withCredentials: true }) // Note the empty object for data payload
-		//   .then(() => {
-		//     if (onAccept) {
-		//       onAccept(data.orderID);
-		//     }
-		//   })
-		//   .catch(err => console.log(err));
 	};
 
 	const handleSelectChange = (event) => {
@@ -70,54 +85,65 @@ export const OrderCard = ({
 		console.log("Changed to:", selectedWaiterID);
 		// Process the selected waiter ID as needed
 	};
+
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const selectedWaiterID = event.target.waiterID.value;
 
 		setSelectwaiterid(selectedWaiterID);
-    accptWithId();
-		// Use callback form to ensure the state update takes effect immediately
-		// setSelectwaiterid(() => {
-		// 	console.log("Previous Waiter ID:", prevID);
-		// 	return selectedWaiterID;
-		// });
-
-		// Additional console log to confirm the state update
+		accptWithId(selectedWaiterID);
 	};
+
 	console.log(selectWaiterid);
 
-	const accptWithId = async () => {
+	const accptWithId = async (selectWaiterid) => {
+		console.log("fgsfgsfdgsfgfsdgs");
 		console.log("Updated Waiter ID in state:", selectWaiterid);
-		axios
-			.put(
-				`${API_URL}/orderaccept/${data.orderID}`,
-				{ selectWaiterid },
-				{ withCredentials: true }
-			)
-			.then(() => {
-				if (onAccept) {
-					onAccept(data.orderID);
-				}
-			})
-			.catch((err) => console.log(err));
+		const response = await axios.put(
+			`${API_URL}/orderaccept/${data.orderID}`,
+			{ selectWaiterid },
+			{ withCredentials: true }
+		);
+		if (response) {
+			window.location.reload();
+			onAccept(data.orderID);
+		}
+	};
+	const closePopUp = () => {
+		setIsAssign(false);
+		setBlurEnable(false);
 	};
 	return (
 		<>
 			<div
 				className={`${
+					blurEnable
+						? "w-full h-full left-0 bg-gray-600  opacity-75  top-0 absolute"
+						: ""
+				}`}></div>
+			<div
+				className={`${
 					isAssign
-						? "absolute w-96 h-40 top-[45%]  left-[50%] border-[#007FA8] bg-gray-100 border-2 rounded-md flex  flex-col items-center"
-						: "hidden bg-red-400"
+						? "absolute w-96 h-40 top-[45%] left-[45%]  bg-gray-100 border-2 rounded-md flex  flex-col items-center"
+						: "hidden "
 				}`}>
-				<p className="mt-2">SELECT THE WAITER FOR ORDER</p>
+				<div className="w-6 h-6 cursor-pointer right-0  top-0 absolute bg-red-600 rounded-md flex items-center justify-center">
+					<IoClose
+						className="text-base text-white"
+						onClick={() => {
+							closePopUp();
+						}}
+					/>
+				</div>
+				<p className="mt-2 font-bold text-lg">SELECT THE WAITER FOR ORDER</p>
 				<div className="w-full  h-20 flex justify-center ">
 					<form
 						onSubmit={handleSubmit}
 						action=""
-						className="w-full flex items-center justify-center px-2 gap-x-2">
+						className="w-full h-full  flex items-center  px-2 ">
 						<select
 							onChange={handleSelectChange}
-							className="w-3/5 h-8 bg-gray-200"
+							className="w-3/5 h-10 bg-gray-300 text-center"
 							name="waiterID"
 							id="waiterID">
 							<option value="" hidden>
@@ -130,24 +156,18 @@ export const OrderCard = ({
 							))}
 						</select>
 
-						<div className="w-2/5 flex items-center justify-center">
-							<button className="text-white rounded-sm px-4 py-1 bg-[#007FA8]">
+						<div className="w-2/5 flex items-center justify-center ">
+							<button className="text-white rounded-sm px-4 py-2 bg-[#007FA8]">
 								Assign
 							</button>
 						</div>
 					</form>
 				</div>
 
-				<div className="bg-[#007FA8] text-white px-4 py-1">
-					<button
-						onClick={() => {
-							accptWithId();
-						}}>
-						ACCEPT
-					</button>
-				</div>
+			
 			</div>
-			<div className="border-[rgb(0,127,168)] border-[1px] px-4 w-full p-2 relative">
+
+			<div className="border-[rgb(0,127,168)] border-[1px] px-4 w-full p-2 ">
 				<div className="grid grid-cols-12 items-center py-2 gap-4">
 					<div className="col-span-1 flex items-center justify-center w-10 h-10 bg-[#007FA8] rounded-full lg:w-12 lg:h-12 xl:w-14 xl:h-14">
 						<p className="text-md font-medium text-white lg:text-xl xl:text-2xl">
@@ -182,7 +202,9 @@ export const OrderCard = ({
 							<button
 								className={`${buttontextColor} ${buttonColor} flex justify-center items-center w-[110px] py-1.5 border-2 ${borderColor} font-semibold lg:text-xl`}
 								onClick={handleAccept}>
-								{title}
+							{title === "delevering" ? <img className="w-20 h-12" src={loading}/> : title}
+
+
 							</button>
 						)}
 					</div>

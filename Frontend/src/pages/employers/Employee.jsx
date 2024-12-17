@@ -103,13 +103,17 @@ function Employee() {
 						</Link>
 
 						{/* Employee Cards */}
-						{employees.map((employee, index) => (
-							<EmployeeCard
-								key={index}
-								data={employee}
-								onAdminClick={() => handleAdminClick(employee)}
-							/>
-						))}
+						{employees ? (
+							employees.map((employee, index) => (
+								<EmployeeCard
+									key={index}
+									data={employee}
+									onAdminClick={() => handleAdminClick(employee)}
+								/>
+							))
+						) : (
+							<p>Loading...</p>
+						)}
 					</div>
 				</div>
 			</div>

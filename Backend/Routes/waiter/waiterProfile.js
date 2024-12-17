@@ -42,7 +42,7 @@ waiterProfile.get("/waiterID/:email", WaiterAuthorization, (req, res) => {
 			if (err) {
 				console.log("server error", err);
 			}
-			console.log(result[0]["empID"]);
+		//	console.log(result[0]["empID"]);
 			return res.json({ waiterID: result[0]["empID"] });
 		});
 	} catch (err) {

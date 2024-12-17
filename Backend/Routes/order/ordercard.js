@@ -346,9 +346,6 @@ router.put(
 router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;
 	const { selectWaiterid } = req.body;
-	console.log(req.body);
-	console.log("waiterID", selectWaiterid);
-	console.log("orderID", orderID, selectWaiterid);
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["accept", orderID], (err, result) => {
@@ -432,7 +429,7 @@ router.put(
 	WaiterAuthorization,
 	(req, res) => {
 		const { orderID } = req.params;
-		console.log("order id", orderID);
+
 		const updateStatusSQL = `UPDATE orders SET status = ? WHERE orderID = ?`;
 		db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
 			console.log("result ", result);
@@ -478,7 +475,7 @@ router.put(
 
 router.put("/orderstatuspaid/:orderID", AdminCashier, (req, res) => {
 	const { orderID } = req.params;
-
+	console.log("sfdgsfdgsfdg");
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["paid", orderID], (err, result) => {
 		if (err) {

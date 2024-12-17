@@ -41,7 +41,7 @@ function OrderAccept() {
 							data={orderacceptdata}
 							// onDelete={handleDeleteOrder}
 							// onAccept={handleAcceptOrder}
-							title={orderacceptdata.status === "accept" ? "Delivering..." : ""}
+							title={orderacceptdata.status === "accept" ? "delevering" : ""}
 							buttontextColor={
 								orderacceptdata.status === "accept"
 									? "text-[rgb(225,0,0)]"

@@ -55,7 +55,7 @@ const isSetToken = useSelector(selectToken)
       : "hidden"
   }`}
 >
-   No orders at the moment. Accept the orders!
+   No orders at the moment.Wait for Orders!
 </div>
 
       

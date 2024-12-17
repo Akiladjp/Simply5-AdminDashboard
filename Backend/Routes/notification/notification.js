@@ -16,6 +16,7 @@ notify.get("/get_notification", AdminCashier, (req, res) => {
 			}
 
 			var newlength = result.length;
+
 			res.json({ length: newlength });
 		});
 	} catch (err) {

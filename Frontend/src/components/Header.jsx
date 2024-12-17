@@ -28,6 +28,7 @@ export default function Header() {
 					toast(`New orders received!`);
 				}
 
+				// Update previous count state
 				setPrevOrderCount(newOrderCount);
 				setIsFirstFetch(false);
 			} catch (error) {
@@ -36,25 +37,24 @@ export default function Header() {
 		};
 
 		if (toekenValid) {
-			fetchData();
-			interval = setInterval(fetchData, 5000);
+			fetchData(); // Fetch immediately
+			interval = setInterval(fetchData, 5000); // Fetch every 5 seconds
 		}
 
 		return () => {
 			clearInterval(interval);
 		};
-	}, []);
+	}, [prevOrderCount, isFirstFetch, toekenValid]);
 
+	// Update the current time every second
 	useEffect(() => {
-		// Update the date and time every second
 		const intervalId = setInterval(() => {
 			setCurrentDate(new Date());
 		}, 1000);
 
-		// Clean up the interval when the component unmounts
 		return () => clearInterval(intervalId);
 	}, []);
-  
+
 	return (
 		<div className="bg-[#056A8B] text-white flex md:pb-4 md:pt-4 fixed w-full h-16 font-medium z-50">
 			<ToastContainer
