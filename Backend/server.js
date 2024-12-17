@@ -13,14 +13,14 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", true);
-  console.log("CORS headers set for:", req.method, req.url);
+  // console.log("CORS headers set for:", req.method, req.url);
   next();
 });
 
 
 app.use(
   cors({
-    origin: "http://localhost:5177",
+    origin: process.env.CORS_ORIGIN,
   })
 );
 

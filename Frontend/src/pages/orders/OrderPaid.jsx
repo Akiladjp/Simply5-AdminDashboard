@@ -18,18 +18,18 @@ function OrderPaid() {
 			.get(url, { withCredentials: true })
 			.then((res) => {
 				setOrderPaid(res.data.data);
-				console.log(res.data.data);
 			})
 			.catch((err) => console.log(err));
-	}, [searchTerm]);
-
-	// const handleAcceptOrder = (orderID) => {
-	//   axios.delete(`${API_URL}/orderpaiddelete/${orderID}`)
-	//     .then(() => {
-	//       setOrderPaid((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
-	//     })
-	//     .catch(err => console.log(err));
-	// };
+    }, [searchTerm]);
+    
+    // const handleAcceptOrder = (orderID) => {
+      //   axios.delete(`${API_URL}/orderpaiddelete/${orderID}`)
+      //     .then(() => {
+        //       setOrderPaid((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
+        //     })
+        //     .catch(err => console.log(err));
+        // };
+        console.log(orderPaiddata);
 
 	return (
 		<div className="w-full flex flex-col mt-8 p-4">

@@ -50,11 +50,14 @@ router.get("/orderaccepted", AllRoleAuthentication, (req, res) => {
 	let sql = `
         SELECT 
             orders.orderID, 
-            orders.status, 
-            orders.mobileNo, 
-            orders.tableNo, 
-            orders.date, 
-            orders.total,
+    orders.status, 
+    orders.mobileNo, 
+    orders.tableNo, 
+    orders.date, 
+    orders.waiterID,
+		orders.total,
+    employer.name AS waiterName,
+    user.name AS userName,
             CONCAT('[', GROUP_CONCAT(
                 CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
                 SEPARATOR ', '
@@ -64,6 +67,7 @@ router.get("/orderaccepted", AllRoleAuthentication, (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
+				JOIN employer ON employer.empID = orders.waiterID
         WHERE orders.status = 'accept'
     `;
 
@@ -78,6 +82,7 @@ router.get("/orderaccepted", AllRoleAuthentication, (req, res) => {
 			res.status(500).json({ error: err.message });
 			return;
 		}
+
 		res.json({
 			data: rows,
 		});
@@ -90,7 +95,7 @@ router.get(
 	(req, res) => {
 		const { mobileNo } = req.query;
 		const { waiterID } = req.params;
-		console.log("waiterID", waiterID);
+
 		let sql = `
         SELECT 
             orders.orderID, 
@@ -137,10 +142,13 @@ router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
         SELECT 
             orders.orderID, 
             orders.status, 
-            orders.mobileNo, 
-            orders.tableNo, 
-            orders.date, 
-            orders.total,
+    orders.mobileNo, 
+    orders.tableNo, 
+    orders.date, 
+    orders.waiterID,
+		orders.total,
+    employer.name AS waiterName,
+    user.name AS userName,
             CONCAT('[', GROUP_CONCAT(
                 CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
                 SEPARATOR ', '
@@ -150,6 +158,7 @@ router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
         JOIN contains ON orders.orderID = contains.orderID
         JOIN item ON contains.itemID = item.itemID
         JOIN user ON orders.mobileNo = user.phoneNo
+				JOIN employer ON employer.empID = orders.waiterID
         WHERE orders.status = 'delivered'
     `;
 
@@ -216,24 +225,26 @@ router.get("/orderpaid", AdminAuthorize, (req, res) => {
 	const { mobileNo } = req.query;
 
 	let sql = `
-        SELECT 
-            orders.orderID, 
-            orders.status, 
-            orders.mobileNo, 
-            orders.tableNo, 
-            orders.date, 
-            orders.total,
-            CONCAT('[', GROUP_CONCAT(
-                CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
-                SEPARATOR ', '
-            ), ']') AS items,
-            user.name AS userName
-        FROM orders
-        JOIN contains ON orders.orderID = contains.orderID
-        JOIN item ON contains.itemID = item.itemID
-        JOIN user ON orders.mobileNo = user.phoneNo
-        WHERE orders.status = 'paid'
-    `;
+       SELECT 
+    orders.orderID, 
+    orders.status, 
+    orders.mobileNo, 
+    orders.tableNo, 
+    orders.date, 
+    orders.total,
+    CONCAT('[', GROUP_CONCAT(
+        CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
+        SEPARATOR ', '
+    ), ']') AS items,
+    user.name AS userName
+FROM orders
+JOIN contains ON orders.orderID = contains.orderID
+JOIN item ON contains.itemID = item.itemID
+JOIN user ON orders.mobileNo = user.phoneNo
+WHERE orders.status = 'paid'
+
+`;
+	// GROUP BY orders.mobileNo
 
 	if (mobileNo) {
 		sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
@@ -243,13 +254,24 @@ router.get("/orderpaid", AdminAuthorize, (req, res) => {
 
 	db.query(sql, [], (err, rows) => {
 		if (err) {
+			console.log(err);
 			res.status(400).json({ error: err.message });
 			return;
 		}
+		console.log(rows);
 		res.json({
 			data: rows,
 		});
 	});
+
+	// const sql = "SELECT `orderID`,`mobileNo` FROM orders GROUP BY mobileNo";
+
+	// db.query(sql,[],(err,result)=>{
+	// 	if(err){
+	// 		console.log(err);
+	// 	}
+	// 	console.log(result);
+	// })
 });
 
 router.delete("/orderdelete/:orderID", AllRoleAuthentication, (req, res) => {

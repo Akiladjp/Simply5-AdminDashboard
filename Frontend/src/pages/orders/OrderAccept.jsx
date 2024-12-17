@@ -13,7 +13,7 @@ function OrderAccept() {
 		const fetchOrders = async () => {
 			let url = `${API_URL}/orderaccepted`;
 			if (searchTerm) {
-				url += `?mobileNo=${searchTerm}`;
+				url += `?mobileNo=${searchTerm}`; 
 			}
 
 			try {
@@ -52,6 +52,7 @@ function OrderAccept() {
 									? "border-[rgb(225,255,255)]"
 									: "border-[rgb(0,127,168)]"
 							}
+							waiterID ={orderAcceptdata.waiterID}
 						/>
 					))
 				) : (
