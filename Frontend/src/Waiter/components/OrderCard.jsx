@@ -3,7 +3,8 @@ import axios from "axios";
 import { useState } from "react";
 // import Stopwatch from "./OrderTimer";
 
-function OrderCard({ data, onDelete, onAccept, title }) {
+function OrderCard({ data, onDelete, onAccept, title,waiterID }) {
+	const API_URL = import.meta.env.VITE_API_URL;
 	// Function to render buttons based on the status
 	if (!data) {
 		return null; // Return nothing if data is undefined
@@ -19,24 +20,25 @@ function OrderCard({ data, onDelete, onAccept, title }) {
 	};
 
 	const handleAccept = () => {
-		axios
-			.put(
-				`http://localhost:8081/orderaccept/${data.orderID}`,
-				{},
-				{ withCredentials: true }
-			)
-			.then(() => {
-				if (onAccept) {
-					onAccept(data.orderID);
-
-					// Reload the page after 5 seconds (5000 milliseconds)
-					setTimeout(() => {
-						window.location.reload();
-					}, 500);
-				}
-			})
-			.catch((err) => console.log(err));
+		axios.put(
+			`${API_URL}/orderaccept/${data.orderID}`,
+			{ selectWaiterid: waiterID}, 
+			{ withCredentials: true } 
+		)
+		.then(() => {
+			// If onAccept callback exists, call it with orderID
+			if (onAccept) {
+				onAccept(data.orderID);
+			}
+	
+			// Reload the page after 500 milliseconds
+			setTimeout(() => {
+				window.location.reload();
+			}, 500);
+		})
+		.catch((err) => console.error("Error accepting the order:", err));
 	};
+	
 
 	const handleDone = () => {
 		onAccept(data.orderID);

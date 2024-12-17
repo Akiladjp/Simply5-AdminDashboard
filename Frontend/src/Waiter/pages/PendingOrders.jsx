@@ -10,9 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { selectEmail } from "../../Redux/Slices/LogiinSlice";
 
 function PendingOrders() {
-	const API_URL = import.meta.env.VITE_API_URL;
 	const [waiterID, setWaiterID] = useState(0);
 	const [orderPendingdata, setOrderPending] = useState([]);
+	const API_URL = import.meta.env.VITE_API_URL;
 	const dispatch = useDispatch();
 	// const navigate = useNavigate();
 	const email = useSelector(selectEmail);
@@ -55,8 +55,8 @@ function PendingOrders() {
 		axios
 			.put(
 				`${API_URL}/orderaccept/${orderID}`,
-				{ waiterID },
-				{ waiterID, withCredentials: true }
+				{selectWaiterid:waiterID},
+				{ withCredentials: true }
 			)
 			.then(() => {
 				console.log(orderID);
@@ -76,6 +76,7 @@ function PendingOrders() {
 							data={orderpendingdata}
 							onDelete={handleDeleteOrder}
 							onAccept={handleAcceptOrder}
+							waiterID={waiterID}
 							title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}
 						/>
 					))}
