@@ -38,7 +38,7 @@ function AllOrders() {
 	const handleAcceptOrder = (orderID) => {
 		axios
 			.put(
-				`http://localhost:8081/orderaccept/${orderID}`,
+				`${API_URL}/orderaccept/${orderID}`,
 				{ waiterID },
 				{ withCredentials: true }
 			)

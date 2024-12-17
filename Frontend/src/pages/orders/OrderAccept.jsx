@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { OrderCard } from "../../components/OrderCard";
 import axios from "axios";
 import { SearchComp } from "../../components/SearchComp";
+import ReactPlayer from 'react-player';
 import { FaUserCheck } from "react-icons/fa6";
+import loading from '../../assets/loading.gif'
 function OrderAccept() {
 	const [orderAcceptdata, setOrderAccept] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -15,7 +17,7 @@ function OrderAccept() {
 			}
 
 			try {
-				const res = await axios.get(url,{withCredentials:true});
+				const res = await axios.get(url, { withCredentials: true });
 				setOrderAccept(res.data.data);
 				console.log(res.data.data);
 			} catch (err) {
@@ -25,7 +27,6 @@ function OrderAccept() {
 
 		fetchOrders();
 	}, [searchTerm]);
-
 
 	return (
 		<div className="w-full flex flex-col mt-8 p-4">
@@ -40,17 +41,27 @@ function OrderAccept() {
 							data={orderacceptdata}
 							// onDelete={handleDeleteOrder}
 							// onAccept={handleAcceptOrder}
-							title={
-								orderacceptdata.status === "accept"	
-									? <FaUserCheck />
-									: ""
+							title={orderacceptdata.status === "accept" ? "Delivering..." : ""}
+							buttontextColor={
+								orderacceptdata.status === "accept"
+									? "text-[rgb(225,0,0)]"
+									: "text-[rgb(255,255,255)]]"
 							}
-							buttontextColor={orderacceptdata.status === "accept" ? "text-[rgb(225,0,0)]" : "text-[rgb(255,255,255)]]"}
-							borderColor={orderacceptdata.status === "accept" ? "border-[rgb(225,255,255)]" : "border-[rgb(0,127,168)]"}
+							borderColor={
+								orderacceptdata.status === "accept"
+									? "border-[rgb(225,255,255)]"
+									: "border-[rgb(0,127,168)]"
+							}
 						/>
 					))
 				) : (
-					<div className="text-center text-gray-500">No orders found.</div>
+					<div
+						className={`
+							? "w-[100%] px-32 flex items-center justify-center mx-auto mt-12 h-20 bg-gray-100 shadow-md text-gray-600 text-lg font-semibold uppercase"
+						
+					`}>
+						No orders at the moment. Accept the orders!
+					</div>
 				)}
 			</div>
 		</div>

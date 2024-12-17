@@ -13,12 +13,12 @@ function AcceptedOrders() {
 	const dispatch = useDispatch();
 	const email = useSelector(selectEmail);
 	const [waiterID, setWaiterID] = useState(0);
-
+	const API_URL = import.meta.env.VITE_API_URL;
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:8081/waiterID/${email}`,
+					`${API_URL}/waiterID/${email}`,
 					{ withCredentials: true }
 				);
 				if (response) {
@@ -37,7 +37,7 @@ function AcceptedOrders() {
 		const fetchData = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:8081/order_waiter_accepted/${waiterID}`,
+					`${API_URL}/order_waiter_accepted/${waiterID}`,
 					{
 						withCredentials: true,
 					}
@@ -57,7 +57,7 @@ function AcceptedOrders() {
 	const handleDeleteOrder = (orderID) => {
 		console.log(orderID);
 		axios
-			.delete(`http://localhost:8081/orderdelete/${orderID}`, {
+			.delete(`${API_URL}/orderdelete/${orderID}`, {
 				withCredentials: true,
 			})
 			.then(() => {
@@ -71,7 +71,7 @@ function AcceptedOrders() {
 	const handleAcceptOrder = async (orderID) => {
 		try {
 			const response = await axios.put(
-				`http://localhost:8081/orderstatusdelivered/${orderID}`,
+				`${API_URL}/orderstatusdelivered/${orderID}`,
 				{},
 				{ withCredentials: true }
 			);

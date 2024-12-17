@@ -12,31 +12,28 @@ const PORT = process.env.PORT || 8081;
 app.use(express.json());
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Credentials", true);
-  console.log("CORS headers set for:", req.method, req.url);
-  next();
+	res.header("Access-Control-Allow-Credentials", true);
+
+	next();
 });
 
-
 app.use(
-  cors({
-    origin: "http://localhost:5177",
-  })
+	cors({
+		origin: "http://localhost:5177",
+	})
 );
-
-
 
 // Setup cookie-parser middleware
 app.use(cookieParser());
 
 // Setup express-session middleware
 app.use(
-  session({
-    secret: "your_secret_key",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // Set to true if using HTTPS
-  })
+	session({
+		secret: "your_secret_key",
+		resave: false,
+		saveUninitialized: true,
+		cookie: { secure: false }, // Set to true if using HTTPS
+	})
 );
 
 // Setup body-parser middleware
@@ -57,11 +54,11 @@ import addemployee from "./Routes/employee/addEmployee.js";
 import editemployee from "./Routes/employee/editEmployee.js";
 import reademployee from "./Routes/employee/readEmployee.js";
 
-import ordercard from "./Routes/order/ordercard.js"
+import ordercard from "./Routes/order/ordercard.js";
 
 import item from "./Routes/Item/item.js";
 import UpdateEmployee from "../Backend/Routes/employee/updateEmployee.js";
-import notify from "../Backend/Routes/notification/notification.js"
+import notify from "../Backend/Routes/notification/notification.js";
 
 import orderSearch from "./Routes/order/orderSearch.js";
 import offer from "./Routes/offer/offer.js";
@@ -94,9 +91,8 @@ app.use("/", notify);
 app.use("/", waiterProfile);
 app.use("/", waiterPicture);
 
-
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+	console.log(`Server is running on port ${PORT}`);
 });
 
 export { app };

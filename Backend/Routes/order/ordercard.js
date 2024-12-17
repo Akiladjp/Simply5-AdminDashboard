@@ -200,7 +200,7 @@ router.get(
 
 		db.query(sql, [waiterID], (err, rows) => {
 			if (err) {
-				console.log("error in order_waiter_delivered ",err);
+				console.log("error in order_waiter_delivered ", err);
 				res.status(400).json({ error: err.message });
 				return;
 			}
@@ -345,9 +345,10 @@ router.put(
 
 router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;
-	const { waiterID } = req.body;
-	console.log(waiterID);
-	console.log("orderID", orderID, waiterID);
+	const { selectWaiterid } = req.body;
+	console.log(req.body);
+	console.log("waiterID", selectWaiterid);
+	console.log("orderID", orderID, selectWaiterid);
 
 	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
 	db.query(updateStatusSQL, ["accept", orderID], (err, result) => {
@@ -358,13 +359,13 @@ router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 
 		if (result.affectedRows === 0) {
 			console.log("not found");
-
 			return res.status(404).json({ message: `Order ${orderID} not found` });
 		}
 
 		const updateWaiterSQL = "UPDATE orders SET waiterID = ? WHERE orderID = ?";
-		db.query(updateWaiterSQL, [waiterID, orderID], (err) => {
+		db.query(updateWaiterSQL, [selectWaiterid, orderID], (err, respo) => {
 			if (err) {
+				console.log(err);
 				return res
 					.status(400)
 					.json({ message: "Error in adding waiter ID to table", error: err });
