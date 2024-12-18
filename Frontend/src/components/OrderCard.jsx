@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import loading from "../assets/loading1.gif";
+import Billsection from "./Billsection";
+
 export const OrderCard = ({
 	data,
 	onDelete,
@@ -14,16 +16,65 @@ export const OrderCard = ({
 }) => {
 	const [showDetails, setShowDetails] = useState(false);
 	const API_URL = import.meta.env.VITE_API_URL;
-	const toggleDetails = () => {
-		setShowDetails((prevShowDetails) => !prevShowDetails);
-	};
+	const [selectMobile, setSelectMobile] = useState(0);
 	const [blurEnable, setBlurEnable] = useState(false);
 	const [isAssign, setIsAssign] = useState(false);
 	const [waiteridies, setWaiterID] = useState([]);
-	const [selectWaiterid, setSelectwaiterid] = useState(0);
-	// Parse the items JSON string if it exists
+	const [paidItems, setPaidItem] = useState([]);
+	const [selectWaiterid, setSelectwaiterid] = useState([]);
+	const [billDetails, setBillDetails] = useState([]);
+	const [billOrderDetails, setOrderBillDetails] = useState([]);
+
+	console.log(data, "in main ");
+	const [showPrint, setShowPrint] = useState(false);
 	const items = data.items ? JSON.parse(data.items) : [];
 
+	const toggleDetails = (mobileNo) => {
+		setSelectMobile(mobileNo);
+
+		setShowDetails((prevShowDetails) => !prevShowDetails);
+	};
+
+	useEffect(() => {
+		const fetchDataPaid = async () => {
+			try {
+				const response = await axios.get(
+					`${API_URL}/getPaiedItem/${selectMobile}`,
+					{ withCredentials: true }
+				);
+				if (response) {
+					setPaidItem(response.data.paidItems);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		const fetchDataDiliver = async () => {
+			try {
+				const response = await axios.get(
+					`${API_URL}/getDeliveryItem/${selectMobile}`,
+					{ withCredentials: true }
+				);
+				if (response) {
+					setPaidItem(response.data.paidItems);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		if (selectMobile !== 0) {
+			if (title === "PAID") {
+				fetchDataDiliver();
+			}
+			if (title === "DELETE") {
+				fetchDataPaid();
+			}
+		}
+	}, [selectMobile]);
+
+	useEffect(() => {
+		setBillDetails(paidItems, data);
+	}, [paidItems]);
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -31,7 +82,6 @@ export const OrderCard = ({
 					withCredentials: true,
 				});
 				if (response) {
-					console.log(response.data.wai);
 					setWaiterID(response.data.waiterIdies);
 				}
 			} catch (error) {
@@ -43,7 +93,7 @@ export const OrderCard = ({
 
 	const handleDelete = () => {
 		axios
-			.delete(`${API_URL}/orderdelete/${data.orderID}`, {
+			.delete(`${API_URL}/orderdelete/${data["orderID"]}`, {
 				withCredentials: true,
 			})
 			.then(() => {
@@ -54,25 +104,36 @@ export const OrderCard = ({
 			.catch((err) => console.error("Error deleting the order:", err));
 	};
 
-	console.log("selectWaiterid", selectWaiterid);
-
-	const handleAccept = async () => {
+	const handleAccept = async (mobileNo) => {
+		setSelectMobile(mobileNo);
+		console.log(selectMobile);
 		console.log("in handle Accept");
 		if (title == "ACCEPT") {
 			setBlurEnable(true);
 			setIsAssign(true);
 		} else if (title == "PAID") {
+			setShowPrint(true);
+			handlePrint(data, paidItems);
+			setSelectMobile(data.mobileNo);
+			setShowPrint(true);
+			handlePrint(data, paidItems);
+			setSelectMobile(data.mobileNo);
+			console.log(data, "in paid");
 			try {
 				const response = await axios.put(
-					`${API_URL}/orderstatuspaid/${data.orderID}`,
+					`${API_URL}/orderstatuspaid/${selectMobile}`,
 					{},
 					{
 						withCredentials: true,
 					}
 				);
 				if (response) {
-					console.log(response.data.message);
-					window.location.reload();
+					setTimeout(() => {
+						setShowPrint(true);
+						handlePrint(data, paidItems);
+						setSelectMobile(data.mobileNo);
+					}, 1000); // Add a comma here
+					//	window.location.reload();
 				}
 			} catch (error) {
 				console.log(error);
@@ -80,9 +141,11 @@ export const OrderCard = ({
 		}
 	};
 
+	const handlePrint = async (data, items) => {};
+
 	const handleSelectChange = (event) => {
 		const selectedWaiterID = event.target.value;
-		console.log("Changed to:", selectedWaiterID);
+
 		// Process the selected waiter ID as needed
 	};
 
@@ -94,11 +157,7 @@ export const OrderCard = ({
 		accptWithId(selectedWaiterID);
 	};
 
-	console.log(selectWaiterid);
-
 	const accptWithId = async (selectWaiterid) => {
-		console.log("fgsfgsfdgsfgfsdgs");
-		console.log("Updated Waiter ID in state:", selectWaiterid);
 		const response = await axios.put(
 			`${API_URL}/orderaccept/${data.orderID}`,
 			{ selectWaiterid },
@@ -115,6 +174,39 @@ export const OrderCard = ({
 	};
 	return (
 		<>
+			<div
+				className={`${
+					showPrint
+						? "w-[100%] left-0  mx-auto h-screen opacity-65 bg-gray-800 absolute top-0 z-10 "
+						: "bg-red-600"
+				}`}></div>
+			<div
+				className={`${
+					showPrint
+						? "w-[50%] left-[30%] mx-auto h-[100vh] my-auto bg-gray-200 absolute top-0 z-50 overflow-hidden  "
+						: "hidden"
+				}`}>
+				{showPrint && (
+					<div className="mt-12 overflow-y-auto h-auto">
+						<Billsection mobileno={selectMobile} />
+					</div>
+				)}
+				<div className="flex p-2  items-center justify-center gap-x-8 h-auto  w-96 mx-auto  bottom-0 relative ">
+					<button
+						className="bg-red-600 uppercase hover:bg-red-700 px-10 text-lg font-semibold text-white  h-12"
+						onClick={() => {
+							setShowPrint(false);
+						}}>
+						Cancel
+					</button>
+					<button
+						onClick={() => {window.location.reload()}}
+						className="bg-[#007FA8] opacity-80 hover:opacity-100 uppercase  px-10 text-lg font-semibold text-white  h-12">
+						Print
+					</button>
+				</div>
+			</div>
+
 			<div
 				className={`${
 					blurEnable
@@ -193,13 +285,17 @@ export const OrderCard = ({
 					<div className="col-span-5 xl:col-span-7 flex gap-2 justify-end">
 						<button
 							className="bg-white px-6 py-1 border-[rgb(0,127,168)] border-2 text-[rgb(0,127,168)] font-semibold lg:text-xl"
-							onClick={toggleDetails}>
+							onClick={() => {
+								toggleDetails(data.mobileNo);
+							}}>
 							{showDetails ? "HIDE" : "VIEW"}
 						</button>
 						{data.status !== "paid" && (
 							<button
 								className={`${buttontextColor} ${buttonColor} flex justify-center items-center w-[110px] py-1.5 border-2 ${borderColor} font-semibold lg:text-xl`}
-								onClick={handleAccept}>
+								onClick={() => {
+									handleAccept(data["mobileNo"]);
+								}}>
 								{title === "delevering" ? (
 									<img className="w-20 h-12" src={loading} />
 								) : (
@@ -233,37 +329,59 @@ export const OrderCard = ({
 								</tr>
 							</thead>
 							<tbody>
-								{items.map((item, index) => (
-									<tr key={index}>
-										<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
-											{index + 1}
-										</td>
-										<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
-											{item.itemName}
-										</td>
-										<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
-											{item.quantity}
-										</td>
-										<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
-											Rs.{item.price}
-										</td>
-										<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
-											Rs.{item.price * item.quantity}
-										</td>
-									</tr>
-								))}
+								{title === "PAID" || title === "DELETE"
+									? paidItems.map((item, index) => (
+											<tr key={index}>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													{index + 1}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													{item.name}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													{item.totalQuantity}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													Rs.{item.price}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													Rs.{item.totalPrice}
+												</td>
+											</tr>
+								  ))
+									: items.map((item, index) => (
+											<tr key={index}>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													{index + 1}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													{item.itemName}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													{item.quantity}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													Rs.{item.price}
+												</td>
+												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">
+													Rs.{item.price * item.quantity}
+												</td>
+											</tr>
+									  ))}
 							</tbody>
 						</table>
 
 						<div
 							className={`${
-								data.status == "accept" || data.status=="delivered"
+								data.status == "accept" || data.status == "delivered"
 									? "flex justify-between mt-6 text-lg lg:text-xl xl:text-2xl w-full "
 									: "flex justify-end mt-6 text-lg lg:text-xl xl:text-2xl w-full  "
 							}`}>
 							<span
 								className={`${
-									data.status == "accept" || data.status=="delivered" ? "text-red-600 text-base" : "hidden"
+									data.status == "accept" || data.status == "delivered"
+										? "text-red-600 text-base"
+										: "hidden"
 								}`}>
 								Accept by: {data.waiterName} -{data.waiterID}
 							</span>
