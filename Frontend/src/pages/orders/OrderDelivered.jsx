@@ -17,7 +17,7 @@ function OrderDelivered() {
 			try {
 				const res = await axios.get(url, { withCredentials: true });
 				setOrderDelivered(res.data.data);
-				console.log(res.data.data);
+		
 			} catch (err) {
 				console.log(err);
 			}
@@ -68,7 +68,7 @@ function OrderDelivered() {
 							key={index}
 							data={orderdelivereddata}
 							// onDelete={handleDeleteOrder}
-							onAccept={handleDeliveredOrder}
+							
 							title={orderdelivereddata.status === "delivered" ? "PAID" : ""}
 							buttontextColor={
 								orderdelivereddata.status === "delivered"

@@ -40,8 +40,8 @@ adminLogin.post("/adminlogin", async (req, res) => {
 									const token = jwt.sign(
 										{ id: empID, userType: position },
 										process.env.JWT_SECRET_KEY,
-										{expiresIn: "1d"}
-									);
+										{ expiresIn: "1d" } // Token valid for 1 day
+								);
 
 									// Redirect based on position
 									if (position === "Waiter") {

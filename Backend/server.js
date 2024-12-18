@@ -62,6 +62,7 @@ import ordercard from "./Routes/order/ordercard.js"
 import item from "./Routes/Item/item.js";
 import UpdateEmployee from "../Backend/Routes/employee/updateEmployee.js";
 import notify from "../Backend/Routes/notification/notification.js"
+import billSection from "./Routes/Admin/billsection/billsection.js";
 
 import orderSearch from "./Routes/order/orderSearch.js";
 import offer from "./Routes/offer/offer.js";
@@ -90,6 +91,7 @@ app.use("/", UpdateEmployee);
 app.use("/", offer);
 app.use("/", summaryEmployee);
 app.use("/", notify);
+app.use("/", billSection);
 
 app.use("/", waiterProfile);
 app.use("/", waiterPicture);

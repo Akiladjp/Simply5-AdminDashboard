@@ -51,10 +51,10 @@ waiterProfile.get("/waiterID/:email", WaiterAuthorization, (req, res) => {
 });
 
 waiterProfile.get("/OrderCount/:waiterID", WaiterAuthorization, (req, res) => {
-	console.log("sgsfdjglsfdjgfsd");
+
 	const date = new Date().toISOString().split("T")[0];
-	const { waiterID } = req.params;
-	console.log(date);
+	const  {waiterID}  = req.params;
+	console.log(date,waiterID);
 	try {
 		// Corrected SQL query to count orders grouped by WaiterID
 		const sql = `
@@ -71,9 +71,13 @@ waiterProfile.get("/OrderCount/:waiterID", WaiterAuthorization, (req, res) => {
 					.status(500)
 					.json({ message: "Error in querying the database." });
 			}
-			console.log(result.length);
-
-			return res.json({ count: result.length });
+			console.log(result[0].orderCount);
+			if (result.length > 0) {
+				const orderCount = result[0].orderCount;
+				return res.json({ count: orderCount });
+			} else {
+				return res.json({ count: 0 });
+			}
 		});
 	} catch (err) {
 		console.log("Server error:", err);
@@ -108,7 +112,12 @@ waiterProfile.get(
 						.json({ message: "Error in querying the database." });
 				}
 
-				return res.json({ count: result.length });
+				if (result.length > 0) {
+					const orderCount = result[0].orderCount;
+					return res.json({ count: orderCount });
+				} else {
+					return res.json({ count: 0 });
+				}
 			});
 		} catch (err) {
 			console.log("Server error:", err);

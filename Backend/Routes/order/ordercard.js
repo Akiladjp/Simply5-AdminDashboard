@@ -1,4 +1,4 @@
-import Express, { response } from "express";
+import Express, { query, response } from "express";
 const router = Express.Router();
 import db from "../../config/DatabaseConfig.js";
 
@@ -135,56 +135,12 @@ router.get(
 	}
 );
 
-router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
-	const { mobileNo } = req.query;
-
-	let sql = `
-        SELECT 
-            orders.orderID, 
-            orders.status, 
-    orders.mobileNo, 
-    orders.tableNo, 
-    orders.date, 
-    orders.waiterID,
-		orders.total,
-    employer.name AS waiterName,
-    user.name AS userName,
-            CONCAT('[', GROUP_CONCAT(
-                CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
-                SEPARATOR ', '
-            ), ']') AS items,
-            user.name AS userName
-        FROM orders
-        JOIN contains ON orders.orderID = contains.orderID
-        JOIN item ON contains.itemID = item.itemID
-        JOIN user ON orders.mobileNo = user.phoneNo
-				JOIN employer ON employer.empID = orders.waiterID
-        WHERE orders.status = 'delivered'
-    `;
-
-	if (mobileNo) {
-		sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
-	}
-
-	sql += `GROUP BY orders.orderID`;
-
-	db.query(sql, [], (err, rows) => {
-		if (err) {
-			res.status(500).json({ error: err.message });
-			return;
-		}
-		res.json({
-			data: rows,
-		});
-	});
-});
-
 router.get(
 	"/order_waiter_delivered/:waiterID",
 	WaiterAuthorization,
 	(req, res) => {
 		const { waiterID } = req.params;
-		console.log("waiterID in deleverd", waiterID);
+
 		const sql = `
         SELECT 
             orders.orderID, 
@@ -213,7 +169,7 @@ router.get(
 				res.status(400).json({ error: err.message });
 				return;
 			}
-			console.log("rows", rows);
+
 			res.json({
 				data: rows,
 			});
@@ -224,54 +180,122 @@ router.get(
 router.get("/orderpaid", AdminAuthorize, (req, res) => {
 	const { mobileNo } = req.query;
 
-	let sql = `
-       SELECT 
-    orders.orderID, 
-    orders.status, 
-    orders.mobileNo, 
-    orders.tableNo, 
-    orders.date, 
-    orders.total,
-    CONCAT('[', GROUP_CONCAT(
-        CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
-        SEPARATOR ', '
-    ), ']') AS items,
-    user.name AS userName
-FROM orders
-JOIN contains ON orders.orderID = contains.orderID
-JOIN item ON contains.itemID = item.itemID
-JOIN user ON orders.mobileNo = user.phoneNo
-WHERE orders.status = 'paid'
-
+	const sql_user = `
+  SELECT 
+    user.name AS userName,
+    user.phoneNo AS userPhoneNo,
+		orders.tableNo,
+		orders.mobileNo,
+		orders.status,
+    SUM(orders.total) AS total,
+    COUNT(orders.orderID) AS totalOrdersCount
+  FROM orders
+  JOIN user ON user.phoneNo = orders.mobileNo
+	WHERE orders.status =?
+  GROUP BY user.phoneNo, user.name;
 `;
-	// GROUP BY orders.mobileNo
 
-	if (mobileNo) {
-		sql += ` AND orders.mobileNo LIKE '%${mobileNo}%' `;
-	}
-
-	sql += `GROUP BY orders.orderID`;
-
-	db.query(sql, [], (err, rows) => {
+	db.query(sql_user, ["paid"], (err, result) => {
 		if (err) {
 			console.log(err);
-			res.status(400).json({ error: err.message });
-			return;
+			res.json({ message: "error on sql", err });
 		}
-		console.log(rows);
-		res.json({
-			data: rows,
-		});
+
+		return res.json({ data: result });
 	});
+});
+router.get("/orderdelivered", AdminAuthorize, (req, res) => {
+	const { mobileNo } = req.query;
 
-	// const sql = "SELECT `orderID`,`mobileNo` FROM orders GROUP BY mobileNo";
+	const sql_user = `
+ SELECT 
+user.name AS userName,
+user.phoneNo AS userPhoneNo,
+orders.tableNo,
+orders.mobileNo,
+orders.status,
+orders.time,
+orders.waiterID,
+orders.orderID,
+SUM(orders.total) AS total,
+COUNT(orders.orderID) AS totalOrdersCount
+FROM orders
+JOIN user ON user.phoneNo = orders.mobileNo
 
-	// db.query(sql,[],(err,result)=>{
-	// 	if(err){
-	// 		console.log(err);
-	// 	}
-	// 	console.log(result);
-	// })
+WHERE orders.status =?
+GROUP BY user.phoneNo, user.name;
+`;
+
+
+
+	db.query(sql_user, ["delivered"], (err, result) => {
+		if (err) {
+			console.log(err);
+			res.json({ message: "error on sql", err });
+		}
+		console.log(result);
+		return res.json({ data: result });
+	});
+});
+
+router.get("/getPaiedItem/:mobileNo", AdminAuthorize, (req, res) => {
+	const { mobileNo } = req.params;
+	console.log("in getpaid", mobileNo);
+	const sql_getOrderId = `
+  SELECT 
+    contains.itemID, 
+    item.price,
+		item.name,
+    SUM(contains.quantity) AS totalQuantity,
+    (item.price * SUM(contains.quantity)) AS totalPrice
+  FROM orders
+  JOIN contains ON contains.orderID = orders.orderID 
+  JOIN item ON item.itemID = contains.itemID
+  WHERE orders.mobileNo = ? AND orders.status=?
+  GROUP BY contains.itemID, item.price;
+
+`;
+
+	db;
+
+	db.query(sql_getOrderId, [mobileNo, "paid"], (err, result) => {
+		if (err) {
+			console.log("error in sql in get paid item", err);
+			res.json({ message: "error in sql" });
+		}
+
+		res.json({ paidItems: result });
+	});
+});
+router.get("/getDeliveryItem/:mobileNo", AdminAuthorize, (req, res) => {
+	const { mobileNo } = req.params;
+	console.log("in getpaid", mobileNo);
+	const sql_getOrderId = `
+  SELECT 
+    contains.itemID, 
+    item.price,
+		item.name,
+		
+    SUM(contains.quantity) AS totalQuantity,
+    (item.price * SUM(contains.quantity)) AS totalPrice
+  FROM orders
+  JOIN contains ON contains.orderID = orders.orderID 
+  JOIN item ON item.itemID = contains.itemID
+  WHERE orders.mobileNo = ? AND orders.status=?
+  GROUP BY contains.itemID, item.price;
+
+`;
+
+	db;
+
+	db.query(sql_getOrderId, [mobileNo, "delivered"], (err, result) => {
+		if (err) {
+			console.log("error in sql in get paid item", err);
+			res.json({ message: "error in sql" });
+		}
+
+		res.json({ paidItems: result });
+	});
 });
 
 router.delete("/orderdelete/:orderID", AllRoleAuthentication, (req, res) => {
@@ -300,7 +324,7 @@ router.delete("/orderdelete/:orderID", AllRoleAuthentication, (req, res) => {
 						res.status(400).json({ error: err.message });
 					});
 				}
-				console.log(result);
+
 				db.commit((err) => {
 					if (err) {
 						return db.rollback(() => {
@@ -346,7 +370,7 @@ router.put(
 						res.status(400).json({ error: err.message });
 					});
 				}
-				console.log(result);
+
 				db.commit((err) => {
 					if (err) {
 						return db.rollback(() => {
@@ -412,7 +436,7 @@ router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 						console.log("SQL ERR IN GETTINGiTEMid", err);
 						return;
 					}
-					console.log(result);
+
 					const OrderItems = result.map((row) => row.itemID);
 					for (let i = 0; i < OrderItems.length; i++) {
 						const update_addcartSTate =
@@ -454,7 +478,6 @@ router.put(
 
 		const updateStatusSQL = `UPDATE orders SET status = ? WHERE orderID = ?`;
 		db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
-			console.log("result ", result);
 			if (err) {
 				console.log(err);
 				res.status(400).json({ error: err.message });
@@ -495,12 +518,14 @@ router.put(
 // 	});
 // });
 
-router.put("/orderstatuspaid/:orderID", AdminCashier, (req, res) => {
-	const { orderID } = req.params;
-	console.log("sfdgsfdgsfdg");
-	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
-	db.query(updateStatusSQL, ["paid", orderID], (err, result) => {
+router.put("/orderstatuspaid/:selectMobile", AdminCashier, (req, res) => {
+	const { selectMobile } = req.params;
+	console.log(selectMobile);
+
+	const updateStatusSQL = "UPDATE orders SET status = ? WHERE mobileNo = ?";
+	db.query(updateStatusSQL, ["paid", selectMobile], (err, result) => {
 		if (err) {
+			console.log(err);
 			res.status(400).json({ error: err.message });
 			return;
 		}
@@ -508,9 +533,9 @@ router.put("/orderstatuspaid/:orderID", AdminCashier, (req, res) => {
 		if (result.affectedRows > 0) {
 			res
 				.status(200)
-				.send({ message: `Order ${orderID} status updated to paid` });
+				.send({ message: `Order ${selectMobile} status updated to paid` });
 		} else {
-			res.status(404).send({ message: `Order ${orderID} not found` });
+			res.status(404).send({ message: `Order ${selectMobile} not found` });
 		}
 	});
 });
