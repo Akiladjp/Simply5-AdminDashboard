@@ -10,7 +10,7 @@ function AllRoleAuthentication(req, res, next) {
       return res.status(400).json({message:"taoken invalied or expired"})
     }
     
-    if(decoded.userType!=="Manager" && decoded.userType!=="Waiter" &&userType!=="Cashier" ){
+    if(decoded.userType!=="Manager" && decoded.userType!=="Waiter" && decoded.userType!=="Cashier" ){
       console.log("message:forbidden hidden");
       return res.status(403).json({messagge:"forbidden"})
     }
