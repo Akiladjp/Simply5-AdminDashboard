@@ -27,14 +27,7 @@ const isSetToken = useSelector(selectToken)
   }, []);
 
 
-  const handleDeleteOrder = (orderID) => {
-    console.log(orderID)
-    axios.delete(`${API_URL}/orderdelete/${orderID}`,{withCredentials:true})
-      .then(() => {
-        setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
-      })
-      .catch(err => console.log(err));
-  };
+
 
   // const handleAcceptOrder = (orderID) => {
   //   console.log("in handleAcceptOrder");
@@ -64,7 +57,7 @@ const isSetToken = useSelector(selectToken)
       <div className="flex flex-col w-full gap-6 lg:w-full">
         {Array.isArray(orderPendingdata) && orderPendingdata.map((orderpendingdata, index) => (
           <OrderCard key={index} data={orderpendingdata}
-           onDelete={handleDeleteOrder} 
+           
             title={orderpendingdata.status === 'pending' ? 'ACCEPT' : ''} 
             buttontextColor={orderpendingdata.status === "pending" ? "text-[rgb(255,255,255)]": ""}
              borderColor={orderpendingdata.status === "pending" ? "border-[rgb(0,127,168)]": ""} 

@@ -345,6 +345,8 @@ router.delete("/orderdelete/:orderID", AllRoleAuthentication, (req, res) => {
 		});
 	});
 });
+
+
 router.put(
 	"/order_deleverd_delete/:orderID",
 	WaiterAuthorization,
@@ -357,14 +359,7 @@ router.put(
 				return res.status(400).json({ error: err.message });
 			}
 
-			// Delete from contains table
-			// const deleteContainsSQL = "DELETE FROM contains WHERE orderID = ?";
-			// db.query(deleteContainsSQL, [orderID], (err, result) => {
-			// 	if (err) {
-			// 		return db.rollback(() => {
-			// 			res.status(400).json({ error: err.message });
-			// 		});
-			// 	}
+			
 
 			// Delete from orders table
 			const deleteOrderSQL =
@@ -394,6 +389,79 @@ router.put(
 		});
 	}
 );
+
+router.put("/order_deleverd_reject/:orderID", AllRoleAuthentication, (req, res) => {
+  const { orderID } = req.params;
+  const time = req.body["time"];
+
+  const updateOrderSQL = "UPDATE orders SET `status`='reject' WHERE orderID = ? AND time = ?";
+  
+  db.beginTransaction((err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    // Update order status to 'reject'
+    db.query(updateOrderSQL, [orderID, time], (err, result) => {
+      if (err) {
+        return db.rollback(() => {
+          res.status(400).json({ error: err.message });
+        });
+      }
+
+      db.commit((err) => {
+        if (err) {
+          return db.rollback(() => {
+            res.status(400).json({ error: err.message });
+          });
+        }
+
+        res.status(200).send({
+          message: `Order ${orderID} status updated to 'reject' successfully.`,
+        });
+
+        // Delete associated records after 3 seconds
+        setTimeout(() => {
+          db.beginTransaction((err) => {
+            if (err) {
+              console.error("Transaction error:", err.message);
+              return;
+            }
+
+            const deleteContainsSQL = "DELETE FROM contains WHERE orderID = ? ";
+            const deleteOrderSQL = "DELETE FROM orders WHERE orderID = ? AND time = ?";
+
+            // Delete from contains table
+            db.query(deleteContainsSQL, [orderID], (err, result) => {
+              if (err) {
+                console.error("Error deleting from contains:", err.message);
+                return db.rollback();
+              }
+
+              // Delete from orders table
+              db.query(deleteOrderSQL, [orderID,time], (err, result) => {
+                if (err) {
+                  console.error("Error deleting from orders:", err.message);
+                  return db.rollback();
+                }
+
+                db.commit((err) => {
+                  if (err) {
+                    console.error("Commit error:", err.message);
+                    return db.rollback();
+                  }
+
+                  console.log(`Order ${orderID} and associated items deleted successfully.`);
+                });
+              });
+            });
+          });
+        }, 25000); 
+      });
+    });
+  });
+});
+
 
 router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;

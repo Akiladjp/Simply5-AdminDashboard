@@ -39,18 +39,18 @@ function PendingOrders() {
 			.catch((err) => console.log(err));
 	}, []);
 
-	const handleDeleteOrder = (orderID) => {
-		axios
-			.delete(`${API_URL}/orderdelete/${orderID}`, {
-				withCredentials: true,
-			})
-			.then(() => {
-				setOrderPending((prevOrders) =>
-					prevOrders.filter((order) => order.orderID !== orderID)
-				);
-			})
-			.catch((err) => console.log(err));
-	};
+	// const handleDeleteOrder = (orderID) => {
+	// 	axios
+	// 		.delete(`${API_URL}/orderdelete/${orderID}`, {
+	// 			withCredentials: true,
+	// 		})
+	// 		.then(() => {
+	// 			setOrderPending((prevOrders) =>
+	// 				prevOrders.filter((order) => order.orderID !== orderID)
+	// 			);
+	// 		})
+	// 		.catch((err) => console.log(err));
+	// };
 
 	// const handleAcceptOrder = (orderID,time) => {
 	// 	axios
@@ -75,7 +75,7 @@ function PendingOrders() {
 						<OrderCard
 							key={index}
 							data={orderpendingdata}
-							onDelete={handleDeleteOrder}
+						//	onDelete={handleDeleteOrder}
 							
 							waiterID={waiterID}
 							title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}

@@ -90,18 +90,21 @@ export const OrderCard = ({
 		fetchData();
 	}, []);
 
-	const handleDelete = () => {
+	const handleReject = (orderID,time) => {
+		console.log("in delete",orderID,time);
 		axios
-			.delete(`${API_URL}/orderdelete/${data["orderID"]}`, {
-				withCredentials: true,
-			})
+			.put(
+				`${API_URL}/order_deleverd_reject/${orderID}`,
+				{time:time},
+				{ withCredentials: true }
+			)
 			.then(() => {
-				if (onDelete) {
-					onDelete(data.orderID);
-				}
+				window.location.reload();
+				
 			})
-			.catch((err) => console.error("Error deleting the order:", err));
+			.catch((err) => console.log(err));
 	};
+	
 
 	const handleAccept = async (mobileNo) => {
 		setSelectMobile(mobileNo);
@@ -401,7 +404,7 @@ export const OrderCard = ({
 							<div className="pt-4 flex justify-end">
 								<button
 									className={`${buttonColor} px-4 py-1.5 border-none text-white font-semibold lg:text-xl`}
-									onClick={handleDelete}>
+									onClick={()=>{handleReject(data.orderID,data.time)}}>
 									DECLINE
 								</button>
 							</div>
