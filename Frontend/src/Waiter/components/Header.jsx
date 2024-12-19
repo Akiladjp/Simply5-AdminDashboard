@@ -2,17 +2,61 @@ import { useEffect, useState } from "react";
 import sample_profile from "../../assets/chef.png";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { selectEmail } from "../../Redux/Slices/LogiinSlice";
-
+import { selectEmail, selectToken } from "../../Redux/Slices/LogiinSlice";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function WaiterHeader() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [image, setImage] = useState(sample_profile);
   const [error, setError] = useState(null);
   const [bannerShow, setbannerShow] = useState([]);
-
+  const [prevOrderCount, setPrevOrderCount] = useState(0);
+	const [isFirstFetch, setIsFirstFetch] = useState(true);
   const API_URL = import.meta.env.VITE_API_URL;
   const email = useSelector(selectEmail);
+const toekenValid = useSelector(selectToken);
 
+  useEffect(() => {
+		let interval;
+
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(`${API_URL}/get_notification`, {
+					withCredentials: true,
+				});
+
+				const newOrderCount = response.data.length;
+
+				if (!isFirstFetch && newOrderCount > prevOrderCount) {
+					toast(`New orders received!`);
+				}
+
+				// Update previous count state
+				setPrevOrderCount(newOrderCount);
+				setIsFirstFetch(false);
+			} catch (error) {
+				console.error("Error fetching notifications:", error);
+			}
+		};
+
+		if (toekenValid) {
+			fetchData(); // Fetch immediately
+			interval = setInterval(fetchData, 5000); // Fetch every 5 seconds
+		}
+
+		return () => {
+			clearInterval(interval);
+		};
+	}, [prevOrderCount, isFirstFetch, toekenValid]);
+
+	// Update the current time every second
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			setCurrentDate(new Date());
+		}, 1000);
+
+		return () => clearInterval(intervalId);
+	}, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -46,6 +90,18 @@ function WaiterHeader() {
 
   return (
     <div className="bg-[#056A8B] text-white flex md:pb-4 md:pt-4 fixed w-full md:h-[70px] h-[55px] font-medium z-50">
+      <ToastContainer
+							position="top-center"
+							autoClose={5000}
+							hideProgressBar={false}
+							newestOnTop={false}
+							closeOnClick
+							rtl={false}
+							pauseOnFocusLoss
+							draggable
+							pauseOnHover
+							theme="dark"
+						/>
       <div className="flex ml-3 h-full items-center">
         <img
           src={bannerShow.image_url}

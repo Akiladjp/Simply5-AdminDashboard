@@ -26,6 +26,20 @@ function OrderCard({ data, onDelete, onAccept, title, waiterID }) {
 			})
 			.catch((err) => console.log(err));
 	};
+	const handleReject = (orderID,time) => {
+		console.log("in delete",orderID,time);
+		axios
+			.put(
+				`${API_URL}/order_deleverd_reject/${orderID}`,
+				{time:time},
+				{ withCredentials: true }
+			)
+			.then(() => {
+				window.location.reload();
+				
+			})
+			.catch((err) => console.log(err));
+	};
 	
 
 	const handleAccept = async () => {
@@ -92,7 +106,7 @@ function OrderCard({ data, onDelete, onAccept, title, waiterID }) {
 							</button>
 							<button
 								className="px-[8px] py-1 text-sm font-medium text-white  rounded-none  border-[#007FA8] border-[1px] bg-[#007FA8]  md:text-lg md:ml-4  md:px-5 ml-2"
-								onClick={handleDelete}>
+								onClick={()=>{handleReject(data.orderID,data.time)}}>
 								DELETE
 							</button>
 						</div>

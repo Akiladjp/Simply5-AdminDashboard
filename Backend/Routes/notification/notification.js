@@ -1,10 +1,11 @@
 import AdminCashier from "../../Authorization/AdminCashierAuthrize.js";
+import AllRoleAuthentication from "../../Authorization/AllRoleAuthentication.js";
 import db from "../../config/DatabaseConfig.js";
 import express from "express";
 
 const notify = express.Router();
 
-notify.get("/get_notification", AdminCashier, (req, res) => {
+notify.get("/get_notification", AllRoleAuthentication, (req, res) => {
 	try {
 		const sql = "SELECT * FROM orders";
 

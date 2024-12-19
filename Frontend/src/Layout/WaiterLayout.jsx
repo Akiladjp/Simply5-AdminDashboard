@@ -50,6 +50,7 @@ const WaiterLayOut = () => {
 
 	return isValied ? (
 		<div className="h-screen">
+			
 			<div>
 				<WaiterHeader />
 			</div>
