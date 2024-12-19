@@ -174,14 +174,14 @@ router.get(
 			}
 
 			console.log(rows);
-		return	res.json({
+			return res.json({
 				data: rows,
 			});
 		});
 	}
 );
 
-router.get("/orderpaid", AdminAuthorize, (req, res) => {
+router.get("/orderpaid", AdminCashier, (req, res) => {
 	const { mobileNo } = req.query;
 
 	const sql_user = `
@@ -208,7 +208,7 @@ router.get("/orderpaid", AdminAuthorize, (req, res) => {
 		return res.json({ data: result });
 	});
 });
-router.get("/orderdelivered", AdminAuthorize, (req, res) => {
+router.get("/orderdelivered", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.query;
 
 	const sql_user = `
@@ -230,8 +230,6 @@ WHERE orders.status =?
 GROUP BY user.phoneNo, user.name;
 `;
 
-
-
 	db.query(sql_user, ["delivered"], (err, result) => {
 		if (err) {
 			console.log(err);
@@ -242,7 +240,7 @@ GROUP BY user.phoneNo, user.name;
 	});
 });
 
-router.get("/getPaiedItem/:mobileNo", AdminAuthorize, (req, res) => {
+router.get("/getPaiedItem/:mobileNo", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.params;
 	console.log("in getpaid", mobileNo);
 	const sql_getOrderId = `
@@ -271,7 +269,7 @@ router.get("/getPaiedItem/:mobileNo", AdminAuthorize, (req, res) => {
 		res.json({ paidItems: result });
 	});
 });
-router.get("/getDeliveryItem/:mobileNo", AdminAuthorize, (req, res) => {
+router.get("/getDeliveryItem/:mobileNo", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.params;
 	console.log("in getpaid", mobileNo);
 	const sql_getOrderId = `
@@ -349,8 +347,8 @@ router.put(
 	WaiterAuthorization,
 	(req, res) => {
 		const { orderID } = req.params;
-		const time =req.body["time"];
-		console.log(time,orderID,"in chsnge to delivered");
+		const time = req.body["time"];
+		console.log(time, orderID, "in chsnge to delivered");
 		db.beginTransaction((err) => {
 			if (err) {
 				return res.status(400).json({ error: err.message });
@@ -368,14 +366,14 @@ router.put(
 			// Delete from orders table
 			const deleteOrderSQL =
 				"UPDATE orders SET `status`='hidden' WHERE orderID = ? AND time =?";
-			db.query(deleteOrderSQL, [orderID,time], (err, result) => {
+			db.query(deleteOrderSQL, [orderID, time], (err, result) => {
 				if (err) {
 					console.log(err);
 					return db.rollback(() => {
 						res.status(400).json({ error: err.message });
 					});
 				}
-console.log(result);
+				console.log(result);
 				db.commit((err) => {
 					if (err) {
 						return db.rollback(() => {
@@ -397,11 +395,11 @@ console.log(result);
 router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;
 	const { selectWaiterid } = req.body;
-	const {time} = req.body
-	
+	const { time } = req.body;
 
-	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ? AND time=?";
-	db.query(updateStatusSQL, ["accept", orderID,time], (err, result) => {
+	const updateStatusSQL =
+		"UPDATE orders SET status = ? WHERE orderID = ? AND time=?";
+	db.query(updateStatusSQL, ["accept", orderID, time], (err, result) => {
 		if (err) {
 			console.log(err);
 			return res.status(400).json({ error: err.message });
@@ -482,10 +480,10 @@ router.put(
 	WaiterAuthorization,
 	(req, res) => {
 		const { orderID } = req.params;
-		const time =req.body["time"];
-console.log(time);
+		const time = req.body["time"];
+		console.log(time);
 		const updateStatusSQL = `UPDATE orders SET status = ? WHERE orderID = ? AND time=?`;
-		db.query(updateStatusSQL, ["delivered", orderID,time], (err, result) => {
+		db.query(updateStatusSQL, ["delivered", orderID, time], (err, result) => {
 			if (err) {
 				console.log(err);
 				res.status(400).json({ error: err.message });
@@ -493,7 +491,7 @@ console.log(time);
 			}
 			if (result.affectedRows > 0) {
 				console.log("changes happen", result);
-				return res.json({message:"update changes"})
+				return res.json({ message: "update changes" });
 			} else {
 				res.status(404).send({ message: `Order ${orderID} not found` });
 			}
@@ -501,31 +499,7 @@ console.log(time);
 	}
 );
 
-// router.patch("/orderstatus/:orderID", WaiterAuthorization, (req, res) => {
-// 	const { orderID } = req.params;
-// 	const { status } = req.body; // Accept `status` from the request body
 
-// 	// Validate the `status` field
-// 	if (!status) {
-// 		return res.status(400).json({ error: "Status is required" });
-// 	}
-
-// 	const updateStatusSQL = "UPDATE `orders` SET `status` = ? WHERE `orderID` = ?";
-// 	db.query(updateStatusSQL, [status, orderID], (err, result) => {
-// 		if (err) {
-// 			console.error(err);
-// 			return res.status(500).json({ error: err.message });
-// 		}
-// 		if (result.affectedRows > 0) {
-// 			console.log("Status updated successfully:", result);
-// 			res
-// 				.status(200)
-// 				.json({ message: `Order ${orderID} status updated to '${status}'` });
-// 		} else {
-// 			res.status(404).json({ error: `Order ${orderID} not found` });
-// 		}
-// 	});
-// });
 
 router.put("/orderstatuspaid/:selectMobile", AdminCashier, (req, res) => {
 	const { selectMobile } = req.params;

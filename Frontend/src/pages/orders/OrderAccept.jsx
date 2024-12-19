@@ -4,7 +4,7 @@ import axios from "axios";
 import { SearchComp } from "../../components/SearchComp";
 import ReactPlayer from 'react-player';
 import { FaUserCheck } from "react-icons/fa6";
-import loading from '../../assets/loading.gif'
+import loading from '../../assets/loadingIcon.gif'
 function OrderAccept() {
 	const [orderAcceptdata, setOrderAccept] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");

@@ -7,8 +7,8 @@ import { GrUserWorker } from "react-icons/gr";
 import { IoIosLogOut } from "react-icons/io";
 import { BiSolidOffer } from "react-icons/bi";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import {logoutFun } from "../Redux/Slices/LogiinSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {logoutFun, selectRole } from "../Redux/Slices/LogiinSlice";
 
 export default function Sidebar() {
 	const API_URL = import.meta.env.VITE_API_URL;
@@ -18,6 +18,8 @@ export default function Sidebar() {
 	const [activeMenuItem, setActiveMenuItem] = useState("");
 	const [activeDropdown, setActiveDropdown] = useState(null);
 	const [activeButton, setActiveButton] = useState("");
+	const position = useSelector(selectRole)
+	
 
 	const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
@@ -295,7 +297,9 @@ export default function Sidebar() {
 						activeButton === "analysis"
 							? "bg-[#027297] hover:bg-[#056A8B]"
 							: "bg-[#007FA8] hover:bg-[#056A8B]"
-					}`}>
+					} ${position === "Manager" ? "flex" : "hidden"}`}
+					
+					>
 					<button
 						onClick={() => toggleDropdown("analysis")}
 						className="flex items-center w-full pr-4 text-base font-medium lg:text-lg">
@@ -344,7 +348,8 @@ export default function Sidebar() {
 						activeButton === "employers"
 							? "bg-[#027297] hover:bg-[#056A8B]"
 							: "bg-[#007FA8] hover:bg-[#056A8B]"
-					}`}>
+					} ${position === "Manager" ? "flex" : "hidden"}`}
+					>
 					<button
 						onClick={() => toggleDropdown("employers")}
 						className="flex items-center w-full text-base font-medium lg:text-lg">
