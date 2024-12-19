@@ -8,6 +8,7 @@ import AdminCashier from "../../Authorization/AdminCashierAuthrize.js";
 import AdminWaiterAuthorize from "../../Authorization/AdminWaiterAuthorize.js";
 import AllRoleAuthentication from "../../Authorization/AllRoleAuthentication.js";
 
+//for all positions
 router.get("/orderpending", AllRoleAuthentication, (req, res) => {
 	const sql1 = "SELECT * FROM orders";
 	const sql = `
@@ -44,7 +45,8 @@ router.get("/orderpending", AllRoleAuthentication, (req, res) => {
 		});
 	});
 });
-// for admin
+
+//for all positions
 router.get("/orderaccepted", AllRoleAuthentication, (req, res) => {
 	const { mobileNo } = req.query;
 
@@ -180,6 +182,7 @@ router.get(
 		});
 	}
 );
+
 
 router.get("/orderpaid", AdminCashier, (req, res) => {
 	const { mobileNo } = req.query;

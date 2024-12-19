@@ -187,11 +187,11 @@ export const OrderCard = ({
 						: "hidden"
 				}`}>
 				{showPrint && (
-					<div className="mt-12 overflow-y-auto h-auto">
+					<div className="mt-12 overflow-y-scroll h-auto">
 						<Billsection mobileno={selectMobile} />
 					</div>
 				)}
-				<div className="flex p-2  items-center justify-center gap-x-8 h-auto  w-96 mx-auto  bottom-0 relative ">
+				<div className="flex p-2 bottom-0 items-center justify-center gap-x-8 h-auto  w-96 mx-auto  mt-2  absolute left-[30%] ">
 					<button
 						className="bg-red-600 uppercase hover:bg-red-700 px-10 text-lg font-semibold text-white  h-12"
 						onClick={() => {
