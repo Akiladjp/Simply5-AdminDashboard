@@ -77,7 +77,7 @@ export default function ItemCard({ data }) {
 						<i className="text-green-700 ">
 							<MdAccessAlarms fontSize="small" />
 						</i>
-						<p className="text-sm text-green-700">{data.prepare_time}</p>
+						<p className="text-sm text-green-700">{data.prepare_time} min</p>
 					</div>
 					<div className="flex items-center gap-1 justify-center">
 						<i className="text-red-700">
