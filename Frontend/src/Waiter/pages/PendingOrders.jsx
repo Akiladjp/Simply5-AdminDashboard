@@ -33,6 +33,7 @@ function PendingOrders() {
 		axios
 			.get(`${API_URL}/orderpending`, { withCredentials: true })
 			.then((res) => {
+				console.log(res.data.data);
 				setOrderPending(res.data.data);
 			})
 			.catch((err) => console.log(err));
@@ -51,21 +52,21 @@ function PendingOrders() {
 			.catch((err) => console.log(err));
 	};
 
-	const handleAcceptOrder = (orderID) => {
-		axios
-			.put(
-				`${API_URL}/orderaccept/${orderID}`,
-				{selectWaiterid:waiterID},
-				{ withCredentials: true }
-			)
-			.then(() => {
-				console.log(orderID);
+	// const handleAcceptOrder = (orderID,time) => {
+	// 	axios
+	// 		.put(
+	// 			`${API_URL}/orderaccept/${orderID}`,
+	// 			{selectWaiterid:waiterID},
+	// 			{ withCredentials: true }
+	// 		)
+	// 		.then(() => {
+	// 			console.log(orderID);
 
-				//  window.location.reload();
-				// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
-			})
-			.catch((err) => console.log(err));
-	};
+	// 			//  window.location.reload();
+	// 			// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
+	// 		})
+	// 		.catch((err) => console.log(err));
+	// };
 	return (
 		<div className="pt-20 md:pt-28 flex  flex-col gap-y-4 ">
 			<div className="mb-36 gap-y-4 flex flex-col">
@@ -75,7 +76,7 @@ function PendingOrders() {
 							key={index}
 							data={orderpendingdata}
 							onDelete={handleDeleteOrder}
-							onAccept={handleAcceptOrder}
+							
 							waiterID={waiterID}
 							title={orderpendingdata.status === "pending" ? "ACCEPT" : "PAID"}
 						/>

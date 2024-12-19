@@ -3,7 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 // import Stopwatch from "./OrderTimer";
 
-function OrderCard({ data, onDelete, onAccept, title,waiterID }) {
+function OrderCard({ data, onDelete, onAccept, title, waiterID }) {
 	const API_URL = import.meta.env.VITE_API_URL;
 	// Function to render buttons based on the status
 	if (!data) {
@@ -12,36 +12,60 @@ function OrderCard({ data, onDelete, onAccept, title,waiterID }) {
 
 	const items = data.items ? JSON.parse(data.items) : [];
 
-	const handleDelete = () => {
-		console.log("in delete");
-		if (onDelete) {
-			onDelete(data.orderID);
-		}
-	};
-
-	const handleAccept = () => {
-		axios.put(
-			`${API_URL}/orderaccept/${data.orderID}`,
-			{ selectWaiterid: waiterID}, 
-			{ withCredentials: true } 
-		)
-		.then(() => {
-			// If onAccept callback exists, call it with orderID
-			if (onAccept) {
-				onAccept(data.orderID);
-			}
-	
-			// Reload the page after 500 milliseconds
-			setTimeout(() => {
+	const handleDelete = (orderID,time) => {
+		console.log("in delete",orderID,time);
+		axios
+			.put(
+				`${API_URL}/order_deleverd_delete/${orderID}`,
+				{time:time},
+				{ withCredentials: true }
+			)
+			.then(() => {
 				window.location.reload();
-			}, 500);
-		})
-		.catch((err) => console.error("Error accepting the order:", err));
+				
+			})
+			.catch((err) => console.log(err));
 	};
 	
 
-	const handleDone = () => {
-		onAccept(data.orderID);
+	const handleAccept = async () => {
+		axios
+			.put(
+				`${API_URL}/orderaccept/${data.orderID}`,
+				{ selectWaiterid: waiterID, time: data.time },
+				{ withCredentials: true }
+			)
+			.then(() => {
+				
+
+				// if (onAccept) {
+				// 	console.log("--------------->",data.time);
+				// 	onAccept(data.orderID,data.time);
+				// }
+
+				// Reload the page after 500 milliseconds
+				setTimeout(() => {
+					window.location.reload();
+				}, 500);
+			})
+			.catch((err) => console.error("Error accepting the order:", err));
+	};
+
+	const handleDone = async (orderID, time) => {
+		//  onAccept(data.orderID);
+		try {
+			const response = await axios.put(
+				`${API_URL}/orderstatusdelivered/${orderID}`,
+				{ time: time },
+				{ withCredentials: true }
+			);
+			if (response) {
+				window.location.reload();
+			}
+			console.log("no data");
+		} catch (error) {
+			console.log(error);
+		}
 		setTimeout(() => {
 			window.location.reload();
 		}, 500);
@@ -78,7 +102,9 @@ function OrderCard({ data, onDelete, onAccept, title,waiterID }) {
 				return (
 					<button
 						className="px-[12px] py-1 text-sm font-medium text-white  rounded-none  border-[#007FA8] border-[1px] bg-[#007FA8]  md:text-lg md:ml-4  md:px-6 ml-2"
-						onClick={handleDone}>
+						onClick={() => {
+							handleDone(data.orderID, data.time);
+						}}>
 						DONE
 					</button>
 				);
@@ -86,7 +112,7 @@ function OrderCard({ data, onDelete, onAccept, title,waiterID }) {
 				return (
 					<button
 						className="px-[8px] py-1 text-sm font-medium text-white  rounded-none  border-[#007FA8] border-[1px] bg-[#007FA8]  md:text-lg md:ml-4  md:px-5 ml-2"
-						onClick={handleDelete}>
+						onClick={()=>{handleDelete(data.orderID, data.time)}}>
 						DELETE
 					</button>
 				);

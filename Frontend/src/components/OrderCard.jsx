@@ -25,7 +25,6 @@ export const OrderCard = ({
 	const [billDetails, setBillDetails] = useState([]);
 	const [billOrderDetails, setOrderBillDetails] = useState([]);
 
-	console.log(data, "in main ");
 	const [showPrint, setShowPrint] = useState(false);
 	const items = data.items ? JSON.parse(data.items) : [];
 
@@ -106,7 +105,7 @@ export const OrderCard = ({
 
 	const handleAccept = async (mobileNo) => {
 		setSelectMobile(mobileNo);
-		console.log(selectMobile);
+
 		console.log("in handle Accept");
 		if (title == "ACCEPT") {
 			setBlurEnable(true);
@@ -118,7 +117,7 @@ export const OrderCard = ({
 			setShowPrint(true);
 			handlePrint(data, paidItems);
 			setSelectMobile(data.mobileNo);
-			console.log(data, "in paid");
+
 			try {
 				const response = await axios.put(
 					`${API_URL}/orderstatuspaid/${selectMobile}`,
@@ -152,15 +151,16 @@ export const OrderCard = ({
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const selectedWaiterID = event.target.waiterID.value;
-
+		const time = event.target.time.value;
+		console.log(selectedWaiterID, time);
 		setSelectwaiterid(selectedWaiterID);
-		accptWithId(selectedWaiterID);
+		accptWithId(selectedWaiterID, time);
 	};
 
-	const accptWithId = async (selectWaiterid) => {
+	const accptWithId = async (selectWaiterid, time) => {
 		const response = await axios.put(
 			`${API_URL}/orderaccept/${data.orderID}`,
-			{ selectWaiterid },
+			{ selectWaiterid, time },
 			{ withCredentials: true }
 		);
 		if (response) {
@@ -177,13 +177,13 @@ export const OrderCard = ({
 			<div
 				className={`${
 					showPrint
-						? "w-[100%] left-0  mx-auto h-screen opacity-65 bg-gray-800 absolute top-0 z-10 "
-						: "bg-red-600"
+						? "w-[100%] left-0  mx-auto h-screen opacity-70 bg-gray-900 absolute top-0 z-10 "
+						: "hidden"
 				}`}></div>
 			<div
 				className={`${
 					showPrint
-						? "w-[50%] left-[30%] mx-auto h-[100vh] my-auto bg-gray-200 absolute top-0 z-50 overflow-hidden  "
+						? "w-[50%] left-[30%] mx-auto h-[100vh] my-auto bg-white absolute top-0 z-50 overflow-hidden  "
 						: "hidden"
 				}`}>
 				{showPrint && (
@@ -200,7 +200,9 @@ export const OrderCard = ({
 						Cancel
 					</button>
 					<button
-						onClick={() => {window.location.reload()}}
+						onClick={() => {
+							window.location.reload();
+						}}
 						className="bg-[#007FA8] opacity-80 hover:opacity-100 uppercase  px-10 text-lg font-semibold text-white  h-12">
 						Print
 					</button>
@@ -210,13 +212,13 @@ export const OrderCard = ({
 			<div
 				className={`${
 					blurEnable
-						? "w-full h-full left-0 bg-gray-600  opacity-75  top-0 absolute"
+						? "w-full h-full left-0 bg-gray-700  opacity-75  top-0 absolute z-10"
 						: ""
 				}`}></div>
 			<div
 				className={`${
 					isAssign
-						? "absolute w-96 h-40 top-[45%] left-[45%]  bg-gray-100 border-2 rounded-md flex  flex-col items-center"
+						? "absolute w-96 h-40 top-[45%] left-[45%] z-50 bg-gray-100 border-2 rounded-md flex  flex-col items-center"
 						: "hidden "
 				}`}>
 				<div className="w-6 h-6 cursor-pointer right-0  top-0 absolute bg-red-600 rounded-md flex items-center justify-center">
@@ -233,6 +235,13 @@ export const OrderCard = ({
 						onSubmit={handleSubmit}
 						action=""
 						className="w-full h-full  flex items-center  px-2 ">
+						<input
+							type="text"
+							hidden
+							id="time"
+							value={data.time}
+							onChange={handleSelectChange}
+						/>
 						<select
 							onChange={handleSelectChange}
 							className="w-3/5 h-10 bg-gray-300 text-center"
@@ -348,7 +357,7 @@ export const OrderCard = ({
 													Rs.{item.totalPrice}
 												</td>
 											</tr>
-								  ))
+									  ))
 									: items.map((item, index) => (
 											<tr key={index}>
 												<td className="border-b border-gray-200 px-2 py-1 xl:py-2">

@@ -60,7 +60,7 @@ waiterProfile.get("/OrderCount/:waiterID", WaiterAuthorization, (req, res) => {
 		const sql = `
 		SELECT WaiterID, COUNT(*) AS orderCount
 		FROM orders
-		WHERE DATE(CONVERT_TZ(date, '+00:00', '+05:30')) = ? AND waiterID =?
+		WHERE DATE(CONVERT_TZ(date, '+00:00', '+05:30')) = ? AND waiterID =? AND status = "delivered" OR status ="hidden"
 		
 	`;
 
@@ -100,7 +100,7 @@ waiterProfile.get(
 			const sql = `
           SELECT WaiterID, COUNT(*) AS orderCount
           FROM orders
-          WHERE YEAR(date) = ? AND MONTH(date) = ? AND waiterID = ?
+          WHERE YEAR(date) = ? AND MONTH(date) = ? AND waiterID = ?  AND status = "delivered" OR status ="hidden"
           GROUP BY WaiterID
       `;
 
