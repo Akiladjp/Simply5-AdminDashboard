@@ -297,7 +297,7 @@ export default function Sidebar() {
 						activeButton === "analysis"
 							? "bg-[#027297] hover:bg-[#056A8B]"
 							: "bg-[#007FA8] hover:bg-[#056A8B]"
-					} ${position === "Manager" ? "flex" : "hidden"}`}
+					} ${position === "Manager" ? "" : "hidden"}`}
 					
 					>
 					<button
@@ -348,7 +348,7 @@ export default function Sidebar() {
 						activeButton === "employers"
 							? "bg-[#027297] hover:bg-[#056A8B]"
 							: "bg-[#007FA8] hover:bg-[#056A8B]"
-					} ${position === "Manager" ? "flex" : "hidden"}`}
+					} ${position === "Manager" ? "" : "hidden"}`}
 					>
 					<button
 						onClick={() => toggleDropdown("employers")}
