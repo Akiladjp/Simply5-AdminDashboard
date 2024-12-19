@@ -137,7 +137,7 @@ function Login() {
 							/>
 							<input
 								type="submit"
-								value="Submit"
+								value="LOGIN"
 								className="flex w-full justify-center rounded-md bg-[rgb(0,127,168)] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[rgb(81,191,228)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(81,191,228)] cursor-pointer mt-8"
 							/>
 

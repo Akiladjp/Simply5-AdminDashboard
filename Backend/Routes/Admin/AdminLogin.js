@@ -40,7 +40,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 									const token = jwt.sign(
 										{ id: empID, userType: position },
 										process.env.JWT_SECRET_KEY,
-										{ expiresIn: "1d" } // Token valid for 1 day
+										{ expiresIn: "1d" } // Token valid for 1 day 1s
 								);
 
 									// Redirect based on position
@@ -50,7 +50,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 											httpOnly: true,
 											maxAge: 24 * 60 * 60 * 1000,
 									})
-									
+									//max age 1*1000
 											.json({
 												Login: true,
 												redirectURL: "/Waiter/pending-orders",

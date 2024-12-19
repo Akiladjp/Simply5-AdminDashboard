@@ -241,7 +241,7 @@ export default function UpdateItem() {
 					<input
 						onChange={handleChange}
 						type="number"
-						placeholder="Delivery Time"
+						placeholder="Delivery Time (min)"
 						value={data.prepare_time}
 						name="prepare_time"
 						className="w-full py-1 ml-1 bg-white rounded-md outline-none focus:ring-2 focus:ring-inset focus:ring-transparent placeholder:text-black"
