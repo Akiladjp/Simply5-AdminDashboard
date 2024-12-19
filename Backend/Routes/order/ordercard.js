@@ -16,6 +16,7 @@ router.get("/orderpending", AllRoleAuthentication, (req, res) => {
             orders.status, 
             orders.mobileNo, 
             orders.tableNo, 
+						orders.time,
             orders.date, 
             orders.total,
             CONCAT('[', GROUP_CONCAT(
@@ -104,6 +105,7 @@ router.get(
             orders.tableNo, 
             orders.date, 
             orders.total,
+						orders.time,
 						orders.waiterID,
             CONCAT('[', GROUP_CONCAT(
                 CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
@@ -149,6 +151,7 @@ router.get(
             orders.tableNo, 
             orders.date, 
             orders.total,
+						orders.time,
 						orders.waiterID,
             CONCAT('[', GROUP_CONCAT(
                 CONCAT('{"itemName": "', item.name, '", "quantity": ', contains.quantity, ', "price": ', item.price, '}') 
@@ -170,7 +173,8 @@ router.get(
 				return;
 			}
 
-			res.json({
+			console.log(rows);
+		return	res.json({
 				data: rows,
 			});
 		});
@@ -345,7 +349,8 @@ router.put(
 	WaiterAuthorization,
 	(req, res) => {
 		const { orderID } = req.params;
-
+		const time =req.body["time"];
+		console.log(time,orderID,"in chsnge to delivered");
 		db.beginTransaction((err) => {
 			if (err) {
 				return res.status(400).json({ error: err.message });
@@ -362,15 +367,15 @@ router.put(
 
 			// Delete from orders table
 			const deleteOrderSQL =
-				"UPDATE orders SET `status`='hidden' WHERE orderID = ?";
-			db.query(deleteOrderSQL, [orderID], (err, result) => {
+				"UPDATE orders SET `status`='hidden' WHERE orderID = ? AND time =?";
+			db.query(deleteOrderSQL, [orderID,time], (err, result) => {
 				if (err) {
 					console.log(err);
 					return db.rollback(() => {
 						res.status(400).json({ error: err.message });
 					});
 				}
-
+console.log(result);
 				db.commit((err) => {
 					if (err) {
 						return db.rollback(() => {
@@ -392,9 +397,11 @@ router.put(
 router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;
 	const { selectWaiterid } = req.body;
+	const {time} = req.body
+	
 
-	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ?";
-	db.query(updateStatusSQL, ["accept", orderID], (err, result) => {
+	const updateStatusSQL = "UPDATE orders SET status = ? WHERE orderID = ? AND time=?";
+	db.query(updateStatusSQL, ["accept", orderID,time], (err, result) => {
 		if (err) {
 			console.log(err);
 			return res.status(400).json({ error: err.message });
@@ -475,9 +482,10 @@ router.put(
 	WaiterAuthorization,
 	(req, res) => {
 		const { orderID } = req.params;
-
-		const updateStatusSQL = `UPDATE orders SET status = ? WHERE orderID = ?`;
-		db.query(updateStatusSQL, ["delivered", orderID], (err, result) => {
+		const time =req.body["time"];
+console.log(time);
+		const updateStatusSQL = `UPDATE orders SET status = ? WHERE orderID = ? AND time=?`;
+		db.query(updateStatusSQL, ["delivered", orderID,time], (err, result) => {
 			if (err) {
 				console.log(err);
 				res.status(400).json({ error: err.message });
@@ -485,6 +493,7 @@ router.put(
 			}
 			if (result.affectedRows > 0) {
 				console.log("changes happen", result);
+				return res.json({message:"update changes"})
 			} else {
 				res.status(404).send({ message: `Order ${orderID} not found` });
 			}

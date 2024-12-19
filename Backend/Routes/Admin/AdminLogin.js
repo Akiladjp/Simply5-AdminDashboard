@@ -46,10 +46,11 @@ adminLogin.post("/adminlogin", async (req, res) => {
 									// Redirect based on position
 									if (position === "Waiter") {
 										return res
-											.cookie("jwtToken", token, {
-												httpOnly: true,
-												maxAge: 24 * 60 * 60 * 1000,
-											})
+										.cookie("jwtToken", token, {
+											httpOnly: true,
+											maxAge: 24 * 60 * 60 * 1000,
+									})
+									
 											.json({
 												Login: true,
 												redirectURL: "/Waiter/pending-orders",
@@ -62,7 +63,7 @@ adminLogin.post("/adminlogin", async (req, res) => {
 										return res
 											.cookie("jwtToken", token, {
 												httpOnly: true,
-												maxAge: 24 * 60 * 60 * 1000,
+												maxAge: 24 * 60 * 60 * 1000, 
 											})
 											.json({
 												Login: true,
@@ -101,7 +102,7 @@ adminLogin.get("/admin-login-validation", AdminCashier, async (req, res) => {
 	try {
 		// console.log("dasf",AdminCashier.res.message);
 		const token = req.cookies.jwtToken;
-		console.log("ko", token);
+		
 
 		if (!token) {
 			console.log("no token");

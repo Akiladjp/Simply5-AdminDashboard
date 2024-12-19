@@ -68,21 +68,22 @@ function AcceptedOrders() {
 			.catch((err) => console.log(err));
 	};
 
-	const handleAcceptOrder = async (orderID) => {
-		try {
-			const response = await axios.put(
-				`${API_URL}/orderstatusdelivered/${orderID}`,
-				{},
-				{ withCredentials: true }
-			);
-			if (response) {
-				window.location.reload();
-			}
-			console.log("no data");
-		} catch (error) {
-			console.log(error);
-		}
-	};
+	// const handleAcceptOrder = async (orderID,time) => {
+	// 	try {
+	// 		console.log("333333333333333",time);
+	// 		const response = await axios.put(
+	// 			`${API_URL}/orderstatusdelivered/${orderID}`,
+	// 			{time},
+	// 			{ withCredentials: true }
+	// 		);
+	// 		if (response) {
+	// 			window.location.reload();
+	// 		}
+	// 		console.log("no data");
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 	}
+	// };
 	return (
 		<div className="pt-20 md:pt-28 flex flex-col gap-y-4   w-full top-16 overflow-y-scroll  mb-[98px]">
 			{Array.isArray(orderAcceptdata) &&
@@ -91,7 +92,7 @@ function AcceptedOrders() {
 						key={index}
 						data={orderacceptdata}
 						onDelete={handleDeleteOrder}
-						onAccept={handleAcceptOrder}
+					//  onAccept={handleAcceptOrder}
 						title={orderacceptdata.status === "accept" ? "PAID" : ""}
 					/>
 				))}

@@ -14,6 +14,7 @@ const isSetToken = useSelector(selectToken)
 
       axios.get(`${API_URL}/orderpending`,{withCredentials:true})
       .then(res => {
+        console.log(res.data.data);
         setOrderPending(res.data.data);
         
         console.log(res);
