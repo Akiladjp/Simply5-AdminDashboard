@@ -36,7 +36,7 @@ function Employee() {
 
 	const fetchEmployees = () => {
 		axios
-			.get("${API_URL}/employeecard/", { withCredentials: true })
+			.get(`${API_URL}/employeecard/`, { withCredentials: true })
 			.then((res) => {
 				console.log(res.data.employees);
 				setEmployees(res.data.employees);
@@ -59,11 +59,11 @@ function Employee() {
 
 		setLoading(true);
 		try {
-			const response = await axios.post("${API_URL}/make-admin", {
-				withCredentials: true,
+			const response = await axios.post(`${API_URL}/make-admin`, {
+				
 				email,
-				empID: selectedEmployee.empID,
-			});
+				empID: selectedEmployee.empID
+			},{withCredentials: true});
 
 			if (response.status === 200) {
 				//alert("Admin updated successfully!");

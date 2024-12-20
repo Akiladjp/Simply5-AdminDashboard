@@ -70,7 +70,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-Employee.post("/make-admin",AdminAuthorize, (req, res) => {
+Employee.post("/make-admin",AdminAuthorize, 
+  (req, res) => {
+    console.log("hi admin");
   const { email, empID } = req.body;
 
   // Start a transaction for admin promotion
