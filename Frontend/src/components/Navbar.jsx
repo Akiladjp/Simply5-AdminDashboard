@@ -376,7 +376,7 @@ export default function Sidebar() {
 										: "text-white"
 								}`}
 								onClick={() => handleMenuItemClick("admin")}>
-								ADMIN
+								USERS
 							</Link>
 							<Link
 								to="/app/employers/summaryemployee"
