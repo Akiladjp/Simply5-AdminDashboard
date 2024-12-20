@@ -467,6 +467,7 @@ router.put("/orderaccept/:orderID", AllRoleAuthentication, (req, res) => {
 	const { orderID } = req.params;
 	const { selectWaiterid } = req.body;
 	const { time } = req.body;
+	console.log(time,orderID);
 
 	const updateStatusSQL =
 		"UPDATE orders SET status = ? WHERE orderID = ? AND time=?";
