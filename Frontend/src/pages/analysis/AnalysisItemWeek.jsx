@@ -128,7 +128,7 @@ function AnalysisItemToday() {
     }, []);
 
   useEffect(() => {
-    axios.get('${API_URL}/week',{withCredentials:true})
+    axios.get(`${API_URL}/week`,{withCredentials:true})
     .then(res => {
       setRawData(res.data);
       updateChartData(res.data); 
