@@ -69,11 +69,13 @@ summaryEmployee.get("/OrderCount",AdminAuthorize, (req, res) => {
 	try {
 		// Corrected SQL query to count orders grouped by WaiterID
 		const sql = `
-		SELECT WaiterID, COUNT(*) AS orderCount
-		FROM orders
-		WHERE DATE(CONVERT_TZ(date, '+00:00', '+05:30')) = ?
-		GROUP BY WaiterID
-	`;
+    SELECT WaiterID, COUNT(*) AS orderCount
+    FROM orders
+    WHERE DATE(CONVERT_TZ(date, '+00:00', '+05:30')) = ? 
+          AND status != "reject"
+    GROUP BY WaiterID
+`;
+
 	
 
 		db.query(sql, [date], (err, result) => {
@@ -109,7 +111,7 @@ summaryEmployee.get("/OrderCountMonth",AdminAuthorize, (req, res) => {
 		const sql = `
           SELECT WaiterID, COUNT(*) AS orderCount
           FROM orders
-          WHERE YEAR(date) = ? AND MONTH(date) = ?
+          WHERE YEAR(date) = ? AND MONTH(date) = ? AND status !="reject" AND status !="pending"
           GROUP BY WaiterID
       `;
 

@@ -39,34 +39,7 @@ function PendingOrders() {
 			.catch((err) => console.log(err));
 	}, []);
 
-	// const handleDeleteOrder = (orderID) => {
-	// 	axios
-	// 		.delete(`${API_URL}/orderdelete/${orderID}`, {
-	// 			withCredentials: true,
-	// 		})
-	// 		.then(() => {
-	// 			setOrderPending((prevOrders) =>
-	// 				prevOrders.filter((order) => order.orderID !== orderID)
-	// 			);
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// };
 
-	// const handleAcceptOrder = (orderID,time) => {
-	// 	axios
-	// 		.put(
-	// 			`${API_URL}/orderaccept/${orderID}`,
-	// 			{selectWaiterid:waiterID},
-	// 			{ withCredentials: true }
-	// 		)
-	// 		.then(() => {
-	// 			console.log(orderID);
-
-	// 			//  window.location.reload();
-	// 			// setOrderPending((prevOrders) => prevOrders.filter(order => order.orderID !== orderID));
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// };
 	return (
 		<div className="pt-20 md:pt-28 flex  flex-col gap-y-4 ">
 			<div className="mb-36 gap-y-4 flex flex-col">
