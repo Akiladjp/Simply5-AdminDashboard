@@ -5,8 +5,8 @@ import 'dotenv/config';
 
 const awsConfig = {
   credentials: {
-    // accessKeyId: process.env.AWS_ACCESS_KEY,
-    // secretAccessKey:  process.env.AWS_SECRET_ACCESSKEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey:  process.env.AWS_SECRET_ACCESSKEY,
   },
   region: "eu-north-1",
 };
